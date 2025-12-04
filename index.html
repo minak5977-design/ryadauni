@@ -10,12 +10,12 @@
 
     <style>
         :root {
-            --primary: #2563eb;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --gray: #d1d5db;
-            --bg-glass: rgba(255, 255, 255, 0.98);
+            --primary: #4361ee;
+            --success: #06d6a0;
+            --danger: #ef476f;
+            --dark: #2b2d42;
+            --light: #f8f9fa;
+            --glass: rgba(255, 255, 255, 0.95);
         }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
         
@@ -23,183 +23,198 @@
             margin: 0;
             background: url('https://a.top4top.io/p_36115ao3o1.jpg') no-repeat center center fixed;
             background-size: cover;
-            display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
         }
-        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(5px); z-index: -1; }
+        /* خلفية ضبابية داكنة */
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px); z-index: -1; }
 
         .app-card {
-            width: 100%; max-width: 480px;
-            background: var(--bg-glass); border-radius: 24px; padding: 25px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3); position: relative;
+            width: 100%; max-width: 450px;
+            background: var(--glass); border-radius: 24px; padding: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4); position: relative;
             max-height: 90vh; overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.3);
         }
         .hidden { display: none !important; }
 
-        /* General UI */
-        .brand { text-align: center; margin-bottom: 20px; }
-        .brand h1 { margin: 0; color: #1f2937; font-size: 20px; font-weight: 800; }
+        /* الشعار والعناوين */
+        .brand { text-align: center; margin-bottom: 25px; }
+        .brand i { font-size: 45px; color: var(--primary); background: #e0e7ff; padding: 15px; border-radius: 20px; margin-bottom: 10px; }
+        .brand h1 { margin: 0; color: var(--dark); font-size: 22px; font-weight: 800; }
         
-        /* Tabs & Forms */
-        .tabs { display: flex; background: #e5e7eb; padding: 4px; border-radius: 12px; margin-bottom: 20px; }
-        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: bold; color: #6b7280; transition: 0.3s; }
-        .tab.active { background: #fff; color: var(--primary); shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        /* التبويبات */
+        .tabs { display: flex; background: #e9ecef; padding: 5px; border-radius: 15px; margin-bottom: 25px; }
+        .tab { flex: 1; text-align: center; padding: 12px; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 700; color: #6c757d; transition: 0.3s; }
+        .tab.active { background: #fff; color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
 
-        .modern-input { width: 100%; padding: 14px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 15px; outline: none; margin-bottom: 12px; transition: 0.3s; }
-        .modern-input:focus { border-color: var(--primary); background: #f9fafb; }
-        
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; color: white; margin-top: 5px; }
-        .btn-primary { background: var(--primary); }
-        .btn-success { background: var(--success); }
-        .btn-warning { background: var(--warning); color: #fff; }
-        .btn:disabled { background: #9ca3af; cursor: not-allowed; }
+        /* الحقول */
+        .input-group { margin-bottom: 15px; position: relative; }
+        .input-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--dark); }
+        .modern-input { 
+            width: 100%; padding: 16px; padding-right: 45px; /* مسافة للأيقونة */
+            border: 2px solid #dee2e6; border-radius: 14px; 
+            font-size: 15px; outline: none; transition: 0.3s; background: #fff;
+        }
+        .modern-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.15); }
+        .input-icon { position: absolute; top: 45px; right: 15px; color: #adb5bd; font-size: 18px; }
 
-        /* Roles Grid */
-        .roles-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .role-card { background: #fff; border: 2px solid #e5e7eb; border-radius: 12px; padding: 15px 5px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .role-card.selected { border-color: var(--primary); background: #eff6ff; color: var(--primary); }
+        /* الأزرار */
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; color: white; transition: 0.2s; box-shadow: 0 10px 20px rgba(0,0,0,0.1); margin-top: 10px; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), #3f37c9); }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn:disabled { background: #ced4da; cursor: not-allowed; }
 
-        /* 🔥 TIMELINE CSS (خط التتبع) 🔥 */
-        .tracking-container {
-            margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;
+        /* اختيار الأدوار */
+        .roles-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .role-card { 
+            background: #fff; border: 2px solid #dee2e6; border-radius: 14px; padding: 15px 5px; 
+            text-align: center; cursor: pointer; transition: 0.2s; 
         }
-        .timeline {
-            display: flex; justify-content: space-between; position: relative; margin-top: 20px;
-        }
-        /* الخط الرمادي الخلفي */
-        .timeline::before {
-            content: ''; position: absolute; top: 14px; left: 0; right: 0; height: 3px; background: #e5e7eb; z-index: 0;
-        }
-        /* الخط الملون (التقدم) */
-        .timeline-progress {
-            content: ''; position: absolute; top: 14px; right: 0; height: 3px; background: var(--success); z-index: 1; width: 0%; transition: width 0.5s ease;
-        }
+        .role-card i { font-size: 24px; color: #adb5bd; display: block; margin-bottom: 5px; }
+        .role-card span { font-size: 12px; font-weight: 700; color: #495057; }
         
-        .step {
-            position: relative; z-index: 2; text-align: center; width: 25%;
-        }
-        .step-circle {
-            width: 30px; height: 30px; background: #fff; border: 3px solid #e5e7eb; border-radius: 50%; margin: 0 auto 5px;
-            display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; transition: 0.3s;
-        }
-        .step-text { font-size: 10px; font-weight: bold; color: #9ca3af; }
-        
-        /* الحالات النشطة */
-        .step.active .step-circle { border-color: var(--primary); background: #fff; color: var(--primary); }
-        .step.completed .step-circle { border-color: var(--success); background: var(--success); color: #fff; }
-        .step.completed .step-text { color: var(--success); }
-        
-        /* كارت البلاغ */
-        .report-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 15px; margin-bottom: 15px; position: relative; overflow: hidden; }
-        .status-badge {
-            position: absolute; top: 15px; left: 15px; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold;
-        }
-        .report-imgs img { width: 40px; height: 40px; border-radius: 6px; margin-left: 5px; border: 1px solid #eee; object-fit: cover; }
-        
-        /* أزرار الفني والمشرف */
-        .action-row { display: flex; gap: 8px; margin-top: 10px; }
-        .action-row button { flex: 1; padding: 8px; border-radius: 8px; border: none; font-size: 12px; font-weight: bold; cursor: pointer; color: white; }
+        .role-card.selected { border-color: var(--primary); background: #e0e7ff; }
+        .role-card.selected i, .role-card.selected span { color: var(--primary); }
 
-        /* البروفايل */
-        .user-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .logout { color: #ef4444; font-size: 12px; font-weight: bold; cursor: pointer; background: #fef2f2; padding: 6px 12px; border-radius: 8px; }
+        /* شاشة التطبيق */
+        .app-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logout-btn { background: #ffe5ec; color: var(--danger); border: none; padding: 8px 15px; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer; }
+
+        /* كروت البلاغات */
+        .report-card { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.02); position: relative; }
+        .status-badge { position: absolute; top: 20px; left: 20px; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; }
+        .bg-new { background: #e0f2fe; color: #0284c7; }
+        .bg-accepted { background: #d1fae5; color: #059669; }
+        
+        .action-row { display: flex; gap: 10px; margin-top: 15px; }
+        .action-btn-sm { flex: 1; padding: 10px; border-radius: 10px; border: none; font-weight: bold; font-size: 13px; cursor: pointer; color: white; }
+        
+        /* شاشة التحميل */
+        #splashScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
+    <div id="splashScreen">
+        <i class="fas fa-tools fa-3x fa-spin" style="color:var(--primary); margin-bottom:20px;"></i>
+        <h3 style="color:var(--dark);">بوابة الصيانة</h3>
+    </div>
+
     <div id="authScreen" class="app-card">
         <div class="brand">
-            <i class="fas fa-hammer fa-2x" style="color:var(--primary)"></i>
-            <h1>نظام الصيانة الذكي</h1>
+            <i class="fas fa-shield-alt"></i>
+            <h1>نظام الصيانة الموحد</h1>
         </div>
 
         <div class="tabs">
-            <div class="tab active" onclick="setTab('login')">دخول</div>
-            <div class="tab" onclick="setTab('register')">تسجيل جديد</div>
+            <div class="tab active" onclick="setTab('login')">تسجيل دخول</div>
+            <div class="tab" onclick="setTab('register')">حساب جديد</div>
         </div>
 
         <div id="loginForm">
-            <input type="tel" id="loginPhone" class="modern-input" placeholder="رقم الهاتف" dir="ltr" style="text-align:right">
-            <input type="password" id="loginPass" class="modern-input" placeholder="كلمة المرور">
-            <button class="btn btn-primary" onclick="login()">دخول</button>
+            <div class="input-group">
+                <label>البريد الإلكتروني</label>
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="loginEmail" class="modern-input" placeholder="example@email.com" dir="ltr">
+            </div>
+            <div class="input-group">
+                <label>كلمة المرور</label>
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="loginPass" class="modern-input" placeholder="••••••••">
+            </div>
+            <button class="btn btn-primary" onclick="login()">دخول آمن <i class="fas fa-arrow-left"></i></button>
         </div>
 
-        <div id="regForm" class="hidden">
-            <div id="regStep1">
-                <label style="font-size:13px; font-weight:bold; display:block; margin-bottom:8px;">1. الوظيفة</label>
-                <div class="roles-grid">
-                    <div class="role-card" onclick="selectRole('employee', this)"><i class="fas fa-user-tie"></i><span>موظف</span></div>
-                    <div class="role-card" onclick="selectRole('supervisor', this)"><i class="fas fa-user-shield"></i><span>مشرف</span></div>
-                    <div class="role-card" onclick="selectRole('technician', this)"><i class="fas fa-tools"></i><span>فني</span></div>
-                </div>
-                <input type="tel" id="regPhone" class="modern-input" placeholder="رقم الهاتف" dir="ltr" style="text-align:right">
-                <div id="recaptcha-container" style="justify-content:center; display:flex; margin:10px 0;"></div>
-                <button id="sendOtpBtn" class="btn btn-primary" onclick="sendOtp()" disabled>إرسال كود</button>
-                <div id="otpArea" class="hidden" style="margin-top:10px;">
-                    <input type="number" id="otpCode" class="modern-input" placeholder="الكود (SMS)" style="text-align:center;">
-                    <button class="btn btn-success" onclick="verifyOtp()">تأكيد</button>
-                </div>
+        <div id="registerForm" class="hidden">
+            <label style="font-size:13px; font-weight:700; margin-bottom:10px; display:block;">اختر وظيفتك</label>
+            <div class="roles-grid">
+                <div class="role-card" onclick="selectRole('employee', this)"><i class="fas fa-user-tie"></i><span>موظف</span></div>
+                <div class="role-card" onclick="selectRole('supervisor', this)"><i class="fas fa-user-shield"></i><span>مشرف</span></div>
+                <div class="role-card" onclick="selectRole('technician', this)"><i class="fas fa-tools"></i><span>فني</span></div>
             </div>
 
-            <div id="regStep2" class="hidden">
-                <h3 style="font-size:16px;">2. البيانات</h3>
-                <input type="text" id="regName" class="modern-input" placeholder="الاسم">
-                <input type="text" id="regWork" class="modern-input" placeholder="مكان العمل">
-                <input type="password" id="regPass" class="modern-input" placeholder="كلمة سر جديدة">
-                <button class="btn btn-primary" onclick="completeRegister()">إنشاء الحساب</button>
+            <div class="input-group">
+                <label>الاسم بالكامل</label>
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="regName" class="modern-input" placeholder="الاسم ثلاثي">
             </div>
+
+            <div class="input-group">
+                <label>مكان العمل (للموظفين)</label>
+                <i class="fas fa-building input-icon"></i>
+                <input type="text" id="regWork" class="modern-input" placeholder="كلية - مبنى - غرفة">
+            </div>
+
+            <div class="input-group">
+                <label>البريد الإلكتروني</label>
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="regEmail" class="modern-input" placeholder="example@email.com" dir="ltr">
+            </div>
+
+            <div class="input-group">
+                <label>كلمة مرور جديدة</label>
+                <i class="fas fa-key input-icon"></i>
+                <input type="password" id="regPass" class="modern-input" placeholder="6 أحرف على الأقل">
+            </div>
+
+            <button class="btn btn-primary" onclick="register()">إنشاء الحساب وبدء العمل 🚀</button>
         </div>
-        <p id="msg" style="text-align:center; font-size:12px; margin-top:10px; color:#ef4444; font-weight:bold;"></p>
+        
+        <p id="msg" style="text-align:center; margin-top:15px; font-weight:bold; font-size:13px; color:var(--danger);"></p>
     </div>
 
     <div id="mainScreen" class="app-card hidden">
-        <div class="user-header">
-            <div>
-                <h3 id="uName" style="margin:0; font-size:16px;">User</h3>
-                <span id="uRoleBadge" style="font-size:11px; color:#6b7280;">Role</span>
+        <div class="app-header">
+            <div class="user-info">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="user-avatar">
+                <div>
+                    <h3 id="uName" style="margin:0; font-size:16px; color:var(--dark);">User</h3>
+                    <span id="uRoleBadge" style="font-size:12px; color:#6b7280;">Role</span>
+                </div>
             </div>
-            <div class="logout" onclick="logout()">خروج</div>
+            <button class="logout-btn" onclick="logout()">خروج</button>
         </div>
 
         <div id="viewEmployee" class="hidden">
-            <div style="background:#f9fafb; padding:15px; border-radius:12px; margin-bottom:20px; border:1px solid #eee;">
-                <h4 style="margin:0 0 10px 0;">➕ بلاغ جديد</h4>
-                <div style="display:flex; gap:10px;">
-                    <div style="flex:1; border:1px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="document.getElementById('fileIn').click()">
-                        <i class="fas fa-camera" style="color:#999"></i>
-                    </div>
-                    <div style="flex:4;">
-                        <input type="text" id="loc" class="modern-input" placeholder="الموقع" style="margin-bottom:5px; padding:8px;">
-                        <input type="text" id="desc" class="modern-input" placeholder="الوصف" style="margin-bottom:0; padding:8px;">
-                    </div>
-                </div>
-                <div id="previewBox" style="display:flex; gap:5px; margin-top:5px;"></div>
-                <input type="file" id="fileIn" multiple accept="image/*" class="hidden" onchange="preview(this)">
-                <button class="btn btn-primary" style="padding:10px; font-size:13px;" onclick="submitReport()">إرسال ومتابعة</button>
+            <h3 style="font-size:16px; margin-bottom:15px;">📝 تقديم بلاغ جديد</h3>
+            
+            <div style="background:#f8f9fa; border:2px dashed #dee2e6; border-radius:15px; padding:20px; text-align:center; cursor:pointer; margin-bottom:15px;" onclick="document.getElementById('fileIn').click()">
+                <i class="fas fa-camera fa-2x" style="color:#adb5bd;"></i>
+                <p style="margin:5px 0 0; font-size:13px; color:#6c757d;">إرفاق صور للعطل</p>
             </div>
+            <div id="previewBox" style="display:flex; gap:5px; margin-bottom:10px;"></div>
+            <input type="file" id="fileIn" multiple accept="image/*" class="hidden" onchange="preview(this)">
 
-            <h3 style="font-size:16px; margin-bottom:10px;">📉 سجل التتبع</h3>
-            <div id="empHistoryList"></div>
+            <input type="text" id="loc" class="modern-input" placeholder="موقع العطل بالتفصيل" style="margin-bottom:10px;">
+            <textarea id="desc" class="modern-input" rows="3" placeholder="وصف المشكلة..." style="margin-bottom:10px;"></textarea>
+            
+            <button class="btn btn-primary" onclick="submitReport()">إرسال البلاغ</button>
+            <h4 style="margin-top:20px; font-size:15px;">حالة بلاغاتي:</h4>
+            <div id="empHistory"></div>
         </div>
 
         <div id="viewSupervisor" class="hidden">
-            <h3 style="font-size:16px;">الوارد (انتظار الموافقة)</h3>
-            <div id="supList"></div>
+            <h3 style="font-size:16px; margin-bottom:15px;">📋 البلاغات الواردة</h3>
+            <div id="supList" style="text-align:center; color:#999;">جاري التحميل...</div>
         </div>
 
         <div id="viewTechnician" class="hidden">
-            <h3 style="font-size:16px;">المهام المسندة</h3>
-            <div id="techList"></div>
+            <h3 style="font-size:16px; margin-bottom:15px;">🔧 المهام المطلوبة</h3>
+            <div id="techList" style="text-align:center; color:#999;">جاري التحميل...</div>
         </div>
-        
+
         <p id="appMsg" style="text-align:center; margin-top:10px; font-weight:bold;"></p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
+        // ⚠️ بياناتك ⚠️
         const firebaseConfig = {
             apiKey: "AIzaSyBojgV1qxSkf16W1gMMjuKm9zF4daDEaFs",
             authDomain: "nursing-attendance.firebaseapp.com",
@@ -214,26 +229,20 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
-        auth.languageCode = 'ar';
 
         let selectedRole = null;
-        let verifiedNumber = '';
 
-        // 1. التبويبات والدخول
+        // 1. التبويبات
         window.setTab = (t) => {
             document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
             if(t==='login') {
                 document.querySelectorAll('.tab')[0].classList.add('active');
                 document.getElementById('loginForm').classList.remove('hidden');
-                document.getElementById('regForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
             } else {
                 document.querySelectorAll('.tab')[1].classList.add('active');
                 document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('regForm').classList.remove('hidden');
-                if(!window.recaptchaVerifier) {
-                    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {'size':'normal'});
-                    recaptchaVerifier.render();
-                }
+                document.getElementById('registerForm').classList.remove('hidden');
             }
         };
 
@@ -241,89 +250,101 @@
             selectedRole = r;
             document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
             el.classList.add('selected');
-            document.getElementById('sendOtpBtn').disabled = false;
         };
 
-        window.sendOtp = () => {
-            if(!selectedRole) { alert("اختر الوظيفة"); return; }
-            let ph = document.getElementById('regPhone').value.trim();
-            if(ph.startsWith('0')) ph = ph.substring(1);
-            verifiedNumber = '+20' + ph;
-
-            document.getElementById('msg').innerText = "جاري الإرسال...";
-            signInWithPhoneNumber(auth, verifiedNumber, window.recaptchaVerifier)
-                .then(res => {
-                    window.confirmationResult = res;
-                    document.getElementById('msg').innerText = "أدخل الكود";
-                    document.getElementById('otpArea').classList.remove('hidden');
-                    document.getElementById('sendOtpBtn').classList.add('hidden');
-                    document.getElementById('recaptcha-container').classList.add('hidden');
-                }).catch(err => document.getElementById('msg').innerText = err.message);
-        };
-
-        window.verifyOtp = () => {
-            const code = document.getElementById('otpCode').value;
-            window.confirmationResult.confirm(code).then(() => {
-                document.getElementById('regStep1').classList.add('hidden');
-                document.getElementById('regStep2').classList.remove('hidden');
-                document.getElementById('msg').innerText = "";
-            }).catch(() => alert("كود خطأ"));
-        };
-
-        window.completeRegister = async () => {
+        // 2. التسجيل
+        window.register = async () => {
             const name = document.getElementById('regName').value;
-            const pass = document.getElementById('regPass').value;
             const work = document.getElementById('regWork').value;
-            if(!name || !work || pass.length < 6) return alert("أكمل البيانات");
-            const email = verifiedNumber.replace('+','') + "@sys.com";
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+            const msg = document.getElementById('msg');
+
+            if(!selectedRole || !name || !email || pass.length < 6) {
+                msg.innerText = "يرجى ملء كافة البيانات (كلمة السر 6 أحرف)"; return;
+            }
+
+            msg.innerText = "جاري إنشاء الحساب..."; msg.style.color="blue";
+
             try {
                 const cred = await createUserWithEmailAndPassword(auth, email, pass);
                 await setDoc(doc(db, "users", cred.user.uid), {
-                    uid: cred.user.uid, name, work, role: selectedRole, phone: verifiedNumber
+                    uid: cred.user.uid,
+                    name, work, email, role: selectedRole,
+                    createdAt: serverTimestamp()
                 });
-            } catch(e) { alert(e.message); }
+                msg.innerText = "";
+                // التوجيه سيتم تلقائياً
+            } catch(e) {
+                if(e.code === 'auth/email-already-in-use') msg.innerText = "هذا البريد مسجل مسبقاً!";
+                else msg.innerText = "خطأ: " + e.message;
+                msg.style.color="red";
+            }
         };
 
+        // 3. الدخول
         window.login = async () => {
-            let ph = document.getElementById('loginPhone').value.trim();
-            if(ph.startsWith('0')) ph = ph.substring(1);
-            const email = "20" + ph + "@sys.com";
+            const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
-            try { await signInWithEmailAndPassword(auth, email, pass); } 
-            catch(e) { document.getElementById('msg').innerText = "بيانات خطأ"; }
+            const msg = document.getElementById('msg');
+
+            if(!email || !pass) { msg.innerText = "أدخل البيانات"; return; }
+            msg.innerText = "جاري التحقق..."; msg.style.color="blue";
+
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                msg.innerText = "";
+            } catch(e) {
+                msg.innerText = "بيانات الدخول غير صحيحة ❌";
+                msg.style.color="red";
+            }
         };
 
-        auth.onAuthStateChanged(async (user) => {
+        // 4. التوجيه الذكي
+        onAuthStateChanged(auth, async (user) => {
             if(user) {
                 const snap = await getDoc(doc(db, "users", user.uid));
-                if(snap.exists()) openApp(snap.data());
+                if(snap.exists()) {
+                    openApp(snap.data());
+                }
+            } else {
+                document.getElementById('splashScreen').style.display='none';
+                document.getElementById('authScreen').classList.remove('hidden');
+                document.getElementById('mainScreen').classList.add('hidden');
             }
         });
 
         function openApp(user) {
+            document.getElementById('splashScreen').style.display='none';
             document.getElementById('authScreen').classList.add('hidden');
             document.getElementById('mainScreen').classList.remove('hidden');
+
             document.getElementById('uName').innerText = user.name;
-            
-            // إعادة التعيين
+            let roleAr = user.role==='supervisor'?'مشرف':(user.role==='technician'?'فني':'موظف');
+            document.getElementById('uRoleBadge').innerText = roleAr;
+
             document.getElementById('viewEmployee').classList.add('hidden');
             document.getElementById('viewSupervisor').classList.add('hidden');
             document.getElementById('viewTechnician').classList.add('hidden');
 
-            let roleName = "موظف";
-            if(user.role === 'supervisor') { roleName="مشرف"; document.getElementById('viewSupervisor').classList.remove('hidden'); loadSupervisor(); }
-            else if(user.role === 'technician') { roleName="فني"; document.getElementById('viewTechnician').classList.remove('hidden'); loadTechnician(); }
-            else { document.getElementById('viewEmployee').classList.remove('hidden'); loadEmployeeHistory(user.uid); }
-            
-            document.getElementById('uRoleBadge').innerText = roleName;
+            if(user.role === 'employee') {
+                document.getElementById('viewEmployee').classList.remove('hidden');
+                loadEmpHistory(user.uid);
+            } else if(user.role === 'supervisor') {
+                document.getElementById('viewSupervisor').classList.remove('hidden');
+                loadSupervisor();
+            } else if(user.role === 'technician') {
+                document.getElementById('viewTechnician').classList.remove('hidden');
+                loadTechnician();
+            }
         }
 
-        // --- A. الموظف: إرسال + تتبع ---
+        // --- الموظف ---
         window.preview = (inp) => {
             const box = document.getElementById('previewBox'); box.innerHTML="";
             for(let f of inp.files) {
                 let img = document.createElement('img'); img.src = URL.createObjectURL(f);
-                img.style.width="40px"; img.style.height="40px"; img.style.borderRadius="5px";
+                img.style.width="50px"; img.style.height="50px"; img.style.borderRadius="8px";
                 box.appendChild(img);
             }
         };
@@ -331,6 +352,7 @@
         window.submitReport = async () => {
             const desc = document.getElementById('desc').value;
             if(!desc) return alert("اكتب الوصف");
+            
             document.getElementById('appMsg').innerText = "جاري الرفع...";
             const uid = auth.currentUser.uid;
             const uData = (await getDoc(doc(db,"users",uid))).data();
@@ -347,108 +369,68 @@
                 loc: document.getElementById('loc').value,
                 images: urls, status: 'new', timestamp: serverTimestamp()
             });
-            
-            document.getElementById('appMsg').innerText = "";
-            document.getElementById('desc').value = "";
-            document.getElementById('previewBox').innerHTML = "";
+
+            document.getElementById('appMsg').innerText = "تم الإرسال ✅";
+            setTimeout(()=>{ document.getElementById('appMsg').innerText=""; document.getElementById('desc').value=""; }, 2000);
         };
 
-        function loadEmployeeHistory(uid) {
+        function loadEmpHistory(uid) {
             const q = query(collection(db, "maintenance_reports"), where("uid", "==", uid), orderBy("timestamp", "desc"));
             onSnapshot(q, snap => {
-                const list = document.getElementById('empHistoryList'); list.innerHTML="";
+                const list = document.getElementById('empHistory'); list.innerHTML="";
                 snap.forEach(d => {
                     const data = d.data();
-                    
-                    // حساب نسبة التقدم (Timeline Logic)
-                    let p = 0; // width percentage
-                    let s1='', s2='', s3='', s4=''; // active classes
-
-                    if(data.status === 'new') { p=15; s1='active'; }
-                    else if(data.status === 'accepted') { p=50; s1='completed'; s2='active'; }
-                    else if(data.status === 'in_progress') { p=85; s1='completed'; s2='completed'; s3='active'; }
-                    else if(data.status === 'completed') { p=100; s1='completed'; s2='completed'; s3='completed'; s4='completed'; }
-                    else if(data.status === 'rejected') { p=0; s1='completed'; } // حالة الرفض
-
-                    // HTML خط التتبع
-                    const timelineHtml = `
-                    <div class="tracking-container">
-                        <div style="font-size:12px; font-weight:bold; margin-bottom:5px;">حالة الطلب:</div>
-                        <div class="timeline">
-                            <style>.timeline-progress { width: ${p}% !important; }</style>
-                            <div class="timeline-progress"></div>
-                            <div class="step ${s1}"><div class="step-circle"><i class="fas fa-paper-plane"></i></div><span class="step-text">إرسال</span></div>
-                            <div class="step ${s2}"><div class="step-circle"><i class="fas fa-user-check"></i></div><span class="step-text">مشرف</span></div>
-                            <div class="step ${s3}"><div class="step-circle"><i class="fas fa-tools"></i></div><span class="step-text">استلام</span></div>
-                            <div class="step ${s4}"><div class="step-circle"><i class="fas fa-check"></i></div><span class="step-text">إصلاح</span></div>
-                        </div>
-                    </div>`;
-
-                    list.innerHTML += `
-                    <div class="report-card">
-                        <div style="font-weight:bold;">${data.desc}</div>
-                        <div style="font-size:11px; color:#666;">${data.loc}</div>
-                        ${data.status === 'rejected' ? '<div style="color:red; font-weight:bold; margin-top:10px;">❌ تم رفض الطلب من المشرف</div>' : timelineHtml}
+                    let stText = data.status==='new'?'قيد المراجعة':(data.status==='accepted'?'تم القبول (جاري الإصلاح)':'مرفوض');
+                    let color = data.status==='new'?'orange':(data.status==='accepted'?'green':'red');
+                    list.innerHTML += `<div style="background:#fff; padding:10px; border-radius:10px; margin-bottom:5px; border:1px solid #eee; font-size:13px;">
+                        <span style="color:${color}; font-weight:bold;">● ${stText}</span><br>
+                        ${data.desc}
                     </div>`;
                 });
             });
         }
 
-        // --- B. المشرف ---
+        // --- المشرف ---
         function loadSupervisor() {
             const q = query(collection(db, "maintenance_reports"), orderBy("timestamp", "desc"));
             onSnapshot(q, snap => {
                 const list = document.getElementById('supList'); list.innerHTML="";
                 snap.forEach(d => {
                     const data = d.data();
-                    const id = d.id;
-                    // يظهر كل الطلبات، لكن الأزرار تظهر فقط للجديد
                     let btns = "";
                     if(data.status === 'new') {
                         btns = `<div class="action-row">
-                            <button class="btn-success" onclick="updateSt('${id}','accepted')">✔ قبول وتحويل للفني</button>
-                            <button class="btn-danger" onclick="updateSt('${id}','rejected')">✘ رفض</button>
+                            <button class="action-btn-sm" style="background:var(--success)" onclick="updateSt('${d.id}','accepted')">✔ قبول وتحويل</button>
+                            <button class="action-btn-sm" style="background:var(--danger)" onclick="updateSt('${d.id}','rejected')">✘ رفض</button>
                         </div>`;
                     }
-                    let badgeColor = data.status==='new'?'#dbeafe':(data.status==='completed'?'#d1fae5':'#f3f4f6');
+                    let badge = data.status==='new'?'bg-new':(data.status==='accepted'?'bg-accepted':'');
                     
                     list.innerHTML += `
                     <div class="report-card">
-                        <span style="background:${badgeColor}; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:bold;">${data.status}</span>
-                        <h4 style="margin:5px 0;">${data.name}</h4>
-                        <p style="font-size:12px;">${data.loc} - ${data.work}</p>
-                        <p>${data.desc}</p>
+                        <span class="status-badge ${badge}">${data.status}</span>
+                        <h4 style="margin:20px 0 5px 0">${data.name}</h4>
+                        <div style="font-size:12px; color:#666; margin-bottom:10px;">${data.loc} (${data.work})</div>
+                        <p style="color:#333; font-size:14px;">${data.desc}</p>
                         ${btns}
                     </div>`;
                 });
             });
         }
 
-        // --- C. الفني ---
+        // --- الفني ---
         function loadTechnician() {
-            // الفني يرى المقبول (ليبدأه) والـ in_progress (لينهيه)
-            const q = query(collection(db, "maintenance_reports"), where("status", "in", ["accepted", "in_progress"]));
+            const q = query(collection(db, "maintenance_reports"), where("status", "==", "accepted"));
             onSnapshot(q, snap => {
                 const list = document.getElementById('techList'); list.innerHTML="";
-                if(snap.empty) list.innerHTML="لا توجد مهام";
-                
+                if(snap.empty) list.innerHTML="لا مهام حالياً";
                 snap.forEach(d => {
                     const data = d.data();
-                    let actionBtn = "";
-                    
-                    if(data.status === 'accepted') {
-                        // زر الاستلام
-                        actionBtn = `<button class="btn-warning" onclick="updateSt('${d.id}', 'in_progress')">🛠 استلام وبدء العمل</button>`;
-                    } else if (data.status === 'in_progress') {
-                        // زر الإنهاء
-                        actionBtn = `<button class="btn-success" onclick="updateSt('${d.id}', 'completed')">✅ تم الإصلاح نهائياً</button>`;
-                    }
-
                     list.innerHTML += `
                     <div class="report-card">
-                        <h4 style="margin:10px 0;">${data.loc}</h4>
+                        <h4 style="margin:0 0 10px 0;">${data.loc}</h4>
                         <p>${data.desc}</p>
-                        <div class="action-row">${actionBtn}</div>
+                        <button class="btn btn-primary" style="margin-top:10px; font-size:13px;" onclick="updateSt('${d.id}','completed')">✅ تم الإصلاح</button>
                     </div>`;
                 });
             });

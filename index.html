@@ -19,7 +19,6 @@
             display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
         }
         
-        /* طبقة تعتيم خفيفة للخلفية */
         body::before {
             content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.3); z-index: -1;
@@ -63,7 +62,6 @@
         .action-btn:active { transform: scale(0.98); }
         .action-btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        /* منطقة الرفع */
         .image-upload-area { border: 2px dashed #888; padding: 20px; text-align: center; border-radius: 15px; margin-bottom: 15px; cursor: pointer; background: rgba(255,255,255,0.6); }
         .gallery { display:flex; flex-wrap:wrap; gap: 8px; margin-bottom: 10px; }
         .gallery img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid #ddd; }
@@ -95,7 +93,7 @@
         </div>
 
         <label style="font-weight: bold; display: block; margin-bottom: 5px;">رقم الهاتف</label>
-        <input type="tel" id="phoneNumber" class="input-box" placeholder="+201xxxxxxxxx" style="direction: ltr; text-align: right;">
+        <input type="tel" id="phoneNumber" class="input-box" placeholder="01xxxxxxxxx" style="direction: ltr; text-align: right;">
         
         <div id="recaptcha-container"></div>
         <button id="sendCodeBtn" class="action-btn" onclick="onSignInSubmit()">إرسال كود التفعيل</button>
@@ -134,13 +132,12 @@
     </div>
 
     <script type="module">
-        // استيراد المكتبات
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-        // ✅ بيانات مشروعك (تمت إضافتها بنجاح)
+        // ✅ بيانات مشروعك (صحيحة 100%)
         const firebaseConfig = {
             apiKey: "AIzaSyBojgV1qxSkf16W1gMMjuKm9zF4daDEaFs",
             authDomain: "nursing-attendance.firebaseapp.com",
@@ -151,44 +148,53 @@
             appId: "1:935107068390:web:60c1dad67bfc9125191627"
         };
 
-        // تشغيل فايربيس
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
-        
-        auth.languageCode = 'ar'; // اللغة العربية للرسائل
+        auth.languageCode = 'ar';
 
-        // المتغيرات
         window.confirmationResult = null;
         let selectedRole = 'technician';
 
-        // 1. عند تحميل الصفحة (فحص الدخول التلقائي)
+        // 1. الفحص التلقائي عند التحميل
         window.onload = function() {
             const savedUser = localStorage.getItem('maintenanceUser');
-            
             if (savedUser) {
-                // المستخدم محفوظ -> دخول مباشر
                 const userData = JSON.parse(savedUser);
                 showApp(userData);
             } else {
-                // مستخدم جديد -> إظهار شاشة الدخول
                 document.getElementById('splashScreen').style.display = 'none';
                 document.getElementById('loginScreen').classList.remove('hidden');
                 
-                // تشغيل الكابتشا
+                // إعادة إنشاء الكابتشا
                 window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'normal' });
                 recaptchaVerifier.render();
             }
         };
 
-        // 2. إرسال كود الـ SMS
+        // 2. دالة إرسال الكود (المعدلة لإصلاح الرقم تلقائياً)
         window.onSignInSubmit = function() {
-            const phoneNumber = document.getElementById('phoneNumber').value;
+            let phoneNumber = document.getElementById('phoneNumber').value.trim();
             const status = document.getElementById('statusMsg');
 
-            if(phoneNumber.length < 10) { status.innerText = "رقم الهاتف غير صحيح (تأكد من +20)"; return; }
-            status.innerText = "جاري الاتصال...";
+            // 🛠️ التصحيح التلقائي للرقم
+            // إذا بدأ بـ 01 (مثل 010, 011)، نحذف الصفر ونضيف +20
+            if (phoneNumber.startsWith('01')) {
+                phoneNumber = '+20' + phoneNumber.substring(1);
+            } 
+            // إذا لم يبدأ بـ +، نضيف +20 احتياطياً
+            else if (!phoneNumber.startsWith('+')) {
+                phoneNumber = '+20' + phoneNumber;
+            }
+
+            // التحقق من الطول
+            if(phoneNumber.length < 12) { 
+                status.innerText = "الرقم قصير جداً، تأكد من كتابته بشكل صحيح";
+                return; 
+            }
+            
+            status.innerText = "جاري الاتصال... (" + phoneNumber + ")";
             
             signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier)
                 .then((result) => {
@@ -201,12 +207,18 @@
                     document.getElementById('otpSection').style.display = 'block';
                 }).catch((error) => {
                     console.error(error);
-                    status.innerText = "خطأ: " + error.message;
+                    if (error.code === 'auth/invalid-phone-number') {
+                        status.innerText = "رقم الهاتف غير صحيح ❌";
+                    } else if (error.code === 'auth/too-many-requests') {
+                        status.innerText = "تم حظر الرقم مؤقتاً لكثرة المحاولات";
+                    } else {
+                        status.innerText = "خطأ: " + error.message;
+                    }
                     status.style.color = "red";
                 });
         };
 
-        // 3. التحقق من الكود وحفظ المستخدم
+        // 3. التحقق من الكود
         window.verifyCode = function() {
             const code = document.getElementById('otpCode').value;
             const status = document.getElementById('statusMsg');
@@ -214,18 +226,14 @@
             window.confirmationResult.confirm(code).then((result) => {
                 const user = result.user;
                 const userData = { phone: user.phoneNumber, role: selectedRole, uid: user.uid };
-
-                // 🔥 حفظ الدخول (Persistent Login)
-                localStorage.setItem('maintenanceUser', JSON.stringify(userData));
                 
+                localStorage.setItem('maintenanceUser', JSON.stringify(userData));
                 showApp(userData);
-
             }).catch((error) => {
                 status.innerText = "الكود غير صحيح ❌";
             });
         };
 
-        // عرض الشاشة الرئيسية
         function showApp(userData) {
             document.getElementById('userInfoDisplay').innerText = `👤 ${userData.phone} (${userData.role === 'admin' ? 'مسؤول' : 'فني'})`;
             document.getElementById('splashScreen').style.display = 'none';
@@ -233,7 +241,6 @@
             document.getElementById('appScreen').classList.remove('hidden');
         }
 
-        // تسجيل الخروج
         window.logout = function() {
             if(confirm("تسجيل الخروج؟")) {
                 localStorage.removeItem('maintenanceUser');
@@ -241,14 +248,12 @@
             }
         }
 
-        // اختيار الدور
         window.selectRole = (role, el) => {
             selectedRole = role;
             document.querySelectorAll('.role-card').forEach(e => e.classList.remove('active'));
             el.classList.add('active');
         };
 
-        // --- منطق رفع التقرير والصور ---
         window.previewImages = (input) => {
             const gallery = document.getElementById('gallery');
             gallery.innerHTML = "";
@@ -267,12 +272,11 @@
             
             if(!desc) { alert("اكتب وصف العطل"); return; }
 
-            status.innerText = "جاري رفع الصور والبيانات...";
+            status.innerText = "جاري الرفع...";
             status.style.color = "blue";
             btn.disabled = true;
 
             try {
-                // رفع الصور
                 let imageUrls = [];
                 const files = document.getElementById('camInput').files;
                 for(let file of files) {
@@ -282,7 +286,6 @@
                     imageUrls.push(url);
                 }
 
-                // حفظ في قاعدة البيانات
                 await addDoc(collection(db, "maintenance_reports"), {
                     userId: user.uid,
                     phone: user.phone,
@@ -296,7 +299,6 @@
 
                 status.innerText = "تم الإرسال بنجاح ✅";
                 status.style.color = "green";
-                
                 setTimeout(() => {
                     document.getElementById('desc').value = '';
                     document.getElementById('gallery').innerHTML = '';
@@ -306,13 +308,12 @@
 
             } catch(e) {
                 console.error(e);
-                status.innerText = "حدث خطأ!";
+                status.innerText = "حدث خطأ أثناء الإرسال";
                 status.style.color = "red";
                 btn.disabled = false;
             }
         };
         
-        // تعيين التاريخ تلقائياً
         const d = document.getElementById('date');
         if(d) d.valueAsDate = new Date();
 

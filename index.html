@@ -2,133 +2,320 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق الصيانة</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>بوابة الصيانة الذكية</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
-        .container { background: white; max-width: 400px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        input, button, textarea { width: 100%; padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #ddd; }
-        button { background: #4e54c8; color: white; border: none; cursor: pointer; font-weight: bold; }
-        button:hover { background: #3c40a3; }
-        #appScreen { display: none; }
-        .error { color: red; font-size: 12px; }
+        :root { --primary: #4e54c8; --glass-bg: rgba(255, 255, 255, 0.95); }
+        * { box-sizing: border-box; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            margin: 0;
+            background: url('https://a.top4top.io/p_36115ao3o1.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
+        }
+        
+        /* طبقة تعتيم خفيفة للخلفية */
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3); z-index: -1;
+        }
+
+        .container-glass {
+            width: 100%; max-width: 450px;
+            background: var(--glass-bg); border-radius: 25px; padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2); backdrop-filter: blur(15px);
+            animation: fadeIn 0.5s ease-out; position: relative;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .hidden { display: none !important; }
+
+        /* شاشة التحميل */
+        #splashScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 999; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; transition: opacity 0.5s;
+        }
+
+        /* عناصر الواجهة */
+        .login-header { text-align: center; margin-bottom: 20px; }
+        .login-header h2 { margin: 0; color: #333; }
+        
+        .role-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+        .role-card {
+            flex: 1; padding: 15px; border-radius: 12px; text-align: center; cursor: pointer;
+            border: 2px solid transparent; background: #f0f2f5; transition: 0.3s;
+        }
+        .role-card.active { border-color: var(--primary); background: #eef2ff; color: var(--primary); font-weight: bold; }
+        
+        .input-box { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #ccc; margin-bottom: 15px; font-size: 16px; }
+        
+        .action-btn {
+            width: 100%; padding: 15px; border: none; border-radius: 10px;
+            background: var(--primary); color: white; font-weight: bold; font-size: 16px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(78, 84, 200, 0.3); transition: 0.2s;
+        }
+        .action-btn:active { transform: scale(0.98); }
+        .action-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* منطقة الرفع */
+        .image-upload-area { border: 2px dashed #888; padding: 20px; text-align: center; border-radius: 15px; margin-bottom: 15px; cursor: pointer; background: rgba(255,255,255,0.6); }
+        .gallery { display:flex; flex-wrap:wrap; gap: 8px; margin-bottom: 10px; }
+        .gallery img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid #ddd; }
+        
+        #recaptcha-container { margin: 10px auto; display: flex; justify-content: center; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>🛠️ بوابة الصيانة</h2>
-        
-        <div id="loginScreen">
-            <p>سجل دخولك برقم الهاتف</p>
-            <input type="tel" id="phone" placeholder="+201xxxxxxxxx" value="+20">
-            <div id="recaptcha-container"></div>
-            <br>
-            <button onclick="sendCode()">إرسال الكود</button>
-            
-            <div id="otpArea" style="display:none; margin-top:10px;">
-                <input type="number" id="otp" placeholder="أدخل الكود (6 أرقام)">
-                <button onclick="verify()" style="background:green;">دخول</button>
-            </div>
-            <p id="msg" class="error"></p>
+    <div id="splashScreen">
+        <i class="fas fa-hammer fa-3x" style="color: var(--primary); margin-bottom: 20px; animation: bounce 1s infinite;"></i>
+        <h3>بوابة الصيانة</h3>
+        <p style="color: #888;">جاري الاتصال...</p>
+    </div>
+
+    <div id="loginScreen" class="container-glass hidden">
+        <div class="login-header">
+            <h2>تسجيل الدخول 👋</h2>
+            <p>أدخل رقمك للتحقق</p>
         </div>
 
-        <div id="appScreen">
-            <h3 id="welcome"></h3>
-            <button onclick="document.getElementById('file').click()">📸 التقاط صورة</button>
-            <input type="file" id="file" style="display:none">
-            <textarea id="desc" rows="3" placeholder="وصف العطل"></textarea>
-            <button onclick="sendData()">إرسال البلاغ</button>
-            <button onclick="logout()" style="background:#d9534f; margin-top:10px;">خروج</button>
+        <div class="role-selector">
+            <div class="role-card active" onclick="selectRole('technician', this)">
+                <i class="fas fa-tools"></i><br>فني
+            </div>
+            <div class="role-card" onclick="selectRole('admin', this)">
+                <i class="fas fa-user-shield"></i><br>مسؤول
+            </div>
         </div>
+
+        <label style="font-weight: bold; display: block; margin-bottom: 5px;">رقم الهاتف</label>
+        <input type="tel" id="phoneNumber" class="input-box" placeholder="+201xxxxxxxxx" style="direction: ltr; text-align: right;">
+        
+        <div id="recaptcha-container"></div>
+        <button id="sendCodeBtn" class="action-btn" onclick="onSignInSubmit()">إرسال كود التفعيل</button>
+
+        <div id="otpSection" style="display: none; margin-top: 15px; animation: fadeIn 0.5s;">
+            <p>أدخل الكود المكون من 6 أرقام:</p>
+            <input type="number" id="otpCode" class="input-box" placeholder="123456" style="text-align: center; letter-spacing: 5px;">
+            <button class="action-btn" style="background: #28a745;" onclick="verifyCode()">تأكيد ودخول</button>
+        </div>
+        <p id="statusMsg" style="text-align: center; color: red; margin-top: 10px; font-size: 13px;"></p>
+    </div>
+
+    <div id="appScreen" class="container-glass hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2 style="margin: 0; font-size: 20px;">بلاغ صيانة جديد</h2>
+            <button onclick="logout()" style="background: none; border: none; color: #dc3545; font-weight: bold; cursor: pointer;">
+                <i class="fas fa-sign-out-alt"></i> خروج
+            </button>
+        </div>
+        
+        <p id="userInfoDisplay" style="background: #eef2ff; padding: 10px; border-radius: 8px; font-size: 12px; color: #4e54c8; margin-bottom: 15px;"></p>
+
+        <div class="image-upload-area" onclick="document.getElementById('camInput').click()">
+            <i class="fas fa-camera fa-2x" style="color: #555;"></i>
+            <p style="margin: 5px 0 0;">إرفاق صور العطل</p>
+        </div>
+        <div id="gallery" class="gallery"></div>
+        <input type="file" id="camInput" multiple accept="image/*" style="display:none" onchange="previewImages(this)">
+
+        <input type="date" id="date" class="input-box" style="padding: 10px;">
+        <input type="text" id="loc" class="input-box" placeholder="الموقع (كلية - مبنى - غرفة)">
+        <textarea id="desc" class="input-box" rows="3" placeholder="وصف المشكلة بالتفصيل..."></textarea>
+        
+        <button class="action-btn" onclick="sendReport()">🚀 إرسال البلاغ</button>
+        <p id="appStatus" style="text-align: center; margin-top: 10px; font-weight: bold;"></p>
     </div>
 
     <script type="module">
+        // استيراد المكتبات
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-        // ⚠️⚠️⚠️ هام جداً: امسح هذا الجزء وضع بيانات مشروعك الحقيقية ⚠️⚠️⚠️
+        // ✅ بيانات مشروعك (تمت إضافتها بنجاح)
         const firebaseConfig = {
-            apiKey: "AIzaSy...", 
-            authDomain: "...",
-            projectId: "...",
-            storageBucket: "...",
-            messagingSenderId: "...",
-            appId: "..."
+            apiKey: "AIzaSyBojgV1qxSkf16W1gMMjuKm9zF4daDEaFs",
+            authDomain: "nursing-attendance.firebaseapp.com",
+            databaseURL: "https://nursing-attendance-default-rtdb.firebaseio.com",
+            projectId: "nursing-attendance",
+            storageBucket: "nursing-attendance.firebasestorage.app",
+            messagingSenderId: "935107068390",
+            appId: "1:935107068390:web:60c1dad67bfc9125191627"
+        };
+
+        // تشغيل فايربيس
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        
+        auth.languageCode = 'ar'; // اللغة العربية للرسائل
+
+        // المتغيرات
+        window.confirmationResult = null;
+        let selectedRole = 'technician';
+
+        // 1. عند تحميل الصفحة (فحص الدخول التلقائي)
+        window.onload = function() {
+            const savedUser = localStorage.getItem('maintenanceUser');
+            
+            if (savedUser) {
+                // المستخدم محفوظ -> دخول مباشر
+                const userData = JSON.parse(savedUser);
+                showApp(userData);
+            } else {
+                // مستخدم جديد -> إظهار شاشة الدخول
+                document.getElementById('splashScreen').style.display = 'none';
+                document.getElementById('loginScreen').classList.remove('hidden');
+                
+                // تشغيل الكابتشا
+                window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'normal' });
+                recaptchaVerifier.render();
+            }
+        };
+
+        // 2. إرسال كود الـ SMS
+        window.onSignInSubmit = function() {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const status = document.getElementById('statusMsg');
+
+            if(phoneNumber.length < 10) { status.innerText = "رقم الهاتف غير صحيح (تأكد من +20)"; return; }
+            status.innerText = "جاري الاتصال...";
+            
+            signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier)
+                .then((result) => {
+                    window.confirmationResult = result;
+                    status.innerText = "تم إرسال الرمز ✅";
+                    status.style.color = "green";
+                    
+                    document.getElementById('sendCodeBtn').style.display = 'none';
+                    document.getElementById('recaptcha-container').style.display = 'none';
+                    document.getElementById('otpSection').style.display = 'block';
+                }).catch((error) => {
+                    console.error(error);
+                    status.innerText = "خطأ: " + error.message;
+                    status.style.color = "red";
+                });
+        };
+
+        // 3. التحقق من الكود وحفظ المستخدم
+        window.verifyCode = function() {
+            const code = document.getElementById('otpCode').value;
+            const status = document.getElementById('statusMsg');
+
+            window.confirmationResult.confirm(code).then((result) => {
+                const user = result.user;
+                const userData = { phone: user.phoneNumber, role: selectedRole, uid: user.uid };
+
+                // 🔥 حفظ الدخول (Persistent Login)
+                localStorage.setItem('maintenanceUser', JSON.stringify(userData));
+                
+                showApp(userData);
+
+            }).catch((error) => {
+                status.innerText = "الكود غير صحيح ❌";
+            });
+        };
+
+        // عرض الشاشة الرئيسية
+        function showApp(userData) {
+            document.getElementById('userInfoDisplay').innerText = `👤 ${userData.phone} (${userData.role === 'admin' ? 'مسؤول' : 'فني'})`;
+            document.getElementById('splashScreen').style.display = 'none';
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('appScreen').classList.remove('hidden');
+        }
+
+        // تسجيل الخروج
+        window.logout = function() {
+            if(confirm("تسجيل الخروج؟")) {
+                localStorage.removeItem('maintenanceUser');
+                location.reload();
+            }
+        }
+
+        // اختيار الدور
+        window.selectRole = (role, el) => {
+            selectedRole = role;
+            document.querySelectorAll('.role-card').forEach(e => e.classList.remove('active'));
+            el.classList.add('active');
+        };
+
+        // --- منطق رفع التقرير والصور ---
+        window.previewImages = (input) => {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = "";
+            for(let file of input.files) {
+                let img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                gallery.appendChild(img);
+            }
+        };
+
+        window.sendReport = async () => {
+            const btn = document.querySelector('#appScreen .action-btn');
+            const status = document.getElementById('appStatus');
+            const user = JSON.parse(localStorage.getItem('maintenanceUser'));
+            const desc = document.getElementById('desc').value;
+            
+            if(!desc) { alert("اكتب وصف العطل"); return; }
+
+            status.innerText = "جاري رفع الصور والبيانات...";
+            status.style.color = "blue";
+            btn.disabled = true;
+
+            try {
+                // رفع الصور
+                let imageUrls = [];
+                const files = document.getElementById('camInput').files;
+                for(let file of files) {
+                    const sRef = ref(storage, 'reports/' + Date.now() + '_' + file.name);
+                    await uploadBytes(sRef, file);
+                    const url = await getDownloadURL(sRef);
+                    imageUrls.push(url);
+                }
+
+                // حفظ في قاعدة البيانات
+                await addDoc(collection(db, "maintenance_reports"), {
+                    userId: user.uid,
+                    phone: user.phone,
+                    role: user.role,
+                    description: desc,
+                    location: document.getElementById('loc').value,
+                    date: document.getElementById('date').value,
+                    images: imageUrls,
+                    timestamp: serverTimestamp()
+                });
+
+                status.innerText = "تم الإرسال بنجاح ✅";
+                status.style.color = "green";
+                
+                setTimeout(() => {
+                    document.getElementById('desc').value = '';
+                    document.getElementById('gallery').innerHTML = '';
+                    status.innerText = '';
+                    btn.disabled = false;
+                }, 2000);
+
+            } catch(e) {
+                console.error(e);
+                status.innerText = "حدث خطأ!";
+                status.style.color = "red";
+                btn.disabled = false;
+            }
         };
         
-        // تشغيل فايربيس
-        let app, auth, db;
-        try {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-            auth.languageCode = 'ar';
-            console.log("Firebase Connected ✅");
-        } catch (e) {
-            alert("خطأ: تأكد من وضع إعدادات فايربيس (Config) في الكود!");
-        }
+        // تعيين التاريخ تلقائياً
+        const d = document.getElementById('date');
+        if(d) d.valueAsDate = new Date();
 
-        window.recaptchaVerifier = null;
-        window.confirmResult = null;
-
-        // تجهيز الكابتشا عند التحميل
-        setTimeout(() => {
-            if(auth) {
-                window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'normal' });
-                window.recaptchaVerifier.render();
-                
-                // فحص تسجيل الدخول المحفوظ
-                const saved = localStorage.getItem('userPhone');
-                if(saved) showApp(saved);
-            }
-        }, 1000);
-
-        // دوال النافذة (Global)
-        window.sendCode = () => {
-            const ph = document.getElementById('phone').value;
-            signInWithPhoneNumber(auth, ph, window.recaptchaVerifier)
-                .then((result) => {
-                    window.confirmResult = result;
-                    document.getElementById('otpArea').style.display = 'block';
-                    document.getElementById('msg').innerText = "تم الإرسال! (إذا كنت تستخدم رقم اختبار، أدخل الكود الثابت)";
-                }).catch(err => {
-                    document.getElementById('msg').innerText = "خطأ: " + err.message;
-                    console.error(err);
-                });
-        };
-
-        window.verify = () => {
-            const code = document.getElementById('otp').value;
-            window.confirmResult.confirm(code).then((res) => {
-                const user = res.user;
-                localStorage.setItem('userPhone', user.phoneNumber);
-                showApp(user.phoneNumber);
-            }).catch(err => document.getElementById('msg').innerText = "الكود خطأ!");
-        };
-
-        window.sendData = async () => {
-            try {
-                await addDoc(collection(db, "reports"), {
-                    desc: document.getElementById('desc').value,
-                    phone: localStorage.getItem('userPhone'),
-                    date: new Date()
-                });
-                alert("تم الإرسال بنجاح!");
-            } catch(e) { alert("حدث خطأ"); }
-        };
-
-        window.logout = () => {
-            localStorage.removeItem('userPhone');
-            location.reload();
-        };
-
-        function showApp(phone) {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'block';
-            document.getElementById('welcome').innerText = "مرحباً: " + phone;
-        }
     </script>
 </body>
 </html>

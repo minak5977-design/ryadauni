@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>بوابة الصيانة الذكية</title>
+    <title>بوابة الصيانة الموحدة</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,14 +21,15 @@
         
         body::before {
             content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.3); z-index: -1;
+            background: rgba(0,0,0,0.4); z-index: -1;
         }
 
         .container-glass {
             width: 100%; max-width: 450px;
             background: var(--glass-bg); border-radius: 25px; padding: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2); backdrop-filter: blur(15px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); backdrop-filter: blur(15px);
             animation: fadeIn 0.5s ease-out; position: relative;
+            max-height: 90vh; overflow-y: auto; /* للسماح بالتمرير في الشاشات الصغيرة */
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
@@ -41,28 +42,48 @@
             align-items: center; justify-content: center; transition: opacity 0.5s;
         }
 
-        /* عناصر الواجهة */
-        .login-header { text-align: center; margin-bottom: 20px; }
-        .login-header h2 { margin: 0; color: #333; }
+        /* العناوين */
+        .header-text { text-align: center; margin-bottom: 20px; }
+        .header-text h2 { margin: 0; color: #333; font-size: 22px; }
+        .header-text p { margin: 5px 0 0; color: #666; font-size: 14px; }
         
-        .role-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+        /* اختيار الأدوار (3 أعمدة) */
+        .role-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 20px; }
         .role-card {
-            flex: 1; padding: 15px; border-radius: 12px; text-align: center; cursor: pointer;
+            padding: 10px 5px; border-radius: 12px; text-align: center; cursor: pointer;
             border: 2px solid transparent; background: #f0f2f5; transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .role-card.active { border-color: var(--primary); background: #eef2ff; color: var(--primary); font-weight: bold; }
+        .role-card i { font-size: 24px; margin-bottom: 5px; color: #555; }
+        .role-card span { font-size: 12px; font-weight: bold; color: #333; }
         
-        .input-box { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #ccc; margin-bottom: 15px; font-size: 16px; }
+        .role-card.active { border-color: var(--primary); background: #eef2ff; }
+        .role-card.active i, .role-card.active span { color: var(--primary); }
+        
+        /* الحقول والأزرار */
+        .input-box { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #ccc; margin-bottom: 15px; font-size: 15px; background: #fff; }
         
         .action-btn {
-            width: 100%; padding: 15px; border: none; border-radius: 10px;
+            width: 100%; padding: 15px; border: none; border-radius: 12px;
             background: var(--primary); color: white; font-weight: bold; font-size: 16px; cursor: pointer;
             box-shadow: 0 4px 15px rgba(78, 84, 200, 0.3); transition: 0.2s;
         }
         .action-btn:active { transform: scale(0.98); }
         .action-btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        .image-upload-area { border: 2px dashed #888; padding: 20px; text-align: center; border-radius: 15px; margin-bottom: 15px; cursor: pointer; background: rgba(255,255,255,0.6); }
+        /* تنسيق صورة البروفايل */
+        .avatar-upload {
+            width: 100px; height: 100px; margin: 0 auto 20px;
+            border-radius: 50%; background: #e0e0e0; border: 3px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; overflow: hidden; position: relative;
+        }
+        .avatar-upload img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-upload i { font-size: 30px; color: #777; }
+
+        /* منطقة الرفع في التطبيق */
+        .image-upload-area { border: 2px dashed #888; padding: 15px; text-align: center; border-radius: 15px; margin-bottom: 15px; cursor: pointer; background: rgba(255,255,255,0.6); }
         .gallery { display:flex; flex-wrap:wrap; gap: 8px; margin-bottom: 10px; }
         .gallery img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid #ddd; }
         
@@ -72,23 +93,29 @@
 <body>
 
     <div id="splashScreen">
-        <i class="fas fa-hammer fa-3x" style="color: var(--primary); margin-bottom: 20px; animation: bounce 1s infinite;"></i>
+        <i class="fas fa-cog fa-spin fa-3x" style="color: var(--primary); margin-bottom: 20px;"></i>
         <h3>بوابة الصيانة</h3>
-        <p style="color: #888;">جاري الاتصال...</p>
+        <p style="color: #888;">جاري التحميل...</p>
     </div>
 
     <div id="loginScreen" class="container-glass hidden">
-        <div class="login-header">
-            <h2>تسجيل الدخول 👋</h2>
-            <p>أدخل رقمك للتحقق</p>
+        <div class="header-text">
+            <h2>مرحباً بك 👋</h2>
+            <p>اختر صفتك للدخول</p>
         </div>
 
         <div class="role-selector">
-            <div class="role-card active" onclick="selectRole('technician', this)">
-                <i class="fas fa-tools"></i><br>فني
+            <div class="role-card active" onclick="selectRole('employee', this)">
+                <i class="fas fa-user-tie"></i>
+                <span>موظف</span>
             </div>
-            <div class="role-card" onclick="selectRole('admin', this)">
-                <i class="fas fa-user-shield"></i><br>مسؤول
+            <div class="role-card" onclick="selectRole('supervisor', this)">
+                <i class="fas fa-user-shield"></i>
+                <span>مشرف</span>
+            </div>
+            <div class="role-card" onclick="selectRole('technician', this)">
+                <i class="fas fa-tools"></i>
+                <span>فني صيانة</span>
             </div>
         </div>
 
@@ -96,25 +123,59 @@
         <input type="tel" id="phoneNumber" class="input-box" placeholder="01xxxxxxxxx" style="direction: ltr; text-align: right;">
         
         <div id="recaptcha-container"></div>
-        <button id="sendCodeBtn" class="action-btn" onclick="onSignInSubmit()">إرسال كود التفعيل</button>
+        <button id="sendCodeBtn" class="action-btn" onclick="onSignInSubmit()">تسجيل الدخول</button>
 
-        <div id="otpSection" style="display: none; margin-top: 15px; animation: fadeIn 0.5s;">
-            <p>أدخل الكود المكون من 6 أرقام:</p>
-            <input type="number" id="otpCode" class="input-box" placeholder="123456" style="text-align: center; letter-spacing: 5px;">
-            <button class="action-btn" style="background: #28a745;" onclick="verifyCode()">تأكيد ودخول</button>
+        <div id="otpSection" style="display: none; margin-top: 15px;">
+            <p style="text-align: center; margin-bottom: 10px;">أدخل كود التحقق (SMS):</p>
+            <input type="number" id="otpCode" class="input-box" placeholder="------" style="text-align: center; letter-spacing: 5px; font-size: 20px;">
+            <button class="action-btn" style="background: #28a745;" onclick="verifyCode()">تأكيد الرقم</button>
         </div>
         <p id="statusMsg" style="text-align: center; color: red; margin-top: 10px; font-size: 13px;"></p>
     </div>
 
+    <div id="profileScreen" class="container-glass hidden">
+        <div class="header-text">
+            <h2>إعداد الحساب 📝</h2>
+            <p>أكمل بياناتك لمرة واحدة فقط</p>
+        </div>
+
+        <div class="avatar-upload" onclick="document.getElementById('avatarInput').click()">
+            <img id="avatarPreview" style="display: none;">
+            <i id="avatarIcon" class="fas fa-camera"></i>
+        </div>
+        <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="previewAvatar(this)">
+        <p style="text-align: center; font-size: 12px; color: #666; margin-top: -15px; margin-bottom: 15px;">اضغط لوضع صورة شخصية</p>
+
+        <input type="text" id="fullName" class="input-box" placeholder="الاسم الرباعي">
+        <input type="text" id="nickName" class="input-box" placeholder="اسم الشهرة (اختياري)">
+        
+        <label style="font-size: 13px; font-weight: bold;">تاريخ الميلاد:</label>
+        <input type="date" id="birthDate" class="input-box">
+
+        <label style="font-size: 13px; font-weight: bold;">مكان العمل:</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <input type="text" id="workCollege" class="input-box" placeholder="الكلية">
+            <input type="text" id="workBuilding" class="input-box" placeholder="المبنى">
+        </div>
+
+        <button class="action-btn" onclick="saveProfile()">حفظ وبدء العمل 🚀</button>
+        <p id="profileStatus" style="text-align: center; color: blue; margin-top: 10px;"></p>
+    </div>
+
     <div id="appScreen" class="container-glass hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h2 style="margin: 0; font-size: 20px;">بلاغ صيانة جديد</h2>
-            <button onclick="logout()" style="background: none; border: none; color: #dc3545; font-weight: bold; cursor: pointer;">
-                <i class="fas fa-sign-out-alt"></i> خروج
-            </button>
+            <div>
+                <h2 style="margin: 0; font-size: 18px;" id="welcomeName">مرحباً</h2>
+                <span id="userRoleBadge" style="font-size: 12px; background: #eef2ff; padding: 3px 8px; border-radius: 10px; color: var(--primary);"></span>
+            </div>
+            <img id="headerAvatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
         </div>
         
-        <p id="userInfoDisplay" style="background: #eef2ff; padding: 10px; border-radius: 8px; font-size: 12px; color: #4e54c8; margin-bottom: 15px;"></p>
+        <button onclick="logout()" style="background: #fee; border: none; color: #d32f2f; font-size: 12px; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-bottom: 15px;">تسجيل خروج</button>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 15px;">
+
+        <h3 style="margin: 0 0 10px 0; font-size: 16px;">تسجيل بلاغ جديد</h3>
 
         <div class="image-upload-area" onclick="document.getElementById('camInput').click()">
             <i class="fas fa-camera fa-2x" style="color: #555;"></i>
@@ -123,21 +184,21 @@
         <div id="gallery" class="gallery"></div>
         <input type="file" id="camInput" multiple accept="image/*" style="display:none" onchange="previewImages(this)">
 
-        <input type="date" id="date" class="input-box" style="padding: 10px;">
-        <input type="text" id="loc" class="input-box" placeholder="الموقع (كلية - مبنى - غرفة)">
+        <input type="date" id="reportDate" class="input-box" style="padding: 10px;">
+        <input type="text" id="loc" class="input-box" placeholder="موقع العطل (مدرج - معمل - غرفة)">
         <textarea id="desc" class="input-box" rows="3" placeholder="وصف المشكلة بالتفصيل..."></textarea>
         
-        <button class="action-btn" onclick="sendReport()">🚀 إرسال البلاغ</button>
+        <button class="action-btn" onclick="sendReport()">إرسال البلاغ</button>
         <p id="appStatus" style="text-align: center; margin-top: 10px; font-weight: bold;"></p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-        // ✅ بيانات مشروعك (صحيحة 100%)
+        // ✅ بيانات مشروعك (كما هي)
         const firebaseConfig = {
             apiKey: "AIzaSyBojgV1qxSkf16W1gMMjuKm9zF4daDEaFs",
             authDomain: "nursing-attendance.firebaseapp.com",
@@ -155,115 +216,183 @@
         auth.languageCode = 'ar';
 
         window.confirmationResult = null;
-        let selectedRole = 'technician';
+        let selectedRole = 'employee'; // القيمة الافتراضية
+        let currentUserUid = null;
+        let currentUserPhone = null;
 
-        // 1. الفحص التلقائي عند التحميل
-        window.onload = function() {
+        // 1️⃣ عند تحميل الصفحة
+        window.onload = async function() {
+            // التحقق من وجود مستخدم مسجل محلياً
             const savedUser = localStorage.getItem('maintenanceUser');
+            
             if (savedUser) {
+                // المستخدم مسجل -> تحقق من وجود بروفايل كامل
                 const userData = JSON.parse(savedUser);
                 showApp(userData);
             } else {
+                // مستخدم جديد
                 document.getElementById('splashScreen').style.display = 'none';
                 document.getElementById('loginScreen').classList.remove('hidden');
                 
-                // إعادة إنشاء الكابتشا
                 window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'normal' });
                 recaptchaVerifier.render();
             }
         };
 
-        // 2. دالة إرسال الكود (المعدلة لإصلاح الرقم تلقائياً)
-        window.onSignInSubmit = function() {
-            let phoneNumber = document.getElementById('phoneNumber').value.trim();
-            const status = document.getElementById('statusMsg');
-
-            // 🛠️ التصحيح التلقائي للرقم
-            // إذا بدأ بـ 01 (مثل 010, 011)، نحذف الصفر ونضيف +20
-            if (phoneNumber.startsWith('01')) {
-                phoneNumber = '+20' + phoneNumber.substring(1);
-            } 
-            // إذا لم يبدأ بـ +، نضيف +20 احتياطياً
-            else if (!phoneNumber.startsWith('+')) {
-                phoneNumber = '+20' + phoneNumber;
-            }
-
-            // التحقق من الطول
-            if(phoneNumber.length < 12) { 
-                status.innerText = "الرقم قصير جداً، تأكد من كتابته بشكل صحيح";
-                return; 
-            }
-            
-            status.innerText = "جاري الاتصال... (" + phoneNumber + ")";
-            
-            signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier)
-                .then((result) => {
-                    window.confirmationResult = result;
-                    status.innerText = "تم إرسال الرمز ✅";
-                    status.style.color = "green";
-                    
-                    document.getElementById('sendCodeBtn').style.display = 'none';
-                    document.getElementById('recaptcha-container').style.display = 'none';
-                    document.getElementById('otpSection').style.display = 'block';
-                }).catch((error) => {
-                    console.error(error);
-                    if (error.code === 'auth/invalid-phone-number') {
-                        status.innerText = "رقم الهاتف غير صحيح ❌";
-                    } else if (error.code === 'auth/too-many-requests') {
-                        status.innerText = "تم حظر الرقم مؤقتاً لكثرة المحاولات";
-                    } else {
-                        status.innerText = "خطأ: " + error.message;
-                    }
-                    status.style.color = "red";
-                });
-        };
-
-        // 3. التحقق من الكود
-        window.verifyCode = function() {
-            const code = document.getElementById('otpCode').value;
-            const status = document.getElementById('statusMsg');
-
-            window.confirmationResult.confirm(code).then((result) => {
-                const user = result.user;
-                const userData = { phone: user.phoneNumber, role: selectedRole, uid: user.uid };
-                
-                localStorage.setItem('maintenanceUser', JSON.stringify(userData));
-                showApp(userData);
-            }).catch((error) => {
-                status.innerText = "الكود غير صحيح ❌";
-            });
-        };
-
-        function showApp(userData) {
-            document.getElementById('userInfoDisplay').innerText = `👤 ${userData.phone} (${userData.role === 'admin' ? 'مسؤول' : 'فني'})`;
-            document.getElementById('splashScreen').style.display = 'none';
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('appScreen').classList.remove('hidden');
-        }
-
-        window.logout = function() {
-            if(confirm("تسجيل الخروج؟")) {
-                localStorage.removeItem('maintenanceUser');
-                location.reload();
-            }
-        }
-
+        // 2️⃣ اختيار الدور
         window.selectRole = (role, el) => {
             selectedRole = role;
             document.querySelectorAll('.role-card').forEach(e => e.classList.remove('active'));
             el.classList.add('active');
         };
 
-        window.previewImages = (input) => {
-            const gallery = document.getElementById('gallery');
-            gallery.innerHTML = "";
-            for(let file of input.files) {
-                let img = document.createElement('img');
-                img.src = URL.createObjectURL(file);
-                gallery.appendChild(img);
+        // 3️⃣ إرسال كود التحقق (مع تصحيح الرقم)
+        window.onSignInSubmit = function() {
+            let phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const status = document.getElementById('statusMsg');
+
+            if (phoneNumber.startsWith('01')) phoneNumber = '+20' + phoneNumber.substring(1);
+            else if (!phoneNumber.startsWith('+')) phoneNumber = '+20' + phoneNumber;
+
+            if(phoneNumber.length < 12) { status.innerText = "رقم الهاتف غير صحيح"; return; }
+            
+            status.innerText = "جاري الاتصال...";
+            
+            signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier)
+                .then((result) => {
+                    window.confirmationResult = result;
+                    status.innerText = "تم إرسال الرمز ✅";
+                    status.style.color = "green";
+                    document.getElementById('sendCodeBtn').style.display = 'none';
+                    document.getElementById('recaptcha-container').style.display = 'none';
+                    document.getElementById('otpSection').style.display = 'block';
+                }).catch((error) => {
+                    console.error(error);
+                    status.innerText = "خطأ: " + error.message;
+                    status.style.color = "red";
+                });
+        };
+
+        // 4️⃣ التحقق من الكود + فحص البروفايل
+        window.verifyCode = function() {
+            const code = document.getElementById('otpCode').value;
+            const status = document.getElementById('statusMsg');
+
+            window.confirmationResult.confirm(code).then(async (result) => {
+                const user = result.user;
+                currentUserUid = user.uid;
+                currentUserPhone = user.phoneNumber;
+
+                status.innerText = "تم التحقق! جاري فحص البيانات...";
+                
+                // فحص هل المستخدم لديه بيانات في Firestore؟
+                const docRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    // المستخدم مسجل سابقاً -> ادخل للتطبيق
+                    const userData = docSnap.data();
+                    localStorage.setItem('maintenanceUser', JSON.stringify(userData));
+                    showApp(userData);
+                } else {
+                    // مستخدم جديد -> اذهب لصفحة استكمال البيانات
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('profileScreen').classList.remove('hidden');
+                }
+
+            }).catch((error) => {
+                status.innerText = "الكود غير صحيح ❌";
+            });
+        };
+
+        // 5️⃣ معاينة صورة البروفايل
+        window.previewAvatar = (input) => {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('avatarPreview').src = e.target.result;
+                    document.getElementById('avatarPreview').style.display = 'block';
+                    document.getElementById('avatarIcon').style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
             }
         };
 
+        // 6️⃣ حفظ بيانات البروفايل (لأول مرة)
+        window.saveProfile = async function() {
+            const fullName = document.getElementById('fullName').value;
+            const nickName = document.getElementById('nickName').value;
+            const birthDate = document.getElementById('birthDate').value;
+            const college = document.getElementById('workCollege').value;
+            const building = document.getElementById('workBuilding').value;
+            const avatarFile = document.getElementById('avatarInput').files[0];
+            const status = document.getElementById('profileStatus');
+
+            if (!fullName || !birthDate || !college || !building) {
+                alert("يرجى ملء جميع البيانات الأساسية");
+                return;
+            }
+
+            status.innerText = "جاري إنشاء الحساب...";
+            const btn = document.querySelector('#profileScreen .action-btn');
+            btn.disabled = true;
+
+            try {
+                let avatarUrl = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"; // صورة افتراضية
+                
+                // رفع الصورة إذا وجدت
+                if (avatarFile) {
+                    status.innerText = "جاري رفع الصورة...";
+                    const sRef = ref(storage, 'avatars/' + currentUserUid);
+                    await uploadBytes(sRef, avatarFile);
+                    avatarUrl = await getDownloadURL(sRef);
+                }
+
+                const userData = {
+                    uid: currentUserUid,
+                    phone: currentUserPhone,
+                    role: selectedRole, // الدور الذي اختاره في البداية
+                    name: fullName,
+                    nickname: nickName,
+                    birthDate: birthDate,
+                    workLocation: { college, building },
+                    avatar: avatarUrl,
+                    createdAt: serverTimestamp()
+                };
+
+                // حفظ في Firestore
+                await setDoc(doc(db, "users", currentUserUid), userData);
+
+                // حفظ محلي والدخول
+                localStorage.setItem('maintenanceUser', JSON.stringify(userData));
+                showApp(userData);
+
+            } catch (error) {
+                console.error(error);
+                status.innerText = "حدث خطأ في الحفظ!";
+                btn.disabled = false;
+            }
+        };
+
+        // 7️⃣ عرض التطبيق وتعبئة البيانات
+        function showApp(userData) {
+            document.getElementById('splashScreen').style.display = 'none';
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('profileScreen').classList.add('hidden');
+            document.getElementById('appScreen').classList.remove('hidden');
+
+            // عرض بيانات المستخدم في الهيدر
+            document.getElementById('welcomeName').innerText = `مرحباً، ${userData.name}`;
+            document.getElementById('headerAvatar').src = userData.avatar || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+            
+            // ترجمة الدور للعرض
+            let roleText = "موظف";
+            if(userData.role === 'supervisor') roleText = "مشرف";
+            if(userData.role === 'technician') roleText = "فني صيانة";
+            document.getElementById('userRoleBadge').innerText = roleText;
+        }
+
+        // 8️⃣ تسجيل بلاغ
         window.sendReport = async () => {
             const btn = document.querySelector('#appScreen .action-btn');
             const status = document.getElementById('appStatus');
@@ -273,7 +402,6 @@
             if(!desc) { alert("اكتب وصف العطل"); return; }
 
             status.innerText = "جاري الرفع...";
-            status.style.color = "blue";
             btn.disabled = true;
 
             try {
@@ -282,17 +410,18 @@
                 for(let file of files) {
                     const sRef = ref(storage, 'reports/' + Date.now() + '_' + file.name);
                     await uploadBytes(sRef, file);
-                    const url = await getDownloadURL(sRef);
-                    imageUrls.push(url);
+                    imageUrls.push(await getDownloadURL(sRef));
                 }
 
                 await addDoc(collection(db, "maintenance_reports"), {
                     userId: user.uid,
-                    phone: user.phone,
-                    role: user.role,
+                    userName: user.name,
+                    userRole: user.role,
+                    userPhone: user.phone,
+                    userLocation: user.workLocation, // مكان عمله المسجل
                     description: desc,
-                    location: document.getElementById('loc').value,
-                    date: document.getElementById('date').value,
+                    reportLocation: document.getElementById('loc').value, // مكان العطل المحدد
+                    reportDate: document.getElementById('reportDate').value,
                     images: imageUrls,
                     timestamp: serverTimestamp()
                 });
@@ -308,15 +437,30 @@
 
             } catch(e) {
                 console.error(e);
-                status.innerText = "حدث خطأ أثناء الإرسال";
-                status.style.color = "red";
+                status.innerText = "حدث خطأ";
                 btn.disabled = false;
             }
         };
-        
-        const d = document.getElementById('date');
-        if(d) d.valueAsDate = new Date();
 
+        // أدوات مساعدة
+        window.previewImages = (input) => {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = "";
+            for(let file of input.files) {
+                let img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                gallery.appendChild(img);
+            }
+        };
+
+        window.logout = () => {
+            if(confirm("خروج؟")) {
+                localStorage.removeItem('maintenanceUser');
+                location.reload();
+            }
+        };
+        
+        document.getElementById('reportDate').valueAsDate = new Date();
     </script>
 </body>
 </html>

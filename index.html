@@ -3,179 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Smart Maintenance System</title>
+    <title>Smart Maintenance Pro</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
-            --primary: #2563eb;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark: #1e293b;
-            --bg-glass: rgba(255, 255, 255, 0.98);
+            --primary: #3b82f6; --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --dark: #1e293b;
+            --glass: rgba(255, 255, 255, 0.95);
         }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body {
-            margin: 0;
-            background: url('https://a.top4top.io/p_36115ao3o1.jpg') no-repeat center center fixed;
-            background-size: cover;
-            display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px;
+            margin: 0; background: #f1f5f9;
+            display: flex; justify-content: center; min-height: 100vh; padding: 15px;
         }
-        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(5px); z-index: -1; }
 
         .app-card {
             width: 100%; max-width: 500px;
-            background: var(--bg-glass); border-radius: 24px; padding: 25px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.4); position: relative;
-            max-height: 90vh; overflow-y: auto;
+            background: var(--glass); border-radius: 24px; padding: 25px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); position: relative;
+            height: fit-content; margin-top: 20px; margin-bottom: 20px;
         }
         .hidden { display: none !important; }
 
-        /* UI Elements */
-        .brand { text-align: center; margin-bottom: 20px; }
-        .brand h1 { margin: 0; color: var(--dark); font-size: 22px; font-weight: 800; }
-        
-        .tabs { display: flex; background: #e2e8f0; padding: 5px; border-radius: 12px; margin-bottom: 20px; }
-        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; color: #64748b; transition: 0.3s; }
-        .tab.active { background: #fff; color: var(--primary); shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        /* Tabs & Inputs */
+        .tabs { display: flex; background: #f1f5f9; padding: 5px; border-radius: 12px; margin-bottom: 20px; }
+        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; color: #64748b; font-weight: bold; }
+        .tab.active { background: #fff; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-        .modern-input { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; outline: none; margin-bottom: 12px; transition: 0.3s; }
-        .modern-input:focus { border-color: var(--primary); background: #f8fafc; }
+        .modern-input { width: 100%; padding: 12px 15px; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 12px; transition: 0.3s; font-size: 14px; }
+        .modern-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
         
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; color: white; margin-top: 5px; transition: 0.2s; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn:active { transform: scale(0.98); }
         .btn-primary { background: var(--primary); }
-        .btn-success { background: var(--success); }
-        .btn-danger { background: var(--danger); }
-        .btn-warning { background: var(--warning); color: #fff; }
+        .btn-outline { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
 
-        /* Roles */
-        .roles-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .role-card { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px 5px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .role-card.selected { border-color: var(--primary); background: #eff6ff; color: var(--primary); }
-
-        /* 🔥 TIMELINE TRACKING (شريط التتبع) 🔥 */
-        .timeline-box { margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
-        .timeline { display: flex; justify-content: space-between; position: relative; margin-top: 15px; }
-        .timeline::before { content: ''; position: absolute; top: 12px; left: 0; right: 0; height: 3px; background: #e2e8f0; z-index: 0; }
-        .timeline-progress { content: ''; position: absolute; top: 12px; right: 0; height: 3px; background: var(--success); z-index: 1; width: 0%; transition: width 0.5s ease; }
-        
-        .step { position: relative; z-index: 2; text-align: center; width: 25%; }
-        .step-circle { width: 28px; height: 28px; background: #fff; border: 3px solid #e2e8f0; border-radius: 50%; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; transition: 0.3s; }
-        .step-text { font-size: 10px; font-weight: bold; color: #94a3b8; }
-        
-        /* حالات التتبع */
-        .step.active .step-circle { border-color: var(--primary); color: var(--primary); }
-        .step.done .step-circle { border-color: var(--success); background: var(--success); color: #fff; }
-        .step.done .step-text { color: var(--success); }
+        /* Roles Selection */
+        .roles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .role-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .role-card i { display: block; font-size: 20px; margin-bottom: 5px; color: #94a3b8; }
+        .role-card.selected { border-color: var(--primary); background: #eff6ff; }
+        .role-card.selected i { color: var(--primary); }
 
         /* Report Cards */
-        .report-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 15px; margin-bottom: 15px; position: relative; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .status-badge { position: absolute; top: 15px; left: 15px; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; }
-        .badge-new { background: #dbeafe; color: #1e40af; }
-        .badge-accepted { background: #d1fae5; color: #065f46; }
-        .badge-progress { background: #fef3c7; color: #92400e; }
-        .badge-done { background: #f3f4f6; color: #1f2937; text-decoration: line-through; }
+        .report-card { background: #fff; border: 1px solid #f1f5f9; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); position: relative; }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; }
         
-        .report-imgs { display: flex; gap: 5px; margin-top: 10px; }
-        .report-imgs img { width: 50px; height: 50px; border-radius: 8px; border: 1px solid #eee; object-fit: cover; cursor: pointer; }
-        
-        /* Action Buttons */
-        .actions { display: flex; gap: 8px; margin-top: 10px; }
-        .btn-sm { flex: 1; padding: 8px; border-radius: 8px; border: none; font-size: 12px; font-weight: bold; cursor: pointer; color: white; }
+        .timeline-mini { display: flex; height: 4px; background: #e2e8f0; margin: 15px 0; border-radius: 2px; overflow: hidden; }
+        .timeline-bar { height: 100%; background: var(--success); transition: width 0.5s; }
 
-        #splashScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .meta-info { font-size: 11px; color: #94a3b8; display: flex; align-items: center; gap: 5px; margin-top: 5px; }
+        
+        /* Stats Dashboard */
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-box { background: #f8fafc; padding: 15px; border-radius: 12px; text-align: center; }
+        .stat-num { font-size: 24px; font-weight: 900; color: var(--dark); }
+        .stat-label { font-size: 11px; color: #64748b; }
+
+        #splash { position: fixed; inset: 0; background: #fff; z-index: 99; display: flex; align-items: center; justify-content: center; flex-direction: column; }
     </style>
 </head>
 <body>
 
-    <div id="splashScreen">
-        <i class="fas fa-tools fa-3x fa-spin" style="color:var(--primary); margin-bottom:20px;"></i>
-        <h3>جاري تحميل النظام...</h3>
+    <div id="splash">
+        <i class="fas fa-circle-notch fa-spin fa-2x" style="color:var(--primary); margin-bottom:15px;"></i>
+        <p style="font-weight:bold; color:var(--dark)">جاري الاتصال بالنظام...</p>
     </div>
 
     <div id="authScreen" class="app-card">
-        <div class="brand">
-            <i class="fas fa-hammer fa-2x" style="color:var(--primary)"></i>
-            <h1>نظام الصيانة الموحد</h1>
+        <div style="text-align:center; margin-bottom:25px;">
+            <div style="width:60px; height:60px; background:#eff6ff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 10px;">
+                <i class="fas fa-wrench fa-lg" style="color:var(--primary)"></i>
+            </div>
+            <h2 style="margin:0;">نظام الصيانة الذكي</h2>
+            <p style="margin:5px 0 0; color:#64748b; font-size:13px;">الإصدار الاحترافي 2.0</p>
         </div>
 
         <div class="tabs">
-            <div class="tab active" onclick="setTab('login')">تسجيل دخول</div>
-            <div class="tab" onclick="setTab('register')">حساب جديد</div>
+            <div class="tab active" onclick="switchTab('login')">دخول</div>
+            <div class="tab" onclick="switchTab('register')">تسجيل</div>
         </div>
 
         <div id="loginForm">
-            <input type="email" id="loginEmail" class="modern-input" placeholder="البريد الإلكتروني" dir="ltr">
-            <input type="password" id="loginPass" class="modern-input" placeholder="كلمة المرور">
-            <button class="btn btn-primary" onclick="login()">دخول</button>
+            <input type="email" id="lEmail" class="modern-input" placeholder="البريد الإلكتروني" dir="ltr">
+            <input type="password" id="lPass" class="modern-input" placeholder="كلمة المرور">
+            <button class="btn btn-primary" onclick="handleLogin()">تسجيل الدخول <i class="fas fa-arrow-left"></i></button>
         </div>
 
         <div id="regForm" class="hidden">
-            <label style="font-size:12px; font-weight:bold; margin-bottom:5px; display:block;">الوظيفة:</label>
             <div class="roles-grid">
-                <div class="role-card" onclick="selectRole('employee', this)"><i class="fas fa-user-tie"></i><span>موظف</span></div>
-                <div class="role-card" onclick="selectRole('supervisor', this)"><i class="fas fa-user-shield"></i><span>مشرف</span></div>
-                <div class="role-card" onclick="selectRole('technician', this)"><i class="fas fa-tools"></i><span>فني</span></div>
+                <div class="role-card" onclick="setRole('employee', this)"><i class="fas fa-user"></i>موظف</div>
+                <div class="role-card" onclick="setRole('supervisor', this)"><i class="fas fa-user-shield"></i>مشرف</div>
+                <div class="role-card" onclick="setRole('technician', this)"><i class="fas fa-tools"></i>فني</div>
             </div>
-            <input type="text" id="regName" class="modern-input" placeholder="الاسم">
-            <input type="text" id="regWork" class="modern-input" placeholder="مكان العمل (الكلية/المبنى)">
-            <input type="email" id="regEmail" class="modern-input" placeholder="البريد الإلكتروني" dir="ltr">
-            <input type="password" id="regPass" class="modern-input" placeholder="كلمة المرور (6+ أحرف)">
-            <button class="btn btn-primary" onclick="register()">إنشاء الحساب</button>
+            <input type="text" id="rName" class="modern-input" placeholder="الاسم الكامل">
+            <input type="text" id="rWork" class="modern-input" placeholder="مقر العمل (مثال: مبنى أ - الدور 2)">
+            <input type="email" id="rEmail" class="modern-input" placeholder="البريد الإلكتروني" dir="ltr">
+            <input type="password" id="rPass" class="modern-input" placeholder="كلمة المرور">
+            <button class="btn btn-primary" onclick="handleRegister()">إنشاء حساب جديد</button>
         </div>
-        <p id="authMsg" style="text-align:center; color:var(--danger); font-size:13px; font-weight:bold; margin-top:10px;"></p>
     </div>
 
     <div id="mainScreen" class="app-card hidden">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:15px; margin-bottom:15px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <div>
-                <h3 id="uName" style="margin:0; font-size:16px;">مرحباً</h3>
-                <span id="uRole" style="font-size:12px; color:#64748b;"></span>
+                <h3 id="userName" style="margin:0;">User</h3>
+                <span id="userRoleBadge" style="font-size:11px; background:#e2e8f0; padding:2px 8px; border-radius:10px;">Role</span>
             </div>
-            <button onclick="logout()" style="background:#fee2e2; color:var(--danger); border:none; padding:6px 12px; border-radius:8px; font-weight:bold; cursor:pointer;">خروج</button>
+            <button onclick="logout()" style="border:none; background:#fee2e2; width:35px; height:35px; border-radius:50%; color:var(--danger); cursor:pointer;"><i class="fas fa-power-off"></i></button>
         </div>
 
-        <div id="viewEmployee" class="hidden">
-            <div style="background:#f8fafc; border:2px dashed #cbd5e1; border-radius:15px; padding:20px; text-align:center; margin-bottom:15px; cursor:pointer;" onclick="document.getElementById('fileIn').click()">
-                <i class="fas fa-camera fa-2x" style="color:#94a3b8"></i>
-                <p style="margin:5px 0 0; font-size:13px; color:#64748b;">اضغط لإرفاق صور</p>
-            </div>
-            <div id="previewBox" style="display:flex; gap:5px; margin-bottom:10px;"></div>
-            <input type="file" id="fileIn" multiple accept="image/*" class="hidden" onchange="preview(this)">
-            
-            <input type="text" id="loc" class="modern-input" placeholder="موقع العطل (المدرج / الغرفة)">
-            <textarea id="desc" class="modern-input" rows="2" placeholder="وصف المشكلة..."></textarea>
-            <button class="btn btn-primary" onclick="submitReport()">إرسال البلاغ</button>
-
-            <h4 style="margin-top:25px; margin-bottom:10px; border-top:1px solid #eee; padding-top:15px;">📉 متابعة البلاغات</h4>
-            <div id="empHistory"></div>
+        <div id="v-employee" class="hidden">
+            <button class="btn btn-primary" style="margin-bottom:20px;" onclick="showAddReportModal()">
+                <i class="fas fa-plus-circle"></i> تقديم بلاغ جديد
+            </button>
+            <h4 style="border-bottom:1px solid #eee; padding-bottom:10px;">سجل البلاغات</h4>
+            <div id="empList"></div>
         </div>
 
-        <div id="viewSupervisor" class="hidden">
-            <h4 style="margin-bottom:15px;">البلاغات الواردة (تحتاج موافقة)</h4>
+        <div id="v-supervisor" class="hidden">
+            <div class="stats-row">
+                <div class="stat-box"><div id="s-new" class="stat-num">0</div><div class="stat-label">جديد</div></div>
+                <div class="stat-box"><div id="s-progress" class="stat-num">0</div><div class="stat-label">جاري العمل</div></div>
+            </div>
+            <div style="height:150px; margin-bottom:20px;">
+                <canvas id="myChart"></canvas>
+            </div>
+            <h4 style="margin-bottom:10px;">طلبات تنتظر الموافقة</h4>
             <div id="supList"></div>
         </div>
 
-        <div id="viewTechnician" class="hidden">
-            <h4 style="margin-bottom:15px;">المهام المسندة إليك</h4>
+        <div id="v-technician" class="hidden">
+            <div class="tabs">
+                <div class="tab active" onclick="filterTech('todo')">مهام جديدة</div>
+                <div class="tab" onclick="filterTech('done')">الأرشيف</div>
+            </div>
             <div id="techList"></div>
         </div>
-        
-        <p id="appMsg" style="text-align:center; margin-top:10px; font-weight:bold;"></p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-        // ✅ بيانات مشروعك
+        // إعدادات المشروع (نفس القديمة)
         const firebaseConfig = {
             apiKey: "AIzaSyBojgV1qxSkf16W1gMMjuKm9zF4daDEaFs",
             authDomain: "nursing-attendance.firebaseapp.com",
@@ -191,235 +170,331 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        let selectedRole = null;
+        let currentUserData = null;
+        let selectedRegRole = null;
+        let chartInstance = null;
 
-        // 1. UI Tabs
-        window.setTab = (t) => {
+        // --- Helper: SweetAlert Toast ---
+        const Toast = Swal.mixin({
+            toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true
+        });
+
+        // --- Auth Logic ---
+        window.switchTab = (t) => {
             document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
-            if(t==='login'){
-                document.querySelectorAll('.tab')[0].classList.add('active');
-                document.getElementById('loginForm').classList.remove('hidden');
-                document.getElementById('regForm').classList.add('hidden');
-            } else {
-                document.querySelectorAll('.tab')[1].classList.add('active');
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('regForm').classList.remove('hidden');
-            }
-        }
+            event.target.classList.add('active');
+            document.getElementById('loginForm').classList.toggle('hidden', t!=='login');
+            document.getElementById('regForm').classList.toggle('hidden', t!=='register');
+        };
 
-        window.selectRole = (r, el) => {
-            selectedRole = r;
+        window.setRole = (r, el) => {
+            selectedRegRole = r;
             document.querySelectorAll('.role-card').forEach(e=>e.classList.remove('selected'));
             el.classList.add('selected');
-        }
+        };
 
-        // 2. Auth Functions
-        window.register = async () => {
-            const name = document.getElementById('regName').value;
-            const work = document.getElementById('regWork').value;
-            const email = document.getElementById('regEmail').value;
-            const pass = document.getElementById('regPass').value;
-            const msg = document.getElementById('authMsg');
+        window.handleRegister = async () => {
+            const name = document.getElementById('rName').value;
+            const email = document.getElementById('rEmail').value;
+            const pass = document.getElementById('rPass').value;
+            const work = document.getElementById('rWork').value;
 
-            if(!selectedRole || !name || !email || pass.length < 6) return msg.innerText="أكمل البيانات";
-            msg.innerText="جاري الإنشاء..."; msg.style.color="blue";
+            if(!name || !selectedRegRole || !email || !pass) return Toast.fire({icon:'warning', title:'الرجاء إكمال البيانات'});
 
             try {
+                Swal.showLoading();
                 const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                await setDoc(doc(db, "users", cred.user.uid), {
-                    uid: cred.user.uid, name, work, email, role: selectedRole, createdAt: serverTimestamp()
+                await setDoc(doc(db, 'users', cred.user.uid), {
+                    uid: cred.user.uid, name, role: selectedRegRole, work, email, createdAt: serverTimestamp()
                 });
-                msg.innerText="";
-            } catch(e) { msg.innerText=e.message; msg.style.color="red"; }
+                Swal.close();
+            } catch(e) { Swal.fire('خطأ', e.message, 'error'); }
         };
 
-        window.login = async () => {
-            const email = document.getElementById('loginEmail').value;
-            const pass = document.getElementById('loginPass').value;
-            try { await signInWithEmailAndPassword(auth, email, pass); }
-            catch(e) { document.getElementById('authMsg').innerText="خطأ في البيانات"; }
+        window.handleLogin = async () => {
+            try {
+                Swal.showLoading();
+                await signInWithEmailAndPassword(auth, document.getElementById('lEmail').value, document.getElementById('lPass').value);
+                Swal.close();
+            } catch(e) { Swal.fire('فشل الدخول', 'تأكد من البريد وكلمة المرور', 'error'); }
         };
 
-        // 3. Routing
+        window.logout = () => signOut(auth);
+
         onAuthStateChanged(auth, async (user) => {
+            const splash = document.getElementById('splash');
+            const authSc = document.getElementById('authScreen');
+            const mainSc = document.getElementById('mainScreen');
+
             if(user) {
-                const snap = await getDoc(doc(db, "users", user.uid));
-                if(snap.exists()) openApp(snap.data());
+                const snap = await getDoc(doc(db, 'users', user.uid));
+                if(snap.exists()){
+                    currentUserData = snap.data();
+                    splash.style.display = 'none';
+                    authSc.classList.add('hidden');
+                    mainSc.classList.remove('hidden');
+                    initAppUI();
+                }
             } else {
-                document.getElementById('splashScreen').style.display='none';
-                document.getElementById('authScreen').classList.remove('hidden');
-                document.getElementById('mainScreen').classList.add('hidden');
+                splash.style.display = 'none';
+                authSc.classList.remove('hidden');
+                mainSc.classList.add('hidden');
             }
         });
 
-        function openApp(user) {
-            document.getElementById('splashScreen').style.display='none';
-            document.getElementById('authScreen').classList.add('hidden');
-            document.getElementById('mainScreen').classList.remove('hidden');
-            document.getElementById('uName').innerText = user.name;
-            
-            let r = user.role==='supervisor'?'مشرف':(user.role==='technician'?'فني':'موظف');
-            document.getElementById('uRole').innerText = r;
+        function initAppUI() {
+            document.getElementById('userName').innerText = currentUserData.name;
+            const roleAr = {employee:'موظف', supervisor:'مشرف', technician:'فني'};
+            document.getElementById('userRoleBadge').innerText = roleAr[currentUserData.role];
 
-            document.getElementById('viewEmployee').classList.add('hidden');
-            document.getElementById('viewSupervisor').classList.add('hidden');
-            document.getElementById('viewTechnician').classList.add('hidden');
+            // Hide all views first
+            ['v-employee','v-supervisor','v-technician'].forEach(id => document.getElementById(id).classList.add('hidden'));
 
-            if(user.role==='employee') {
-                document.getElementById('viewEmployee').classList.remove('hidden');
-                loadEmpHistory(user.uid);
-            } else if(user.role==='supervisor') {
-                document.getElementById('viewSupervisor').classList.remove('hidden');
-                loadSupervisor();
-            } else if(user.role==='technician') {
-                document.getElementById('viewTechnician').classList.remove('hidden');
-                loadTechnician();
+            if(currentUserData.role === 'employee') {
+                document.getElementById('v-employee').classList.remove('hidden');
+                initEmployee();
+            } else if(currentUserData.role === 'supervisor') {
+                document.getElementById('v-supervisor').classList.remove('hidden');
+                initSupervisor();
+            } else if(currentUserData.role === 'technician') {
+                document.getElementById('v-technician').classList.remove('hidden');
+                initTechnician();
             }
         }
 
-        // --- A. Employee Logic (with Timeline) ---
-        window.preview = (inp) => {
-            const b = document.getElementById('previewBox'); b.innerHTML="";
-            for(let f of inp.files) {
-                let i = document.createElement('img'); i.src = URL.createObjectURL(f);
-                i.style.width="50px"; i.style.height="50px"; i.style.borderRadius="8px"; b.appendChild(i);
-            }
-        };
-
-        window.submitReport = async () => {
-            const desc = document.getElementById('desc').value;
-            if(!desc) return alert("اكتب الوصف");
-            document.getElementById('appMsg').innerText="جاري الرفع...";
-            
-            const uid = auth.currentUser.uid;
-            const uData = (await getDoc(doc(db,"users",uid))).data();
-            
-            let urls = [];
-            for(let f of document.getElementById('fileIn').files) {
-                const r = ref(storage, 'reports/'+Date.now()+'_'+f.name);
-                await uploadBytes(r, f);
-                urls.push(await getDownloadURL(r));
-            }
-
-            await addDoc(collection(db, "maintenance_reports"), {
-                uid, name: uData.name, work: uData.work, desc, 
-                loc: document.getElementById('loc').value,
-                images: urls, status: 'new', timestamp: serverTimestamp()
+        // --- 1. Employee Logic ---
+        window.showAddReportModal = async () => {
+            const { value: formValues } = await Swal.fire({
+                title: 'بلاغ صيانة جديد',
+                html: `
+                    <input id="swal-loc" class="swal2-input" placeholder="الموقع (الغرفة/المعمل)">
+                    <textarea id="swal-desc" class="swal2-textarea" placeholder="وصف المشكلة بالتفصيل"></textarea>
+                    <input type="file" id="swal-file" class="swal2-file" accept="image/*" multiple>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'إرسال',
+                cancelButtonText: 'إلغاء',
+                preConfirm: () => {
+                    return [
+                        document.getElementById('swal-loc').value,
+                        document.getElementById('swal-desc').value,
+                        document.getElementById('swal-file').files
+                    ]
+                }
             });
 
-            document.getElementById('appMsg').innerText="تم الإرسال ✅";
-            setTimeout(()=>{document.getElementById('appMsg').innerText=""; document.getElementById('desc').value="";}, 2000);
+            if (formValues) {
+                const [loc, desc, files] = formValues;
+                if(!loc || !desc) return Toast.fire({icon:'warning', title:'الوصف والموقع مطلوبان'});
+                
+                Swal.fire({title: 'جاري الرفع...', didOpen: () => Swal.showLoading()});
+                
+                let urls = [];
+                if(files.length > 0) {
+                    for(let f of files){
+                        const r = ref(storage, `reports/${Date.now()}_${f.name}`);
+                        await uploadBytes(r, f);
+                        urls.push(await getDownloadURL(r));
+                    }
+                }
+
+                await addDoc(collection(db, 'reports'), {
+                    uid: currentUserData.uid,
+                    name: currentUserData.name,
+                    work: currentUserData.work,
+                    loc, desc, images: urls,
+                    status: 'new', // new, accepted, in_progress, completed, rejected
+                    timestamp: serverTimestamp()
+                });
+
+                Swal.fire('تم!', 'تم إرسال البلاغ بنجاح', 'success');
+            }
         };
 
-        function loadEmpHistory(uid) {
-            const q = query(collection(db, "maintenance_reports"), where("uid", "==", uid), orderBy("timestamp", "desc"));
-            onSnapshot(q, snap => {
-                const list = document.getElementById('empHistory'); list.innerHTML="";
+        function initEmployee() {
+            const q = query(collection(db, 'reports'), where('uid', '==', currentUserData.uid), orderBy('timestamp', 'desc'));
+            onSnapshot(q, (snap) => {
+                const div = document.getElementById('empList');
+                div.innerHTML = '';
                 snap.forEach(d => {
                     const data = d.data();
-                    
-                    // 🔥 TIMELINE LOGIC 🔥
-                    let w=0, s1='', s2='', s3='', s4='';
-                    if(data.status==='new') { w=15; s1='active'; }
-                    else if(data.status==='accepted') { w=50; s1='done'; s2='done'; s3='active'; } // عند الفني
-                    else if(data.status==='in_progress') { w=80; s1='done'; s2='done'; s3='done'; s4='active'; } // بدأ العمل
-                    else if(data.status==='completed') { w=100; s1='done'; s2='done'; s3='done'; s4='done'; } // انتهى
+                    // Timeline Width
+                    let w = 10; let col = 'var(--primary)';
+                    if(data.status==='accepted') w=40;
+                    if(data.status==='in_progress') w=70;
+                    if(data.status==='completed') { w=100; col='var(--success)'; }
+                    if(data.status==='rejected') { w=100; col='var(--danger)'; }
 
-                    let timeline = "";
-                    if(data.status === 'rejected') {
-                        timeline = `<div style="color:var(--danger); font-weight:bold; margin-top:10px; text-align:center;">❌ تم رفض الطلب</div>`;
-                    } else {
-                        timeline = `
-                        <div class="timeline-box">
-                            <div class="timeline">
-                                <div class="timeline-progress" style="width:${w}%"></div>
-                                <div class="step ${s1}"><div class="step-circle"><i class="fas fa-paper-plane"></i></div><span class="step-text">إرسال</span></div>
-                                <div class="step ${s2}"><div class="step-circle"><i class="fas fa-user-check"></i></div><span class="step-text">مشرف</span></div>
-                                <div class="step ${s3}"><div class="step-circle"><i class="fas fa-tools"></i></div><span class="step-text">فني</span></div>
-                                <div class="step ${s4}"><div class="step-circle"><i class="fas fa-check"></i></div><span class="step-text">تم</span></div>
+                    let statusAr = {new:'جديد', accepted:'مقبول', in_progress:'جاري العمل', completed:'مكتمل', rejected:'مرفوض'};
+                    let time = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString('ar-EG') : 'الآن';
+
+                    let rejectionMsg = data.status === 'rejected' ? `<div style="background:#fee2e2; color:#b91c1c; padding:10px; border-radius:8px; margin-top:10px; font-size:12px;">🛑 سبب الرفض: ${data.rejectionReason}</div>` : '';
+                    let techNote = data.techNote ? `<div style="background:#ecfdf5; color:#047857; padding:10px; border-radius:8px; margin-top:10px; font-size:12px;">💡 تقرير الفني: ${data.techNote}</div>` : '';
+
+                    div.innerHTML += `
+                    <div class="report-card">
+                        <div class="card-header">
+                            <span style="font-weight:bold; color:var(--dark)">${data.loc}</span>
+                            <span class="badge" style="background:${col}20; color:${col}">${statusAr[data.status]}</span>
+                        </div>
+                        <p style="margin:0; font-size:14px; color:#475569">${data.desc}</p>
+                        
+                        ${rejectionMsg}
+                        ${techNote}
+
+                        <div class="timeline-mini">
+                            <div class="timeline-bar" style="width:${w}%; background:${col}"></div>
+                        </div>
+                        <div class="meta-info">
+                            <i class="far fa-clock"></i> ${time}
+                        </div>
+                    </div>`;
+                });
+            });
+        }
+
+        // --- 2. Supervisor Logic ---
+        function initSupervisor() {
+            const q = query(collection(db, 'reports'), orderBy('timestamp', 'desc'));
+            onSnapshot(q, (snap) => {
+                const list = document.getElementById('supList');
+                list.innerHTML = '';
+                
+                // Stats
+                let stats = { new:0, progress:0, completed:0, rejected:0 };
+
+                snap.forEach(d => {
+                    const data = d.data();
+                    if(data.status === 'new') stats.new++;
+                    else if(data.status === 'in_progress') stats.progress++;
+                    else if(data.status === 'completed') stats.completed++;
+                    else if(data.status === 'rejected') stats.rejected++;
+
+                    if(data.status === 'new') {
+                        let imgs = data.images && data.images.length ? `<div style="display:flex; gap:5px; margin:10px 0;">${data.images.map(u=>`<img src="${u}" style="width:40px; height:40px; border-radius:5px; cursor:pointer" onclick="window.open('${u}')">`).join('')}</div>` : '';
+                        
+                        list.innerHTML += `
+                        <div class="report-card" style="border-right: 4px solid var(--primary)">
+                            <div style="font-weight:bold; font-size:15px;">${data.name} <span style="font-weight:normal; font-size:12px; color:#64748b">(${data.work})</span></div>
+                            <div style="margin:5px 0; color:#334155; font-size:14px;">${data.loc}: ${data.desc}</div>
+                            ${imgs}
+                            <div style="display:flex; gap:10px; margin-top:10px;">
+                                <button class="btn btn-primary" style="flex:1; background:var(--success); padding:8px;" onclick="supAction('${d.id}', 'accept')"><i class="fas fa-check"></i> قبول</button>
+                                <button class="btn btn-primary" style="flex:1; background:var(--danger); padding:8px;" onclick="supAction('${d.id}', 'reject')"><i class="fas fa-times"></i> رفض</button>
                             </div>
                         </div>`;
                     }
-
-                    let imgs = data.images?.map(u=>`<a href="${u}" target="_blank"><img src="${u}"></a>`).join('')||'';
-                    
-                    list.innerHTML += `
-                    <div class="report-card">
-                        <div style="font-weight:bold; margin-bottom:5px;">${data.desc}</div>
-                        <div style="font-size:12px; color:#64748b;">${data.loc}</div>
-                        <div class="report-imgs">${imgs}</div>
-                        ${timeline}
-                    </div>`;
                 });
+
+                // Update Stats
+                document.getElementById('s-new').innerText = stats.new;
+                document.getElementById('s-progress').innerText = stats.progress;
+                updateChart(stats);
             });
         }
 
-        // --- B. Supervisor Logic ---
-        function loadSupervisor() {
-            const q = query(collection(db, "maintenance_reports"), orderBy("timestamp", "desc"));
-            onSnapshot(q, snap => {
-                const list = document.getElementById('supList'); list.innerHTML="";
-                snap.forEach(d => {
-                    const data = d.data();
-                    let actions = "";
-                    
-                    // أزرار التحكم تظهر فقط للجديد
-                    if(data.status === 'new') {
-                        actions = `
-                        <div class="actions">
-                            <button class="btn-sm" style="background:var(--success)" onclick="upStat('${d.id}','accepted')">✔ قبول وتحويل للفني</button>
-                            <button class="btn-sm" style="background:var(--danger)" onclick="upStat('${d.id}','rejected')">✘ رفض</button>
-                        </div>`;
-                    }
-
-                    let badgeClass = data.status==='new'?'badge-new':(data.status==='completed'?'badge-done':'badge-accepted');
-                    let statusTxt = data.status==='new'?'جديد':data.status;
-
-                    list.innerHTML += `
-                    <div class="report-card">
-                        <span class="status-badge ${badgeClass}">${statusTxt}</span>
-                        <h4 style="margin:20px 0 5px 0;">${data.name}</h4>
-                        <div style="font-size:12px; color:#64748b; margin-bottom:10px;">${data.loc} (${data.work})</div>
-                        <p>${data.desc}</p>
-                        ${actions}
-                    </div>`;
+        window.supAction = async (id, type) => {
+            if(type === 'accept') {
+                await updateDoc(doc(db, 'reports', id), { status: 'accepted' });
+                Toast.fire({icon:'success', title:'تم تحويل البلاغ للفنيين'});
+            } else {
+                const { value: reason } = await Swal.fire({
+                    title: 'سبب الرفض',
+                    input: 'text',
+                    inputPlaceholder: 'لماذا ترفض هذا البلاغ؟',
+                    showCancelButton: true
                 });
-            });
-        }
-
-        // --- C. Technician Logic ---
-        function loadTechnician() {
-            // الفني يرى فقط المقبول والجاري تنفيذه
-            const q = query(collection(db, "maintenance_reports"), where("status", "in", ["accepted", "in_progress"]));
-            onSnapshot(q, snap => {
-                const list = document.getElementById('techList'); list.innerHTML="";
-                if(snap.empty) list.innerHTML="<p style='text-align:center'>لا مهام حالياً</p>";
-                
-                snap.forEach(d => {
-                    const data = d.data();
-                    let btn = "";
-                    
-                    if(data.status === 'accepted') {
-                        btn = `<button class="btn btn-warning" onclick="upStat('${d.id}','in_progress')">🛠 بدء العمل</button>`;
-                    } else if (data.status === 'in_progress') {
-                        btn = `<button class="btn btn-success" onclick="upStat('${d.id}','completed')">✅ تم الإصلاح</button>`;
-                    }
-
-                    list.innerHTML += `
-                    <div class="report-card">
-                        <h4 style="margin:0 0 5px 0;">${data.loc}</h4>
-                        <p style="margin-bottom:10px;">${data.desc}</p>
-                        ${btn}
-                    </div>`;
-                });
-            });
-        }
-
-        window.upStat = async (id, st) => {
-            await updateDoc(doc(db, "maintenance_reports", id), { status: st });
+                if(reason) {
+                    await updateDoc(doc(db, 'reports', id), { status: 'rejected', rejectionReason: reason });
+                    Toast.fire({icon:'info', title:'تم رفض البلاغ'});
+                }
+            }
         };
 
-        window.logout = () => { if(confirm("خروج؟")) auth.signOut().then(()=>location.reload()); };
+        function updateChart(stats) {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            if(chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['جديد', 'جاري', 'مكتمل', 'مرفوض'],
+                    datasets: [{
+                        data: [stats.new, stats.progress, stats.completed, stats.rejected],
+                        backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'left', labels: {font:{family:'Cairo'}} } } }
+            });
+        }
+
+        // --- 3. Technician Logic ---
+        let techReports = [];
+        window.filterTech = (mode) => {
+            document.querySelectorAll('#v-technician .tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            renderTechList(mode);
+        };
+
+        function initTechnician() {
+            // Get Accepted & In Progress
+            const q = query(collection(db, 'reports'), where('status', 'in', ['accepted', 'in_progress', 'completed']));
+            onSnapshot(q, (snap) => {
+                techReports = [];
+                snap.forEach(d => techReports.push({id: d.id, ...d.data()}));
+                // Default View: ToDo
+                renderTechList('todo');
+            });
+        }
+
+        function renderTechList(mode) {
+            const list = document.getElementById('techList');
+            list.innerHTML = '';
+            
+            const filtered = techReports.filter(r => {
+                if(mode === 'todo') return r.status === 'accepted' || r.status === 'in_progress';
+                return r.status === 'completed';
+            });
+
+            if(filtered.length === 0) list.innerHTML = `<p style="text-align:center; color:#94a3b8; margin-top:20px;">لا توجد بيانات هنا</p>`;
+
+            filtered.forEach(data => {
+                let actionBtn = '';
+                if(data.status === 'accepted') {
+                    actionBtn = `<button class="btn btn-primary" style="background:var(--warning); color:#000;" onclick="techUpdate('${data.id}', 'start')">🛠 بدء العمل</button>`;
+                } else if(data.status === 'in_progress') {
+                    actionBtn = `<button class="btn btn-primary" style="background:var(--success);" onclick="techUpdate('${data.id}', 'finish')">✅ إنهاء المهمة</button>`;
+                } else {
+                    actionBtn = `<div style="text-align:center; color:var(--success); font-weight:bold;"><i class="fas fa-check-circle"></i> تم الإصلاح</div>`;
+                }
+
+                list.innerHTML += `
+                <div class="report-card">
+                   <div style="font-weight:bold; margin-bottom:5px;">${data.loc}</div> 
+                   <p style="color:#475569; font-size:14px; margin-bottom:15px;">${data.desc}</p>
+                   ${actionBtn}
+                </div>`;
+            });
+        }
+
+        window.techUpdate = async (id, action) => {
+            if(action === 'start') {
+                await updateDoc(doc(db, 'reports', id), { status: 'in_progress' });
+            } else {
+                const { value: note } = await Swal.fire({
+                    title: 'تقرير الإصلاح',
+                    input: 'textarea',
+                    inputPlaceholder: 'ماذا فعلت؟ (مثال: تم تغيير اللمبة)',
+                    showCancelButton: true
+                });
+                if(note) {
+                    await updateDoc(doc(db, 'reports', id), { status: 'completed', techNote: note });
+                    Toast.fire({icon:'success', title:'عاش يا هندسة!'});
+                }
+            }
+        };
+
     </script>
 </body>
 </html>

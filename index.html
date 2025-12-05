@@ -3,17 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الصيانة</title>
-    <link rel="stylesheet" href="style.css">
+    <title>نظام إدارة الصيانة المتكامل</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* إعدادات عامة */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* الحاويات */
+        .container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* الكروت */
+        .card, .action-card, .list-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        /* المدخلات والأزرار */
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        /* الهيدر */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logout-btn {
+            width: auto;
+            background-color: #dc3545;
+            padding: 5px 15px;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* روابط التبديل */
+        .switch-auth {
+            color: #007bff;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 15px;
+            text-align: center;
+            text-decoration: underline;
+        }
+
+        /* تصميم كرت الطلب */
+        .request-card {
+            background: white;
+            border-right: 5px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            text-align: right;
+        }
+
+        /* ألوان الحالات */
+        .status-pending { border-right-color: #f1c40f; }
+        .status-approved { border-right-color: #3498db; }
+        .status-rejected { border-right-color: #e74c3c; }
+        .status-done { border-right-color: #2ecc71; }
+
+        .status-label {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: white;
+            margin-bottom: 5px;
+        }
+        .bg-pending { background-color: #f1c40f; color: #333;}
+        .bg-approved { background-color: #3498db; }
+        .bg-rejected { background-color: #e74c3c; }
+        .bg-done { background-color: #2ecc71; }
+
+        /* أزرار الإجراءات */
+        .action-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .btn-approve { background-color: #27ae60; width: auto; flex: 1; font-size: 14px; }
+        .btn-reject { background-color: #c0392b; width: auto; flex: 1; font-size: 14px; }
+    </style>
 </head>
 <body>
 
     <div id="auth-screen" class="container">
         <div class="card">
-            <h2 id="auth-title">تسجيل الدخول</h2>
+            <h2 id="auth-title" style="text-align: center;">تسجيل الدخول</h2>
             
-            <select id="user-role">
+            <select id="user-role" style="display: none;">
                 <option value="employee">موظف (مقدم طلب)</option>
                 <option value="supervisor">مشرف (إدارة)</option>
                 <option value="technician">فني (صيانة)</option>
@@ -30,41 +155,281 @@
 
     <div id="app-container" class="container hidden">
         <header>
-            <h3 id="user-display-name">مرحباً</h3>
+            <h3 id="user-display-name" style="margin:0;">مرحباً</h3>
             <button onclick="logout()" class="logout-btn">خروج</button>
         </header>
 
         <div id="employee-view" class="role-view hidden">
             <div class="action-card">
-                <h3><i class="fa-solid fa-plus-circle"></i> طلب صيانة جديد</h3>
+                <h3 style="margin-top:0;"><i class="fa-solid fa-plus-circle"></i> طلب صيانة جديد</h3>
                 <input type="text" id="req-title" placeholder="عنوان العطل (مثال: تكييف غرفة 4)">
-                <textarea id="req-desc" placeholder="وصف تفصيلي..."></textarea>
-                <input type="file" id="req-media"> <button onclick="submitRequest()">إرسال للمشرف</button>
+                <textarea id="req-desc" rows="3" placeholder="وصف تفصيلي..."></textarea>
+                <label style="font-size:14px; color:#666;">صورة العطل (اختياري):</label>
+                <input type="file" id="req-media">
+                <button onclick="submitRequest()">إرسال للمشرف</button>
             </div>
             
             <div class="list-section">
                 <h4><i class="fa-solid fa-history"></i> متابعة طلباتي</h4>
-                <div id="employee-requests-list">
-                    </div>
+                <div id="employee-requests-list"></div>
             </div>
         </div>
 
         <div id="supervisor-view" class="role-view hidden">
-            <h4><i class="fa-solid fa-inbox"></i> الطلبات الواردة (تحت المراجعة)</h4>
-            <div id="supervisor-pending-list">
-                </div>
+            <div class="list-section">
+                <h4><i class="fa-solid fa-inbox"></i> الطلبات الواردة (تحت المراجعة)</h4>
+                <div id="supervisor-pending-list"></div>
+            </div>
         </div>
 
         <div id="technician-view" class="role-view hidden">
-            <h4><i class="fa-solid fa-tools"></i> مهامي الحالية</h4>
-            <div id="technician-tasks-list">
-                </div>
+            <div class="list-section">
+                <h4><i class="fa-solid fa-tools"></i> مهامي الحالية</h4>
+                <div id="technician-tasks-list"></div>
+            </div>
         </div>
-
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script> <script src="app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // --- 1. الإعدادات (ضع مفاتيحك هنا) ---
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/upload";
+        const CLOUDINARY_PRESET = "YOUR_UPLOAD_PRESET";
+
+        // --- تهيئة التطبيق ---
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let userRole = null;
+        let isLoginMode = true;
+
+        // --- المصادقة ---
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                fetchUserRole(user.uid);
+            } else {
+                currentUser = null;
+                showScreen('auth-screen');
+            }
+        });
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            const title = document.getElementById('auth-title');
+            const btn = document.getElementById('auth-btn');
+            const switchText = document.querySelector('.switch-auth');
+            const roleSelect = document.getElementById('user-role');
+
+            if (isLoginMode) {
+                title.innerText = "تسجيل الدخول";
+                btn.innerText = "دخول";
+                switchText.innerText = "ليس لديك حساب؟ سجل جديد";
+                roleSelect.style.display = "none";
+            } else {
+                title.innerText = "إنشاء حساب جديد";
+                btn.innerText = "تسجيل";
+                switchText.innerText = "لديك حساب بالفعل؟ دخول";
+                roleSelect.style.display = "block";
+            }
+        }
+
+        async function handleAuth() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('user-role').value;
+            const btn = document.getElementById('auth-btn');
+
+            if(!email || !password) return alert("املأ البيانات!");
+            btn.innerText = "جاري التحميل...";
+
+            try {
+                if (isLoginMode) {
+                    await auth.signInWithEmailAndPassword(email, password);
+                } else {
+                    const cred = await auth.createUserWithEmailAndPassword(email, password);
+                    await db.collection('users').doc(cred.user.uid).set({
+                        email: email, role: role, createdAt: new Date()
+                    });
+                }
+            } catch (error) {
+                alert("خطأ: " + error.message);
+                btn.innerText = isLoginMode ? "دخول" : "تسجيل";
+            }
+        }
+
+        async function fetchUserRole(uid) {
+            const doc = await db.collection('users').doc(uid).get();
+            if (doc.exists) {
+                userRole = doc.data().role;
+                document.getElementById('user-display-name').innerText = `مرحباً (${translateRole(userRole)})`;
+                setupDashboard(userRole);
+            }
+        }
+
+        function logout() {
+            auth.signOut();
+            location.reload();
+        }
+
+        // --- التوجيه ---
+        function showScreen(screenId) {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.add('hidden');
+            document.querySelectorAll('.role-view').forEach(el => el.classList.add('hidden'));
+            
+            if(screenId === 'auth-screen') {
+                document.getElementById('auth-screen').classList.remove('hidden');
+            } else {
+                document.getElementById('app-container').classList.remove('hidden');
+            }
+        }
+
+        function setupDashboard(role) {
+            showScreen('app-container');
+            if (role === 'employee') {
+                document.getElementById('employee-view').classList.remove('hidden');
+                listenToRequests('employee');
+            } else if (role === 'supervisor') {
+                document.getElementById('supervisor-view').classList.remove('hidden');
+                listenToRequests('supervisor');
+            } else if (role === 'technician') {
+                document.getElementById('technician-view').classList.remove('hidden');
+                listenToRequests('technician');
+            }
+        }
+
+        // --- الوظائف ---
+        async function uploadImage(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_PRESET);
+            const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+            const data = await res.json();
+            return data.secure_url;
+        }
+
+        async function submitRequest() {
+            const title = document.getElementById('req-title').value;
+            const desc = document.getElementById('req-desc').value;
+            const fileInput = document.getElementById('req-media');
+            const btn = document.querySelector('.action-card button');
+
+            if (!title) return alert("اكتب العنوان!");
+            btn.innerText = "جاري الرفع...";
+            btn.disabled = true;
+
+            let imageUrl = "";
+            if (fileInput.files[0]) {
+                try { imageUrl = await uploadImage(fileInput.files[0]); } 
+                catch (e) { alert("فشل رفع الصورة"); btn.disabled = false; return; }
+            }
+
+            try {
+                await db.collection('requests').add({
+                    userId: currentUser.uid,
+                    email: currentUser.email,
+                    title: title, desc: desc, imageUrl: imageUrl,
+                    status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("تم الإرسال!");
+                document.getElementById('req-title').value = "";
+                document.getElementById('req-desc').value = "";
+                fileInput.value = "";
+            } catch (error) { alert("خطأ: " + error.message); }
+            
+            btn.innerText = "إرسال للمشرف";
+            btn.disabled = false;
+        }
+
+        async function updateStatus(docId, newStatus) {
+            if(!confirm("تغيير الحالة؟")) return;
+            try {
+                await db.collection('requests').doc(docId).update({ status: newStatus });
+            } catch (error) { alert("خطأ: " + error.message); }
+        }
+
+        function listenToRequests(role) {
+            let query;
+            const col = db.collection('requests').orderBy('createdAt', 'desc');
+            let targetId = '';
+
+            if (role === 'employee') {
+                query = col.where('userId', '==', currentUser.uid);
+                targetId = 'employee-requests-list';
+            } else if (role === 'supervisor') {
+                query = col.where('status', '==', 'pending');
+                targetId = 'supervisor-pending-list';
+            } else if (role === 'technician') {
+                query = col.where('status', '==', 'approved');
+                targetId = 'technician-tasks-list';
+            }
+
+            query.onSnapshot(snapshot => {
+                const container = document.getElementById(targetId);
+                container.innerHTML = "";
+                if (snapshot.empty) {
+                    container.innerHTML = "<p style='text-align:center; color:#777;'>لا توجد بيانات.</p>";
+                    return;
+                }
+                snapshot.forEach(doc => {
+                    container.innerHTML += createRequestCard(doc.id, doc.data(), role);
+                });
+            });
+        }
+
+        function createRequestCard(id, data, role) {
+            let statusBadge = getStatusBadge(data.status);
+            let imageHtml = data.imageUrl ? `<a href="${data.imageUrl}" target="_blank" style="color:#007bff; display:block; margin:5px 0;">[مشاهدة الصورة]</a>` : "";
+            let buttons = "";
+
+            if (role === 'supervisor') {
+                buttons = `<div class="action-btns">
+                    <button onclick="updateStatus('${id}', 'approved')" class="btn-approve">قبول</button>
+                    <button onclick="updateStatus('${id}', 'rejected')" class="btn-reject">رفض</button>
+                </div>`;
+            } else if (role === 'technician') {
+                buttons = `<div class="action-btns"><button onclick="updateStatus('${id}', 'done')" class="bg-done">تم التنفيذ</button></div>`;
+            }
+
+            return `<div class="request-card status-${data.status}">
+                <div style="display:flex; justify-content:space-between;"><strong>${data.title}</strong>${statusBadge}</div>
+                <p style="color:#555; font-size:14px; margin:5px 0;">${data.desc}</p>
+                <small style="color:#888;">${data.email}</small>
+                ${imageHtml} ${buttons}
+            </div>`;
+        }
+
+        function getStatusBadge(status) {
+            const map = {
+                'pending': '<span class="status-label bg-pending">انتظار</span>',
+                'approved': '<span class="status-label bg-approved">جاري التنفيذ</span>',
+                'rejected': '<span class="status-label bg-rejected">مرفوض</span>',
+                'done': '<span class="status-label bg-done">منتهي</span>'
+            };
+            return map[status] || status;
+        }
+
+        function translateRole(role) {
+            const map = { 'employee': 'موظف', 'supervisor': 'مشرف', 'technician': 'فني' };
+            return map[role] || role;
+        }
+    </script>
 </body>
 </html>

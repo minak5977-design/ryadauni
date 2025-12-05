@@ -162,11 +162,10 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        // تم حذف Firebase Storage Imports
-
+        
         // ⚠️ يجب تغيير إعدادات المشروع إلى مشروعك الجديد!
         const firebaseConfig = {
-            apiKey: "AIzaSyBojgV1qxSkf16W1gMMjuKm9zF4daDEaFs",
+            apiKey: "269486844418831",
             authDomain: "nursing-attendance.firebaseapp.com",
             databaseURL: "https://nursing-attendance-default-rtdb.firebaseio.com",
             projectId: "nursing-attendance",
@@ -181,6 +180,7 @@
         let currentUserData = null;
         let selectedRegRole = null;
         let chartInstance = null;
+        let currentTechMode = 'todo'; // لفلترة مهام الفني
 
         // --- Helper: SweetAlert Toast ---
         const Toast = Swal.mixin({
@@ -286,10 +286,9 @@
              let html = '<div class="media-grid">';
 
              urls.forEach(u => {
-                 const isVideo = u.includes('/video/'); // Cloudinary يضع '/video/' في الرابط
+                 const isVideo = u.includes('/video/'); 
                  
                  if (isVideo) {
-                     // عرض الفيديو مباشرة مع عناصر التحكم
                      html += `<video controls src="${u}" preload="metadata"></video>`;
                  } else {
                      // عرض الصور كصورة مصغرة
@@ -364,7 +363,7 @@
                         }
                     } catch(e) {
                          Swal.fire('فشل الرفع!', `حدث خطأ أثناء الاتصال بالخادم: ${e.message || e}`, 'error');
-                         return; // إيقاف العملية إذا فشل الرفع
+                         return;
                     }
                 }
 
@@ -373,7 +372,7 @@
                     uid: currentUserData.uid,
                     name: currentUserData.name,
                     work: currentUserData.work,
-                    loc, desc, mediaUrls: urls, // تم تغيير images إلى mediaUrls
+                    loc, desc, mediaUrls: urls,
                     status: 'new', 
                     timestamp: serverTimestamp()
                 });
@@ -426,7 +425,7 @@
             });
         }
 
-        // --- 2. Supervisor Logic (محدث لدعم عرض الفيديو) ---
+        // --- 2. Supervisor Logic ---
         function initSupervisor() {
             const q = query(collection(db, 'reports'), orderBy('timestamp', 'desc'));
             onSnapshot(q, (snap) => {
@@ -464,12 +463,142 @@
             });
         }
 
-        window.supAction = async (id, type) => { /* ... (باقي الكود) ... */ };
-        function updateChart(stats) { /* ... (باقي الكود) ... */ };
-        window.filterTech = (mode) => { /* ... (باقي الكود) ... */ };
-        function initTechnician() { /* ... (باقي الكود) ... */ };
-        function renderTechList(mode) { /* ... (باقي الكود) ... */ };
-        window.techUpdate = async (id, action) => { /* ... (باقي الكود) ... */ };
+        window.supAction = async (id, type) => {
+            if(type === 'reject') {
+                const { value: reason } = await Swal.fire({
+                    title: 'سبب الرفض',
+                    input: 'textarea',
+                    inputPlaceholder: 'اكتب سبب الرفض هنا...',
+                    showCancelButton: true,
+                    confirmButtonText: 'رفض البلاغ',
+                    cancelButtonText: 'إلغاء'
+                });
+                if(!reason) return;
+                await updateDoc(doc(db, 'reports', id), { status: 'rejected', rejectionReason: reason });
+                Toast.fire({icon:'error', title:'تم رفض البلاغ بنجاح'});
+            } else if (type === 'accept') {
+                await updateDoc(doc(db, 'reports', id), { status: 'accepted' });
+                Toast.fire({icon:'success', title:'تم قبول البلاغ بنجاح'});
+            }
+        };
+
+        function updateChart(stats) {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            
+            const data = {
+                labels: ['جديد', 'جاري العمل', 'مكتمل', 'مرفوض'],
+                datasets: [{
+                    label: 'حالة البلاغات',
+                    data: [stats.new, stats.progress, stats.completed, stats.rejected],
+                    backgroundColor: [
+                        '#3b82f6', // Primary (New)
+                        '#f59e0b', // Warning (Progress)
+                        '#10b981', // Success (Completed)
+                        '#ef4444'  // Danger (Rejected)
+                    ],
+                    hoverOffset: 4
+                }]
+            };
+
+            if (chartInstance) {
+                chartInstance.data = data;
+                chartInstance.update();
+            } else {
+                chartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+        }
+
+        // --- 3. Technician Logic ---
+        function initTechnician() {
+            renderTechList(currentTechMode); // Initial load
+        }
+
+        window.filterTech = (mode) => {
+            currentTechMode = mode;
+            document.querySelectorAll('#v-technician .tab').forEach(e => e.classList.remove('active'));
+            event.target.classList.add('active');
+            renderTechList(mode);
+        };
+
+        function renderTechList(mode) {
+            const list = document.getElementById('techList');
+            list.innerHTML = '<p style="color:#64748b; text-align:center;">جاري تحميل المهام...</p>';
+
+            let q;
+            if (mode === 'todo') {
+                // عرض المقبول (تحتاج إلى فني) والجاري العمل عليها (يقوم بها الفني حاليا)
+                q = query(collection(db, 'reports'), where('status', 'in', ['accepted', 'in_progress']), orderBy('timestamp', 'asc'));
+            } else { // 'done'
+                // عرض المكتملة والمرفوضة (الأرشيف)
+                q = query(collection(db, 'reports'), where('status', 'in', ['completed', 'rejected']), orderBy('timestamp', 'desc'));
+            }
+
+            onSnapshot(q, (snap) => {
+                list.innerHTML = '';
+                if(snap.empty) {
+                    list.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8;"><i class="fas fa-box-open fa-2x"></i><p>لا توجد مهام حالياً.</p></div>`;
+                    return;
+                }
+                
+                snap.forEach(d => {
+                    const data = d.data();
+                    let col = data.status === 'accepted' ? 'var(--primary)' : data.status === 'in_progress' ? 'var(--warning)' : data.status === 'completed' ? 'var(--success)' : 'var(--danger)';
+                    let statusAr = {accepted:'مقبول - ابدأ', in_progress:'جاري العمل', completed:'مكتمل', rejected:'مرفوض'};
+                    let mediaContent = renderMedia(data.mediaUrls);
+                    let rejectionMsg = data.status === 'rejected' ? `<div style="background:#fee2e2; color:#b91c1c; padding:10px; border-radius:8px; margin-top:10px; font-size:12px;">🛑 سبب الرفض: ${data.rejectionReason}</div>` : '';
+
+                    let actions = '';
+                    if(data.status === 'accepted') {
+                        actions = `<button class="btn btn-primary" style="background:var(--warning); padding:8px;" onclick="techUpdate('${d.id}', 'start')"><i class="fas fa-play"></i> بدء العمل</button>`;
+                    } else if (data.status === 'in_progress') {
+                        actions = `<button class="btn btn-primary" style="background:var(--success); padding:8px;" onclick="techUpdate('${d.id}', 'complete')"><i class="fas fa-check"></i> إنهاء وإغلاق</button>`;
+                    }
+
+                    list.innerHTML += `
+                    <div class="report-card" style="border-right: 4px solid ${col}">
+                        <div class="card-header">
+                            <span style="font-weight:bold; color:var(--dark)">${data.loc} (${data.work})</span>
+                            <span class="badge" style="background:${col}20; color:${col}">${statusAr[data.status]}</span>
+                        </div>
+                        <p style="margin:0; font-size:14px; color:#475569">${data.desc}</p>
+                        ${mediaContent}
+                        ${rejectionMsg}
+                        ${data.techNote && mode === 'done' ? `<div style="background:#ecfdf5; color:#047857; padding:10px; border-radius:8px; margin-top:10px; font-size:12px;">💡 تقريرك: ${data.techNote}</div>` : ''}
+
+                        <div style="margin-top:15px; text-align:center;">${actions}</div>
+                    </div>`;
+                });
+            });
+        }
+
+        window.techUpdate = async (id, action) => {
+            if (action === 'start') {
+                await updateDoc(doc(db, 'reports', id), { status: 'in_progress' });
+                Toast.fire({icon:'warning', title:'تم تحديث حالة البلاغ: جاري العمل'});
+            } else if (action === 'complete') {
+                const { value: note } = await Swal.fire({
+                    title: 'تقرير الإنجاز',
+                    input: 'textarea',
+                    inputPlaceholder: 'اكتب ملاحظاتك عن العمل المنجز هنا...',
+                    showCancelButton: true,
+                    confirmButtonText: 'إغلاق البلاغ',
+                    cancelButtonText: 'إلغاء'
+                });
+                if(!note) return;
+                await updateDoc(doc(db, 'reports', id), { status: 'completed', techNote: note });
+                Toast.fire({icon:'success', title:'تم إغلاق البلاغ بنجاح'});
+            }
+        };
 
     </script>
 </body>

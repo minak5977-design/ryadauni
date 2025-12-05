@@ -2,604 +2,69 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Smart Maintenance Pro</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <style>
-        :root {
-            --primary: #3b82f6; --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --dark: #1e293b;
-            --glass: rgba(255, 255, 255, 0.95);
-        }
-        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        body {
-            margin: 0; background: #f1f5f9;
-            display: flex; justify-content: center; min-height: 100vh; padding: 15px;
-        }
-
-        .app-card {
-            width: 100%; max-width: 500px;
-            background: var(--glass); border-radius: 24px; padding: 25px;
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); position: relative;
-            height: fit-content; margin-top: 20px; margin-bottom: 20px;
-        }
-        .hidden { display: none !important; }
-
-        /* Tabs & Inputs */
-        .tabs { display: flex; background: #f1f5f9; padding: 5px; border-radius: 12px; margin-bottom: 20px; }
-        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; color: #64748b; font-weight: bold; }
-        .tab.active { background: #fff; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-
-        .modern-input { width: 100%; padding: 12px 15px; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 12px; transition: 0.3s; font-size: 14px; }
-        .modern-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-        
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn:active { transform: scale(0.98); }
-        .btn-primary { background: var(--primary); }
-        .btn-outline { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
-
-        /* Roles Selection */
-        .roles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
-        .role-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .role-card i { display: block; font-size: 20px; margin-bottom: 5px; color: #94a3b8; }
-        .role-card.selected { border-color: var(--primary); background: #eff6ff; }
-        .role-card.selected i { color: var(--primary); }
-
-        /* Report Cards */
-        .report-card { background: #fff; border: 1px solid #f1f5f9; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); position: relative; }
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; }
-        
-        .timeline-mini { display: flex; height: 4px; background: #e2e8f0; margin: 15px 0; border-radius: 2px; overflow: hidden; }
-        .timeline-bar { height: 100%; background: var(--success); transition: width 0.5s; }
-
-        .meta-info { font-size: 11px; color: #94a3b8; display: flex; align-items: center; gap: 5px; margin-top: 5px; }
-        
-        /* Stats Dashboard */
-        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .stat-box { background: #f8fafc; padding: 15px; border-radius: 12px; text-align: center; }
-        .stat-num { font-size: 24px; font-weight: 900; color: var(--dark); }
-        .stat-label { font-size: 11px; color: #64748b; }
-
-        #splash { position: fixed; inset: 0; background: #fff; z-index: 99; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-        
-        /* New: Media Grid for Images/Videos */
-        .media-grid { display: flex; flex-wrap: wrap; gap: 5px; margin: 10px 0; }
-        .media-grid img { 
-            width: 80px; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; 
-        }
-        .media-grid video { 
-            width: 100% !important; height: auto !important; max-height: 200px; border-radius: 8px; 
-            background: #000;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة الصيانة</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <div id="splash">
-        <i class="fas fa-circle-notch fa-spin fa-2x" style="color:var(--primary); margin-bottom:15px;"></i>
-        <p style="font-weight:bold; color:var(--dark)">جاري الاتصال بالنظام...</p>
-    </div>
-
-    <div id="authScreen" class="app-card">
-        <div style="text-align:center; margin-bottom:25px;">
-            <div style="width:60px; height:60px; background:#eff6ff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 10px;">
-                <i class="fas fa-wrench fa-lg" style="color:var(--primary)"></i>
-            </div>
-            <h2 style="margin:0;">نظام الصيانة الذكي</h2>
-            <p style="margin:5px 0 0; color:#64748b; font-size:13px;">الإصدار الاحترافي 2.0</p>
-        </div>
-
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab('login')">دخول</div>
-            <div class="tab" onclick="switchTab('register')">تسجيل</div>
-        </div>
-
-        <div id="loginForm">
-            <input type="email" id="lEmail" class="modern-input" placeholder="البريد الإلكتروني" dir="ltr">
-            <input type="password" id="lPass" class="modern-input" placeholder="كلمة المرور">
-            <button class="btn btn-primary" onclick="handleLogin()">تسجيل الدخول <i class="fas fa-arrow-left"></i></button>
-        </div>
-
-        <div id="regForm" class="hidden">
-            <div class="roles-grid">
-                <div class="role-card" onclick="setRole('employee', this)"><i class="fas fa-user"></i>موظف</div>
-                <div class="role-card" onclick="setRole('supervisor', this)"><i class="fas fa-user-shield"></i>مشرف</div>
-                <div class="role-card" onclick="setRole('technician', this)"><i class="fas fa-tools"></i>فني</div>
-            </div>
-            <input type="text" id="rName" class="modern-input" placeholder="الاسم الكامل">
-            <input type="text" id="rWork" class="modern-input" placeholder="مقر العمل (مثال: مبنى أ - الدور 2)">
-            <input type="email" id="rEmail" class="modern-input" placeholder="البريد الإلكتروني" dir="ltr">
-            <input type="password" id="rPass" class="modern-input" placeholder="كلمة المرور">
-            <button class="btn btn-primary" onclick="handleRegister()">إنشاء حساب جديد</button>
-        </div>
-    </div>
-
-    <div id="mainScreen" class="app-card hidden">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <div>
-                <h3 id="userName" style="margin:0;">User</h3>
-                <span id="userRoleBadge" style="font-size:11px; background:#e2e8f0; padding:2px 8px; border-radius:10px;">Role</span>
-            </div>
-            <button onclick="logout()" style="border:none; background:#fee2e2; width:35px; height:35px; border-radius:50%; color:var(--danger); cursor:pointer;"><i class="fas fa-power-off"></i></button>
-        </div>
-
-        <div id="v-employee" class="hidden">
-            <button class="btn btn-primary" style="margin-bottom:20px;" onclick="showAddReportModal()">
-                <i class="fas fa-plus-circle"></i> تقديم بلاغ جديد
-            </button>
-            <h4 style="border-bottom:1px solid #eee; padding-bottom:10px;">سجل البلاغات</h4>
-            <div id="empList"></div>
-        </div>
-
-        <div id="v-supervisor" class="hidden">
-            <div class="stats-row">
-                <div class="stat-box"><div id="s-new" class="stat-num">0</div><div class="stat-label">جديد</div></div>
-                <div class="stat-box"><div id="s-progress" class="stat-num">0</div><div class="stat-label">جاري العمل</div></div>
-            </div>
-            <div style="height:150px; margin-bottom:20px;">
-                <canvas id="myChart"></canvas>
-            </div>
-            <h4 style="margin-bottom:10px;">طلبات تنتظر الموافقة</h4>
-            <div id="supList"></div>
-        </div>
-
-        <div id="v-technician" class="hidden">
-            <div class="tabs">
-                <div class="tab active" onclick="filterTech('todo')">مهام جديدة</div>
-                <div class="tab" onclick="filterTech('done')">الأرشيف</div>
-            </div>
-            <div id="techList"></div>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        
-        // ⚠️ يجب تغيير إعدادات المشروع إلى مشروعك الجديد!
-        const firebaseConfig = {
-            apiKey: "269486844418831",
-            authDomain: "ryadauni1.firebaseapp.com",
-            databaseURL: "https://ryadauni1-default-rtdb.firebaseio.com",
-            projectId: "ryadauni1",
-            messagingSenderId: "403287528356",
-            appId: "1:403287528356:web:e5b40e03e6f56a13812731"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let currentUserData = null;
-        let selectedRegRole = null;
-        let chartInstance = null;
-        let currentTechMode = 'todo'; // لفلترة مهام الفني
-
-        // --- Helper: SweetAlert Toast ---
-        const Toast = Swal.mixin({
-            toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true
-        });
-
-        // --- Auth Logic ---
-        window.switchTab = (t) => {
-            document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById('loginForm').classList.toggle('hidden', t!=='login');
-            document.getElementById('regForm').classList.toggle('hidden', t!=='register');
-        };
-
-        window.setRole = (r, el) => {
-            selectedRegRole = r;
-            document.querySelectorAll('.role-card').forEach(e=>e.classList.remove('selected'));
-            el.classList.add('selected');
-        };
-
-        window.handleRegister = async () => {
-            const name = document.getElementById('rName').value;
-            const email = document.getElementById('rEmail').value;
-            const pass = document.getElementById('rPass').value;
-            const work = document.getElementById('rWork').value;
-
-            if(!name || !selectedRegRole || !email || !pass) return Toast.fire({icon:'warning', title:'الرجاء إكمال البيانات'});
-
-            try {
-                Swal.showLoading();
-                const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                await setDoc(doc(db, 'users', cred.user.uid), {
-                    uid: cred.user.uid, name, role: selectedRegRole, work, email, createdAt: serverTimestamp()
-                });
-                Swal.close();
-                Toast.fire({icon:'success', title:'تم التسجيل بنجاح! يمكنك الدخول الآن.'});
-            } catch(e) { 
-                let msg = 'خطأ غير معروف في التسجيل';
-                if(e.code === 'auth/email-already-in-use') msg = 'هذا البريد مستخدم بالفعل.';
-                if(e.code === 'auth/weak-password') msg = 'كلمة المرور ضعيفة جدًا (يجب أن تكون 6 أحرف على الأقل).';
-                Swal.fire('خطأ', msg, 'error'); 
-            }
-        };
-
-        window.handleLogin = async () => {
-            try {
-                Swal.showLoading();
-                await signInWithEmailAndPassword(auth, document.getElementById('lEmail').value, document.getElementById('lPass').value);
-                Swal.close();
-            } catch(e) { 
-                let msg = 'تأكد من البريد وكلمة المرور.';
-                if(e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password') msg = 'بيانات الدخول غير صحيحة.';
-                Swal.fire('فشل الدخول', msg, 'error'); 
-            }
-        };
-
-        window.logout = () => signOut(auth);
-
-        onAuthStateChanged(auth, async (user) => {
-            const splash = document.getElementById('splash');
-            const authSc = document.getElementById('authScreen');
-            const mainSc = document.getElementById('mainScreen');
-
-            if(user) {
-                const snap = await getDoc(doc(db, 'users', user.uid));
-                if(snap.exists()){
-                    currentUserData = snap.data();
-                    splash.style.display = 'none';
-                    authSc.classList.add('hidden');
-                    mainSc.classList.remove('hidden');
-                    initAppUI();
-                }
-            } else {
-                splash.style.display = 'none';
-                authSc.classList.remove('hidden');
-                mainSc.classList.add('hidden');
-            }
-        });
-
-        function initAppUI() {
-            document.getElementById('userName').innerText = currentUserData.name;
-            const roleAr = {employee:'موظف', supervisor:'مشرف', technician:'فني'};
-            document.getElementById('userRoleBadge').innerText = roleAr[currentUserData.role];
-
-            // Hide all views first
-            ['v-employee','v-supervisor','v-technician'].forEach(id => document.getElementById(id).classList.add('hidden'));
-
-            if(currentUserData.role === 'employee') {
-                document.getElementById('v-employee').classList.remove('hidden');
-                initEmployee();
-            } else if(currentUserData.role === 'supervisor') {
-                document.getElementById('v-supervisor').classList.remove('hidden');
-                initSupervisor();
-            } else if(currentUserData.role === 'technician') {
-                document.getElementById('v-technician').classList.remove('hidden');
-                initTechnician();
-            }
-        }
-
-        // --- Helper Function: Render Media (Image/Video) ---
-        function renderMedia(urls) {
-             if (!urls || urls.length === 0) return '';
-             let html = '<div class="media-grid">';
-
-             urls.forEach(u => {
-                 const isVideo = u.includes('/video/'); 
-                 
-                 if (isVideo) {
-                     html += `<video controls src="${u}" preload="metadata"></video>`;
-                 } else {
-                     // عرض الصور كصورة مصغرة
-                     html += `<img src="${u}" onclick="window.open('${u}')">`;
-                 }
-             });
-
-             html += '</div>';
-             return html;
-        }
-
-        // --- 1. Employee Logic (محدث لـ Cloudinary) ---
-        window.showAddReportModal = async () => {
-            const { value: formValues } = await Swal.fire({
-                title: 'بلاغ صيانة جديد',
-                html: `
-                    <input id="swal-loc" class="swal2-input" placeholder="الموقع (الغرفة/المعمل)">
-                    <textarea id="swal-desc" class="swal2-textarea" placeholder="وصف المشكلة بالتفصيل"></textarea>
-                    <input type="file" id="swal-file" class="swal2-file" accept="image/*,video/*" multiple>
-                    <p style="font-size:11px; color:#94a3b8; margin-top:5px;">يمكنك اختيار صورة أو فيديو واحد أو أكثر.</p>
-                `,
-                focusConfirm: false,
-                showCancelButton: true,
-                confirmButtonText: 'إرسال',
-                cancelButtonText: 'إلغاء',
-                preConfirm: () => {
-                    return [
-                        document.getElementById('swal-loc').value,
-                        document.getElementById('swal-desc').value,
-                        document.getElementById('swal-file').files
-                    ]
-                }
-            });
-
-            if (formValues) {
-                const [loc, desc, files] = formValues;
-                if(!loc || !desc) return Toast.fire({icon:'warning', title:'الوصف والموقع مطلوبان'});
-                
-                Swal.fire({title: 'جاري الرفع...', html: 'الرجاء الانتظار، قد يستغرق رفع الفيديوهات وقتاً', didOpen: () => Swal.showLoading()});
-                
-                let urls = [];
-                if(files.length > 0) {
-                    try {
-                        for(let f of files){
-                            // 1. تحويل الملف إلى Base64 لإرساله إلى Apps Script
-                            const base64 = await new Promise(resolve => {
-                                const reader = new FileReader();
-                                reader.readAsDataURL(f);
-                                reader.onload = () => resolve(reader.result.split(',')[1]);
-                            });
-
-                            // 2. استدعاء Google Apps Script لرفع الملف لـ Cloudinary
-                            const fileData = {
-                                data: base64,
-                                mimeType: f.type,
-                                fileName: `${Date.now()}_${f.name.replace(/[^a-z0-9.]/gi, '_')}`
-                            };
-
-                            const res = await new Promise((resolve, reject) => {
-                                // استدعاء دالة uploadFileToCloudinary في Code.gs
-                                google.script.run
-                                    .withSuccessHandler(resolve)
-                                    .withFailureHandler(reject)
-                                    .uploadFileToCloudinary(fileData);
-                            });
-
-                            if(res.success) {
-                                urls.push(res.url); // حفظ رابط Cloudinary
-                            } else {
-                                throw new Error(res.message);
-                            }
-                        }
-                    } catch(e) {
-                         Swal.fire('فشل الرفع!', `حدث خطأ أثناء الاتصال بالخادم: ${e.message || e}`, 'error');
-                         return;
-                    }
-                }
-
-                // 3. حفظ السجل في Firestore باستخدام روابط Cloudinary
-                await addDoc(collection(db, 'reports'), {
-                    uid: currentUserData.uid,
-                    name: currentUserData.name,
-                    work: currentUserData.work,
-                    loc, desc, mediaUrls: urls,
-                    status: 'new', 
-                    timestamp: serverTimestamp()
-                });
-
-                Swal.fire('تم!', 'تم إرسال البلاغ بنجاح', 'success');
-            }
-        };
-
-        function initEmployee() {
-            const q = query(collection(db, 'reports'), where('uid', '==', currentUserData.uid), orderBy('timestamp', 'desc'));
-            onSnapshot(q, (snap) => {
-                const div = document.getElementById('empList');
-                div.innerHTML = '';
-                snap.forEach(d => {
-                    const data = d.data();
-                    
-                    let w = 10; let col = 'var(--primary)';
-                    if(data.status==='accepted') w=40;
-                    if(data.status==='in_progress') w=70;
-                    if(data.status==='completed') { w=100; col='var(--success)'; }
-                    if(data.status==='rejected') { w=100; col='var(--danger)'; }
-
-                    let statusAr = {new:'جديد', accepted:'مقبول', in_progress:'جاري العمل', completed:'مكتمل', rejected:'مرفوض'};
-                    let time = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString('ar-EG') : 'الآن';
-
-                    let rejectionMsg = data.status === 'rejected' ? `<div style="background:#fee2e2; color:#b91c1c; padding:10px; border-radius:8px; margin-top:10px; font-size:12px;">🛑 سبب الرفض: ${data.rejectionReason}</div>` : '';
-                    let techNote = data.techNote ? `<div style="background:#ecfdf5; color:#047857; padding:10px; border-radius:8px; margin-top:10px; font-size:12px;">💡 تقرير الفني: ${data.techNote}</div>` : '';
-                    let mediaContent = renderMedia(data.mediaUrls);
-
-                    div.innerHTML += `
-                    <div class="report-card">
-                        <div class="card-header">
-                            <span style="font-weight:bold; color:var(--dark)">${data.loc}</span>
-                            <span class="badge" style="background:${col}20; color:${col}">${statusAr[data.status]}</span>
-                        </div>
-                        <p style="margin:0; font-size:14px; color:#475569">${data.desc}</p>
-                        
-                        ${mediaContent}
-                        ${rejectionMsg}
-                        ${techNote}
-
-                        <div class="timeline-mini">
-                            <div class="timeline-bar" style="width:${w}%; background:${col}"></div>
-                        </div>
-                        <div class="meta-info">
-                            <i class="far fa-clock"></i> ${time}
-                        </div>
-                    </div>`;
-                });
-            });
-        }
-
-        // --- 2. Supervisor Logic ---
-        function initSupervisor() {
-            const q = query(collection(db, 'reports'), orderBy('timestamp', 'desc'));
-            onSnapshot(q, (snap) => {
-                const list = document.getElementById('supList');
-                list.innerHTML = '';
-                
-                let stats = { new:0, progress:0, completed:0, rejected:0 };
-
-                snap.forEach(d => {
-                    const data = d.data();
-                    if(data.status === 'new') stats.new++;
-                    else if(data.status === 'in_progress') stats.progress++;
-                    else if(data.status === 'completed') stats.completed++;
-                    else if(data.status === 'rejected') stats.rejected++;
-
-                    if(data.status === 'new') {
-                        let mediaContent = renderMedia(data.mediaUrls);
-                        
-                        list.innerHTML += `
-                        <div class="report-card" style="border-right: 4px solid var(--primary)">
-                            <div style="font-weight:bold; font-size:15px;">${data.name} <span style="font-weight:normal; font-size:12px; color:#64748b">(${data.work})</span></div>
-                            <div style="margin:5px 0; color:#334155; font-size:14px;">${data.loc}: ${data.desc}</div>
-                            ${mediaContent}
-                            <div style="display:flex; gap:10px; margin-top:10px;">
-                                <button class="btn btn-primary" style="flex:1; background:var(--success); padding:8px;" onclick="supAction('${d.id}', 'accept')"><i class="fas fa-check"></i> قبول</button>
-                                <button class="btn btn-primary" style="flex:1; background:var(--danger); padding:8px;" onclick="supAction('${d.id}', 'reject')"><i class="fas fa-times"></i> رفض</button>
-                            </div>
-                        </div>`;
-                    }
-                });
-
-                document.getElementById('s-new').innerText = stats.new;
-                document.getElementById('s-progress').innerText = stats.progress;
-                updateChart(stats);
-            });
-        }
-
-        window.supAction = async (id, type) => {
-            if(type === 'reject') {
-                const { value: reason } = await Swal.fire({
-                    title: 'سبب الرفض',
-                    input: 'textarea',
-                    inputPlaceholder: 'اكتب سبب الرفض هنا...',
-                    showCancelButton: true,
-                    confirmButtonText: 'رفض البلاغ',
-                    cancelButtonText: 'إلغاء'
-                });
-                if(!reason) return;
-                await updateDoc(doc(db, 'reports', id), { status: 'rejected', rejectionReason: reason });
-                Toast.fire({icon:'error', title:'تم رفض البلاغ بنجاح'});
-            } else if (type === 'accept') {
-                await updateDoc(doc(db, 'reports', id), { status: 'accepted' });
-                Toast.fire({icon:'success', title:'تم قبول البلاغ بنجاح'});
-            }
-        };
-
-        function updateChart(stats) {
-            const ctx = document.getElementById('myChart').getContext('2d');
+    <div id="auth-screen" class="container">
+        <div class="card">
+            <h2 id="auth-title">تسجيل الدخول</h2>
             
-            const data = {
-                labels: ['جديد', 'جاري العمل', 'مكتمل', 'مرفوض'],
-                datasets: [{
-                    label: 'حالة البلاغات',
-                    data: [stats.new, stats.progress, stats.completed, stats.rejected],
-                    backgroundColor: [
-                        '#3b82f6', // Primary (New)
-                        '#f59e0b', // Warning (Progress)
-                        '#10b981', // Success (Completed)
-                        '#ef4444'  // Danger (Rejected)
-                    ],
-                    hoverOffset: 4
-                }]
-            };
+            <select id="user-role">
+                <option value="employee">موظف (مقدم طلب)</option>
+                <option value="supervisor">مشرف (إدارة)</option>
+                <option value="technician">فني (صيانة)</option>
+            </select>
 
-            if (chartInstance) {
-                chartInstance.data = data;
-                chartInstance.update();
-            } else {
-                chartInstance = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: data,
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom' }
-                        }
-                    }
-                });
-            }
-        }
+            <input type="email" id="email" placeholder="البريد الإلكتروني">
+            <input type="password" id="password" placeholder="كلمة المرور">
+            
+            <button onclick="handleAuth()" id="auth-btn">دخول</button>
+            
+            <p class="switch-auth" onclick="toggleAuthMode()">ليس لديك حساب؟ سجل جديد</p>
+        </div>
+    </div>
 
-        // --- 3. Technician Logic ---
-        function initTechnician() {
-            renderTechList(currentTechMode); // Initial load
-        }
+    <div id="app-container" class="container hidden">
+        <header>
+            <h3 id="user-display-name">مرحباً</h3>
+            <button onclick="logout()" class="logout-btn">خروج</button>
+        </header>
 
-        window.filterTech = (mode) => {
-            currentTechMode = mode;
-            document.querySelectorAll('#v-technician .tab').forEach(e => e.classList.remove('active'));
-            event.target.classList.add('active');
-            renderTechList(mode);
-        };
+        <div id="employee-view" class="role-view hidden">
+            <div class="action-card">
+                <h3><i class="fa-solid fa-plus-circle"></i> طلب صيانة جديد</h3>
+                <input type="text" id="req-title" placeholder="عنوان العطل (مثال: تكييف غرفة 4)">
+                <textarea id="req-desc" placeholder="وصف تفصيلي..."></textarea>
+                <input type="file" id="req-media"> <button onclick="submitRequest()">إرسال للمشرف</button>
+            </div>
+            
+            <div class="list-section">
+                <h4><i class="fa-solid fa-history"></i> متابعة طلباتي</h4>
+                <div id="employee-requests-list">
+                    </div>
+            </div>
+        </div>
 
-        function renderTechList(mode) {
-            const list = document.getElementById('techList');
-            list.innerHTML = '<p style="color:#64748b; text-align:center;">جاري تحميل المهام...</p>';
+        <div id="supervisor-view" class="role-view hidden">
+            <h4><i class="fa-solid fa-inbox"></i> الطلبات الواردة (تحت المراجعة)</h4>
+            <div id="supervisor-pending-list">
+                </div>
+        </div>
 
-            let q;
-            if (mode === 'todo') {
-                // عرض المقبول (تحتاج إلى فني) والجاري العمل عليها (يقوم بها الفني حاليا)
-                q = query(collection(db, 'reports'), where('status', 'in', ['accepted', 'in_progress']), orderBy('timestamp', 'asc'));
-            } else { // 'done'
-                // عرض المكتملة والمرفوضة (الأرشيف)
-                q = query(collection(db, 'reports'), where('status', 'in', ['completed', 'rejected']), orderBy('timestamp', 'desc'));
-            }
+        <div id="technician-view" class="role-view hidden">
+            <h4><i class="fa-solid fa-tools"></i> مهامي الحالية</h4>
+            <div id="technician-tasks-list">
+                </div>
+        </div>
 
-            onSnapshot(q, (snap) => {
-                list.innerHTML = '';
-                if(snap.empty) {
-                    list.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8;"><i class="fas fa-box-open fa-2x"></i><p>لا توجد مهام حالياً.</p></div>`;
-                    return;
-                }
-                
-                snap.forEach(d => {
-                    const data = d.data();
-                    let col = data.status === 'accepted' ? 'var(--primary)' : data.status === 'in_progress' ? 'var(--warning)' : data.status === 'completed' ? 'var(--success)' : 'var(--danger)';
-                    let statusAr = {accepted:'مقبول - ابدأ', in_progress:'جاري العمل', completed:'مكتمل', rejected:'مرفوض'};
-                    let mediaContent = renderMedia(data.mediaUrls);
-                    let rejectionMsg = data.status === 'rejected' ? `<div style="background:#fee2e2; color:#b91c1c; padding:10px; border-radius:8px; margin-top:10px; font-size:12px;">🛑 سبب الرفض: ${data.rejectionReason}</div>` : '';
+    </div>
 
-                    let actions = '';
-                    if(data.status === 'accepted') {
-                        actions = `<button class="btn btn-primary" style="background:var(--warning); padding:8px;" onclick="techUpdate('${d.id}', 'start')"><i class="fas fa-play"></i> بدء العمل</button>`;
-                    } else if (data.status === 'in_progress') {
-                        actions = `<button class="btn btn-primary" style="background:var(--success); padding:8px;" onclick="techUpdate('${d.id}', 'complete')"><i class="fas fa-check"></i> إنهاء وإغلاق</button>`;
-                    }
-
-                    list.innerHTML += `
-                    <div class="report-card" style="border-right: 4px solid ${col}">
-                        <div class="card-header">
-                            <span style="font-weight:bold; color:var(--dark)">${data.loc} (${data.work})</span>
-                            <span class="badge" style="background:${col}20; color:${col}">${statusAr[data.status]}</span>
-                        </div>
-                        <p style="margin:0; font-size:14px; color:#475569">${data.desc}</p>
-                        ${mediaContent}
-                        ${rejectionMsg}
-                        ${data.techNote && mode === 'done' ? `<div style="background:#ecfdf5; color:#047857; padding:10px; border-radius:8px; margin-top:10px; font-size:12px;">💡 تقريرك: ${data.techNote}</div>` : ''}
-
-                        <div style="margin-top:15px; text-align:center;">${actions}</div>
-                    </div>`;
-                });
-            });
-        }
-
-        window.techUpdate = async (id, action) => {
-            if (action === 'start') {
-                await updateDoc(doc(db, 'reports', id), { status: 'in_progress' });
-                Toast.fire({icon:'warning', title:'تم تحديث حالة البلاغ: جاري العمل'});
-            } else if (action === 'complete') {
-                const { value: note } = await Swal.fire({
-                    title: 'تقرير الإنجاز',
-                    input: 'textarea',
-                    inputPlaceholder: 'اكتب ملاحظاتك عن العمل المنجز هنا...',
-                    showCancelButton: true,
-                    confirmButtonText: 'إغلاق البلاغ',
-                    cancelButtonText: 'إلغاء'
-                });
-                if(!note) return;
-                await updateDoc(doc(db, 'reports', id), { status: 'completed', techNote: note });
-                Toast.fire({icon:'success', title:'تم إغلاق البلاغ بنجاح'});
-            }
-        };
-
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script> <script src="app.js"></script>
 </body>
 </html>

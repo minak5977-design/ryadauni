@@ -70,11 +70,13 @@
         
         /* New: Media Grid for Images/Videos */
         .media-grid { display: flex; flex-wrap: wrap; gap: 5px; margin: 10px 0; }
-        .media-grid img, .media-grid video { 
+        .media-grid img { 
             width: 80px; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; 
-            max-width: 100%; height: auto;
         }
-        .media-grid video { width: 100% !important; height: auto !important; max-height: 200px; }
+        .media-grid video { 
+            width: 100% !important; height: auto !important; max-height: 200px; border-radius: 8px; 
+            background: #000;
+        }
     </style>
 </head>
 <body>
@@ -168,7 +170,6 @@
             authDomain: "nursing-attendance.firebaseapp.com",
             databaseURL: "https://nursing-attendance-default-rtdb.firebaseio.com",
             projectId: "nursing-attendance",
-            // تم حذف storageBucket
             messagingSenderId: "935107068390",
             appId: "1:935107068390:web:60c1dad67bfc9125191627"
         };
@@ -176,7 +177,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        // تم حذف const storage = getStorage(app);
 
         let currentUserData = null;
         let selectedRegRole = null;
@@ -187,7 +187,7 @@
             toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true
         });
 
-        // --- Auth Logic (لم يتم تعديلها: تستخدم Firebase Auth و Firestore) ---
+        // --- Auth Logic ---
         window.switchTab = (t) => {
             document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
             event.target.classList.add('active');
@@ -280,7 +280,28 @@
             }
         }
 
-        // --- 1. Employee Logic (تم تحديثها لاستخدام Cloudinary) ---
+        // --- Helper Function: Render Media (Image/Video) ---
+        function renderMedia(urls) {
+             if (!urls || urls.length === 0) return '';
+             let html = '<div class="media-grid">';
+
+             urls.forEach(u => {
+                 const isVideo = u.includes('/video/'); // Cloudinary يضع '/video/' في الرابط
+                 
+                 if (isVideo) {
+                     // عرض الفيديو مباشرة مع عناصر التحكم
+                     html += `<video controls src="${u}" preload="metadata"></video>`;
+                 } else {
+                     // عرض الصور كصورة مصغرة
+                     html += `<img src="${u}" onclick="window.open('${u}')">`;
+                 }
+             });
+
+             html += '</div>';
+             return html;
+        }
+
+        // --- 1. Employee Logic (محدث لـ Cloudinary) ---
         window.showAddReportModal = async () => {
             const { value: formValues } = await Swal.fire({
                 title: 'بلاغ صيانة جديد',
@@ -311,33 +332,39 @@
                 
                 let urls = [];
                 if(files.length > 0) {
-                    for(let f of files){
-                        // 1. تحويل الملف إلى Base64 لإرساله إلى Apps Script
-                        const base64 = await new Promise(resolve => {
-                            const reader = new FileReader();
-                            reader.readAsDataURL(f);
-                            reader.onload = () => resolve(reader.result.split(',')[1]);
-                        });
+                    try {
+                        for(let f of files){
+                            // 1. تحويل الملف إلى Base64 لإرساله إلى Apps Script
+                            const base64 = await new Promise(resolve => {
+                                const reader = new FileReader();
+                                reader.readAsDataURL(f);
+                                reader.onload = () => resolve(reader.result.split(',')[1]);
+                            });
 
-                        // 2. استدعاء Google Apps Script لرفع الملف لـ Cloudinary
-                        const fileData = {
-                            data: base64,
-                            mimeType: f.type,
-                            fileName: `${Date.now()}_${f.name.replace(/[^a-z0-9.]/gi, '_')}` // اسم ملف آمن
-                        };
+                            // 2. استدعاء Google Apps Script لرفع الملف لـ Cloudinary
+                            const fileData = {
+                                data: base64,
+                                mimeType: f.type,
+                                fileName: `${Date.now()}_${f.name.replace(/[^a-z0-9.]/gi, '_')}`
+                            };
 
-                        const res = await new Promise((resolve, reject) => {
-                            google.script.run
-                                .withSuccessHandler(resolve)
-                                .withFailureHandler(reject)
-                                .uploadFileToCloudinary(fileData);
-                        });
+                            const res = await new Promise((resolve, reject) => {
+                                // استدعاء دالة uploadFileToCloudinary في Code.gs
+                                google.script.run
+                                    .withSuccessHandler(resolve)
+                                    .withFailureHandler(reject)
+                                    .uploadFileToCloudinary(fileData);
+                            });
 
-                        if(res.success) {
-                            urls.push(res.url); // حفظ رابط Cloudinary
-                        } else {
-                            throw new Error(res.message);
+                            if(res.success) {
+                                urls.push(res.url); // حفظ رابط Cloudinary
+                            } else {
+                                throw new Error(res.message);
+                            }
                         }
+                    } catch(e) {
+                         Swal.fire('فشل الرفع!', `حدث خطأ أثناء الاتصال بالخادم: ${e.message || e}`, 'error');
+                         return; // إيقاف العملية إذا فشل الرفع
                     }
                 }
 
@@ -354,24 +381,6 @@
                 Swal.fire('تم!', 'تم إرسال البلاغ بنجاح', 'success');
             }
         };
-
-        function renderMedia(urls) {
-             if (!urls || urls.length === 0) return '';
-             let html = '<div class="media-grid">';
-
-             urls.forEach(u => {
-                 const isVideo = u.includes('/video/'); // Cloudinary يضع '/video/' في الرابط
-                 
-                 if (isVideo) {
-                     html += `<video controls src="${u}" preload="metadata"></video>`;
-                 } else {
-                     html += `<img src="${u}" onclick="window.open('${u}')">`;
-                 }
-             });
-
-             html += '</div>';
-             return html;
-        }
 
         function initEmployee() {
             const q = query(collection(db, 'reports'), where('uid', '==', currentUserData.uid), orderBy('timestamp', 'desc'));
@@ -392,7 +401,7 @@
 
                     let rejectionMsg = data.status === 'rejected' ? `<div style="background:#fee2e2; color:#b91c1c; padding:10px; border-radius:8px; margin-top:10px; font-size:12px;">🛑 سبب الرفض: ${data.rejectionReason}</div>` : '';
                     let techNote = data.techNote ? `<div style="background:#ecfdf5; color:#047857; padding:10px; border-radius:8px; margin-top:10px; font-size:12px;">💡 تقرير الفني: ${data.techNote}</div>` : '';
-                    let mediaContent = renderMedia(data.mediaUrls); // استخدام دالة عرض الميديا الجديدة
+                    let mediaContent = renderMedia(data.mediaUrls);
 
                     div.innerHTML += `
                     <div class="report-card">
@@ -402,7 +411,8 @@
                         </div>
                         <p style="margin:0; font-size:14px; color:#475569">${data.desc}</p>
                         
-                        ${mediaContent} ${rejectionMsg}
+                        ${mediaContent}
+                        ${rejectionMsg}
                         ${techNote}
 
                         <div class="timeline-mini">
@@ -416,14 +426,13 @@
             });
         }
 
-        // --- 2. Supervisor Logic (تم تحديثها لدعم عرض الفيديو) ---
+        // --- 2. Supervisor Logic (محدث لدعم عرض الفيديو) ---
         function initSupervisor() {
             const q = query(collection(db, 'reports'), orderBy('timestamp', 'desc'));
             onSnapshot(q, (snap) => {
                 const list = document.getElementById('supList');
                 list.innerHTML = '';
                 
-                // Stats
                 let stats = { new:0, progress:0, completed:0, rejected:0 };
 
                 snap.forEach(d => {
@@ -434,13 +443,14 @@
                     else if(data.status === 'rejected') stats.rejected++;
 
                     if(data.status === 'new') {
-                        let mediaContent = renderMedia(data.mediaUrls); // استخدام دالة عرض الميديا الجديدة
+                        let mediaContent = renderMedia(data.mediaUrls);
                         
                         list.innerHTML += `
                         <div class="report-card" style="border-right: 4px solid var(--primary)">
                             <div style="font-weight:bold; font-size:15px;">${data.name} <span style="font-weight:normal; font-size:12px; color:#64748b">(${data.work})</span></div>
                             <div style="margin:5px 0; color:#334155; font-size:14px;">${data.loc}: ${data.desc}</div>
-                            ${mediaContent} <div style="display:flex; gap:10px; margin-top:10px;">
+                            ${mediaContent}
+                            <div style="display:flex; gap:10px; margin-top:10px;">
                                 <button class="btn btn-primary" style="flex:1; background:var(--success); padding:8px;" onclick="supAction('${d.id}', 'accept')"><i class="fas fa-check"></i> قبول</button>
                                 <button class="btn btn-primary" style="flex:1; background:var(--danger); padding:8px;" onclick="supAction('${d.id}', 'reject')"><i class="fas fa-times"></i> رفض</button>
                             </div>
@@ -448,22 +458,18 @@
                     }
                 });
 
-                // Update Stats
                 document.getElementById('s-new').innerText = stats.new;
                 document.getElementById('s-progress').innerText = stats.progress;
                 updateChart(stats);
             });
         }
 
-        window.supAction = async (id, type) => { /* ... (باقي الكود كما هو) ... */ };
-        function updateChart(stats) { /* ... (باقي الكود كما هو) ... */ };
-        window.filterTech = (mode) => { /* ... (باقي الكود كما هو) ... */ };
-        function initTechnician() { /* ... (باقي الكود كما هو) ... */ };
-        function renderTechList(mode) { /* ... (باقي الكود كما هو) ... */ };
-        window.techUpdate = async (id, action) => { /* ... (باقي الكود كما هو) ... */ };
-
-        // ⚠️ الكود المتبقي من 2. Supervisor Logic و 3. Technician Logic لم يتغير، تم اختصاره في هذا العرض.
-        // تأكد من ترك باقي الكود في ملفك الأصلي كما هو.
+        window.supAction = async (id, type) => { /* ... (باقي الكود) ... */ };
+        function updateChart(stats) { /* ... (باقي الكود) ... */ };
+        window.filterTech = (mode) => { /* ... (باقي الكود) ... */ };
+        function initTechnician() { /* ... (باقي الكود) ... */ };
+        function renderTechList(mode) { /* ... (باقي الكود) ... */ };
+        window.techUpdate = async (id, action) => { /* ... (باقي الكود) ... */ };
 
     </script>
 </body>

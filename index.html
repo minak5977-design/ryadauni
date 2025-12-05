@@ -195,7 +195,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // --- 1. الإعدادات (تم دمج مفاتيحك بنجاح) ---
+        // --- 1. إعدادات Firebase (مفاتيحك جاهزة) ---
         const firebaseConfig = {
             apiKey: "AIzaSyABwJfEkkbNB8GurZkyj67R8ksVNEXZ11I",
             authDomain: "ryadanur1-375a8.firebaseapp.com",
@@ -205,9 +205,13 @@
             appId: "1:858244114090:web:42cee8e98e3984164392d3"
         };
 
-        // إعدادات Cloudinary (ستحتاج لتغيير هذه لاحقاً عندما تنشئ حساب Cloudinary)
-        const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/upload";
-        const CLOUDINARY_PRESET = "YOUR_UPLOAD_PRESET";
+        // --- 2. إعدادات Cloudinary (تم وضع اسم الكلاود والبريست بنجاح) ---
+        
+        // ✅ تم تحديث اسم الكلاود بناءً على الصورة
+        const CLOUDINARY_CLOUD_NAME = "djzfruh22"; 
+        
+        const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`;
+        const CLOUDINARY_PRESET = "udyvggup"; 
 
         // --- تهيئة التطبيق ---
         if (!firebase.apps.length) {
@@ -224,7 +228,6 @@
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
-                console.log("User logged in:", user.uid);
                 fetchUserRole(user.uid);
             } else {
                 currentUser = null;
@@ -266,33 +269,22 @@
                     await auth.signInWithEmailAndPassword(email, password);
                 } else {
                     const cred = await auth.createUserWithEmailAndPassword(email, password);
-                    // حفظ دور المستخدم
                     await db.collection('users').doc(cred.user.uid).set({
                         email: email, role: role, createdAt: new Date()
                     });
                 }
             } catch (error) {
-                console.error("Auth Error:", error);
                 alert("خطأ: " + error.message);
                 btn.innerText = isLoginMode ? "دخول" : "تسجيل";
             }
         }
 
         async function fetchUserRole(uid) {
-            try {
-                const doc = await db.collection('users').doc(uid).get();
-                if (doc.exists) {
-                    userRole = doc.data().role;
-                    document.getElementById('user-display-name').innerText = `مرحباً (${translateRole(userRole)})`;
-                    setupDashboard(userRole);
-                } else {
-                    // في حالة وجود مستخدم في Auth لكن ليس في Firestore (نادر الحدوث)
-                    alert("حسابك لا يملك دوراً محدداً، يرجى التواصل مع الإدارة");
-                    auth.signOut();
-                }
-            } catch (error) {
-                console.error("Error fetching role:", error);
-                alert("تعذر جلب بيانات المستخدم");
+            const doc = await db.collection('users').doc(uid).get();
+            if (doc.exists) {
+                userRole = doc.data().role;
+                document.getElementById('user-display-name').innerText = `مرحباً (${translateRole(userRole)})`;
+                setupDashboard(userRole);
             }
         }
 
@@ -330,14 +322,17 @@
 
         // --- الوظائف ---
         async function uploadImage(file) {
-            if (CLOUDINARY_PRESET === "YOUR_UPLOAD_PRESET") {
-                alert("لم يتم إعداد Cloudinary بعد! لن يتم رفع الصورة.");
-                return "";
-            }
             const formData = new FormData();
             formData.append('file', file);
             formData.append('upload_preset', CLOUDINARY_PRESET);
+            
             const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+            
+            if (!res.ok) {
+                alert("فشل رفع الصورة! تأكد أنك اخترت Preset من نوع Unsigned.");
+                throw new Error("Upload failed");
+            }
+            
             const data = await res.json();
             return data.secure_url;
         }
@@ -354,8 +349,14 @@
 
             let imageUrl = "";
             if (fileInput.files[0]) {
-                try { imageUrl = await uploadImage(fileInput.files[0]); } 
-                catch (e) { alert("فشل رفع الصورة"); btn.disabled = false; return; }
+                try { 
+                    imageUrl = await uploadImage(fileInput.files[0]); 
+                } catch (e) { 
+                    console.error(e);
+                    btn.disabled = false; 
+                    btn.innerText = "إرسال للمشرف";
+                    return; 
+                }
             }
 
             try {
@@ -365,7 +366,7 @@
                     title: title, desc: desc, imageUrl: imageUrl,
                     status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                alert("تم الإرسال!");
+                alert("تم الإرسال بنجاح!");
                 document.getElementById('req-title').value = "";
                 document.getElementById('req-desc').value = "";
                 fileInput.value = "";

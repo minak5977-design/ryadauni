@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Maintenance V12 (Final Fix)</title>
+    <title>Smart Maintenance V13 (Team Fix)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -24,19 +24,19 @@
         .app-wrapper { max-width: 550px; margin: 0 auto; min-height: 100vh; background: rgba(0,0,0,0.2); position: relative; padding-bottom: 90px; overflow-x: hidden; }
         .hidden { display: none !important; }
 
-        /* Cards */
+        /* UI Components */
         .glass-card {
             background: var(--glass); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative;
         }
 
-        /* Inputs & Buttons */
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 5px; }
         input, select, textarea {
             width: 100%; padding: 12px; background: #2b2b36; border: 1px solid var(--border);
             border-radius: 10px; color: white; font-family: inherit; font-size: 14px;
         }
+        
         .btn-main {
             width: 100%; padding: 12px; background: var(--primary); border: none; border-radius: 10px;
             color: white; font-weight: bold; cursor: pointer; display: flex; justify-content: center; 
@@ -58,11 +58,22 @@
         .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #444; }
         .badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 2px; }
 
+        /* Tabs */
+        .tabs-container { display: flex; gap: 10px; padding: 10px 15px; background: #15151a; position: sticky; top: 0; z-index: 50; }
+        .tab-btn { flex: 1; padding: 8px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; font-size: 12px; }
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); font-weight: bold; }
+
         /* Modals */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .modal-content { width: 100%; max-width: 400px; background: #202025; border: 1px solid var(--border); border-radius: 20px; padding: 20px; max-height: 85vh; overflow-y: auto; position: relative; }
         .close-modal { position: absolute; top: 15px; left: 15px; color: #aaa; cursor: pointer; }
 
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 550px; margin: 0 auto; background: #1a1a1e; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 900; }
+        .nav-item { text-align: center; color: #666; font-size: 10px; cursor: pointer; flex: 1; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { font-size: 20px; margin-bottom: 3px; display: block; }
+        
         /* Timeline */
         .timeline { display: flex; justify-content: space-between; position: relative; margin-top: 15px; padding: 0 10px; }
         .timeline::before { content:''; position: absolute; top: 10px; left: 15px; right: 15px; height: 2px; background: #333; z-index: 0; }
@@ -70,16 +81,6 @@
         .dot { width: 22px; height: 22px; background: #222; border: 2px solid #555; border-radius: 50%; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; transition: 0.3s; }
         .step.active .dot { background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 0 10px var(--primary); }
         .step.done .dot { background: var(--success); border-color: var(--success); color: white; }
-
-        /* Tabs & Nav */
-        .tabs-container { display: flex; gap: 10px; padding: 10px 15px; background: #15151a; position: sticky; top: 0; z-index: 50; }
-        .tab-btn { flex: 1; padding: 8px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; font-size: 12px; }
-        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); font-weight: bold; }
-        
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 550px; margin: 0 auto; background: #1a1a1e; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 900; }
-        .nav-item { text-align: center; color: #666; font-size: 10px; cursor: pointer; flex: 1; }
-        .nav-item.active { color: var(--primary); }
-        .nav-item i { font-size: 20px; margin-bottom: 3px; display: block; }
     </style>
 </head>
 <body>
@@ -94,7 +95,7 @@
         <div class="glass-card">
             <i class="fa-solid fa-envelope-circle-check fa-4x" style="color:var(--gold); margin-bottom:20px;"></i>
             <h3>تأكيد البريد الإلكتروني</h3>
-            <p style="color:#aaa; font-size:13px;">رابط التفعيل أرسل إلى: <b style="color:white" id="verify-email-display"></b></p>
+            <p style="color:#aaa; font-size:13px;">تم إرسال رابط إلى: <b style="color:white" id="verify-email-display"></b></p>
             <button onclick="checkVerification()" class="btn-main" id="verify-btn">تحديث الحالة</button>
             <button onclick="logout()" class="btn-main btn-ghost">خروج</button>
         </div>
@@ -162,7 +163,7 @@
 
             <div id="page-team" class="page-section hidden">
                 <div class="glass-card">
-                    <h4>👥 الفريق</h4>
+                    <h4>👥 شبكة الفريق</h4>
                     <div style="display:flex; gap:5px; margin-bottom:15px;">
                         <input type="text" id="search-query" placeholder="ID أو الإيميل" style="margin:0;">
                         <button onclick="searchUser()" class="btn-main" id="search-btn" style="width:auto; margin:0;"><i class="fa-solid fa-plus"></i></button>
@@ -239,8 +240,9 @@
     let currentUser=null, userData=null, isLoginMode=true, selectedSup=null;
     let currentTab = 'active'; 
     let requestsCache = [];
+    let myFriends = {}; // Object to store friends to avoid duplicates
 
-    // --- Auth ---
+    // Auth
     auth.onAuthStateChanged(async u => {
         document.getElementById('loader').classList.add('hidden');
         if(u) {
@@ -330,7 +332,7 @@
         else { toast("لم يتم التفعيل بعد"); btn.disabled = false; }
     }
 
-    // --- Requests ---
+    // Requests
     function updateBuildings() {
         const f = document.getElementById('req-faculty').value;
         const b = document.getElementById('req-building');
@@ -436,7 +438,71 @@
     }
     async function setStatus(id, s) { await db.collection('requests').doc(id).update({status:s}); }
 
-    // --- Profile Edit Logic ---
+    // --- Team & Search (Fixed Bidirectional Logic) ---
+    async function searchUser() {
+        const btn = document.getElementById('search-btn'); const q = document.getElementById('search-query').value.trim();
+        if(!q) return; btn.disabled=true;
+        try {
+            let snap = await db.collection('users').where('shortId','==',q.toUpperCase()).get();
+            if(snap.empty) snap = await db.collection('users').where('email','==',q.toLowerCase()).get();
+            if(snap.empty) { toast("غير موجود"); return; }
+            const target = snap.docs[0];
+            if(target.id === currentUser.uid) { toast("لا يمكن"); return; }
+            
+            // IMPORTANT: Save BOTH sender and receiver data in request
+            await db.collection('friend_requests').add({
+                fromId: currentUser.uid, 
+                fromData: { fullName: userData.fullName, role: userData.role, photoUrl: userData.photoUrl, phone: userData.phone, jobTitle: userData.jobTitle, email: userData.email, location: userData.location, shortId: userData.shortId },
+                toId: target.id, 
+                toData: target.data(), // Grab target data to show in my list later
+                status: 'pending'
+            });
+            toast("تم الإرسال");
+        } catch(e) { toast("خطأ"); } finally { btn.disabled=false; }
+    }
+
+    function loadTeam() {
+        myFriends = {}; // Reset
+        
+        // 1. Requests sent TO me (Pending)
+        db.collection('friend_requests').where('toId','==',currentUser.uid).where('status','==','pending').onSnapshot(s => {
+            const l = document.getElementById('reqs-list'); l.innerHTML="";
+            if(s.empty) document.getElementById('friend-reqs').classList.add('hidden');
+            else { document.getElementById('friend-reqs').classList.remove('hidden'); s.forEach(d => l.innerHTML+=`<div>${d.data().fromData.fullName}<button onclick="acceptReq('${d.id}')" class="btn-main" style="width:auto; padding:5px;">قبول</button></div>`); }
+        });
+
+        // 2. Friends (Accepted) - TWO WAY LISTENER
+        // A. People who sent request TO me
+        db.collection('friend_requests').where('toId','==',currentUser.uid).where('status','==','accepted').onSnapshot(s => {
+            s.forEach(doc => { myFriends[doc.data().fromId] = doc.data().fromData; });
+            renderFriendsList();
+        });
+        // B. People I sent request TO
+        db.collection('friend_requests').where('fromId','==',currentUser.uid).where('status','==','accepted').onSnapshot(s => {
+            s.forEach(doc => { myFriends[doc.data().toId] = doc.data().toData; });
+            renderFriendsList();
+        });
+    }
+
+    function renderFriendsList() {
+        const list = document.getElementById('team-list'); list.innerHTML = "";
+        const friendIds = Object.keys(myFriends);
+        if(friendIds.length === 0) { list.innerHTML="<p style='text-align:center; color:#555'>القائمة فارغة</p>"; return; }
+        
+        friendIds.forEach(id => {
+            const d = myFriends[id];
+            let rc = d.role==='supervisor'?'role-supervisor':d.role==='technician'?'role-technician':'role-employee';
+            // Click to View Profile
+            list.innerHTML += `
+            <div class="${rc} user-header" onclick='viewFriend(${JSON.stringify(d)})' style="cursor:pointer; padding:10px; border-bottom:1px solid #333; margin-bottom:5px;">
+                <img src="${d.photoUrl}" class="avatar"><div><b>${d.fullName}</b><br><span class="badge">${d.role}</span></div>
+            </div>`;
+        });
+    }
+
+    async function acceptReq(id) { await db.collection('friend_requests').doc(id).update({status:'accepted'}); }
+
+    // --- Profile Editing & Viewing ---
     function openProfileEdit() {
         document.getElementById('edit-profile-modal').classList.remove('hidden');
         document.getElementById('edit-current-pic').src = userData.photoUrl;
@@ -449,68 +515,24 @@
     async function saveProfile() {
         const btn = document.getElementById('save-profile-btn');
         btn.disabled = true; btn.innerText = "جاري الحفظ...";
-        
         try {
             const name = document.getElementById('edit-profile-name').value;
             const phone = document.getElementById('edit-profile-phone').value;
             const file = document.getElementById('edit-profile-file').files[0];
             let url = userData.photoUrl;
-
             if(file) {
                 const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', CLOUD_PRESET);
                 const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {method:'POST', body:fd});
                 const d = await res.json(); url = d.secure_url;
             }
-
             await db.collection('users').doc(currentUser.uid).update({
                 fullName: name, phone: phone, jobTitle: document.getElementById('edit-profile-job').value,
                 location: document.getElementById('edit-profile-loc').value, photoUrl: url
             });
-            
-            // Local Update
             userData.fullName = name; userData.photoUrl = url;
-            renderHeader();
-            closeModal('edit-profile-modal');
-            toast("تم تحديث البروفايل");
-        } catch(e) { toast("خطأ في التحديث"); }
-        finally { btn.disabled = false; btn.innerText = "حفظ التغييرات"; }
+            renderHeader(); closeModal('edit-profile-modal'); toast("تم التحديث");
+        } catch(e) { toast("خطأ"); } finally { btn.disabled = false; btn.innerText = "حفظ التغييرات"; }
     }
-
-    // --- Team & Search ---
-    async function searchUser() {
-        const btn = document.getElementById('search-btn'); const q = document.getElementById('search-query').value.trim();
-        if(!q) return; btn.disabled=true;
-        try {
-            let snap = await db.collection('users').where('shortId','==',q.toUpperCase()).get();
-            if(snap.empty) snap = await db.collection('users').where('email','==',q.toLowerCase()).get();
-            if(snap.empty) { toast("غير موجود"); return; }
-            const target = snap.docs[0];
-            if(target.id === currentUser.uid) { toast("لا يمكن"); return; }
-            await db.collection('friend_requests').add({ fromId: currentUser.uid, fromData: userData, toId: target.id, status: 'pending' });
-            toast("تم الإرسال");
-        } catch(e) { toast("خطأ"); } finally { btn.disabled=false; }
-    }
-
-    function loadTeam() {
-        db.collection('friend_requests').where('toId','==',currentUser.uid).where('status','==','pending').onSnapshot(s => {
-            const l = document.getElementById('reqs-list'); l.innerHTML="";
-            if(s.empty) document.getElementById('friend-reqs').classList.add('hidden');
-            else { document.getElementById('friend-reqs').classList.remove('hidden'); s.forEach(d => l.innerHTML+=`<div>${d.data().fromData.fullName}<button onclick="acceptReq('${d.id}')">قبول</button></div>`); }
-        });
-        db.collection('friend_requests').where('toId','==',currentUser.uid).where('status','==','accepted').onSnapshot(s => renderFriends(s));
-    }
-
-    function renderFriends(snap) {
-        const list = document.getElementById('team-list'); list.innerHTML = "";
-        if(snap.empty) { list.innerHTML="<p style='text-align:center; color:#555'>القائمة فارغة</p>"; return; }
-        snap.forEach(doc => {
-            const d = doc.data().fromData;
-            let rc = d.role==='supervisor'?'role-supervisor':d.role==='technician'?'role-technician':'role-employee';
-            list.innerHTML += `<div class="${rc} user-header" onclick='viewFriend(${JSON.stringify(d)})' style="cursor:pointer; padding:10px; border-bottom:1px solid #333; margin-bottom:5px;">
-                <img src="${d.photoUrl}" class="avatar"><div><b>${d.fullName}</b><br><span class="badge">${d.role}</span></div></div>`;
-        });
-    }
-    async function acceptReq(id) { await db.collection('friend_requests').doc(id).update({status:'accepted'}); }
 
     function viewFriend(d) {
         document.getElementById('friend-modal').classList.remove('hidden');
@@ -518,7 +540,7 @@
         document.getElementById('friend-profile-content').innerHTML = `
             <div class="${rc}"><img src="${d.photoUrl}" class="avatar" style="width:80px;height:80px;margin-bottom:10px;">
             <h3>${d.fullName}</h3><span class="badge">${d.role}</span><div style="text-align:right;margin-top:20px;background:#111;padding:15px;border-radius:10px;">
-            <p>📞 <b>الهاتف:</b> ${d.phone}</p><p>📍 <b>المكان:</b> ${d.location}</p><p>📧 <b>الإيميل:</b> ${d.email}</p></div></div>`;
+            <p>📞 <b>الهاتف:</b> ${d.phone}</p><p>📍 <b>المكان:</b> ${d.location}</p><p>📧 <b>الإيميل:</b> ${d.email}</p><p>🆔 <b>المعرف:</b> ${d.shortId}</p></div></div>`;
     }
 
     // Utils

@@ -3,26 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Maintenance V20</title>
+    <title>Smart Maintenance V21</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         /* ==================== Core Styling ==================== */
         :root {
-            --primary: #2563eb; 
+            --primary: #3b82f6; 
+            --primary-dark: #1d4ed8;
             --dark: #0f172a; 
             --surface: #1e293b;
-            --border: rgba(255, 255, 255, 0.1);
-            --text: #f1f5f9; 
+            --surface-light: #334155;
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #f8fafc; 
             --text-muted: #94a3b8;
-            --gold: #fbbf24; 
+            --gold: #f59e0b; 
             --success: #10b981; 
             --error: #ef4444; 
-            --warning: #f59e0b;
+            --warning: #f97316;
             --bg-image: url('https://a.top4top.io/p_36115ao3o1.jpg');
+            --glass: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
         
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -41,67 +47,75 @@
             overflow-x: hidden;
         }
         
-        body::before { content: ''; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.92); z-index: -1; }
+        body::before { content: ''; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.94); z-index: -1; }
 
         .app-wrapper { max-width: 550px; margin: 0 auto; min-height: 100vh; position: relative; padding-bottom: 90px; }
         .hidden { display: none !important; }
 
-        /* --- New Elegant Header --- */
+        /* --- Header (Redesigned) --- */
         .main-banner {
-            height: 180px; 
-            background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(15, 23, 42, 1)), url('https://a.top4top.io/p_36115ao3o1.jpg');
+            height: 200px; 
+            background: linear-gradient(to bottom, rgba(15,23,42,0.2), rgba(15, 23, 42, 1)), url('https://a.top4top.io/p_36115ao3o1.jpg');
             background-size: cover; 
             background-position: center;
             display: flex; 
             flex-direction: column; 
             justify-content: flex-end; 
-            padding: 20px;
-            border-bottom-left-radius: 30px; 
-            border-bottom-right-radius: 30px; 
-            margin-bottom: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 25px;
+            border-bottom-left-radius: 35px; 
+            border-bottom-right-radius: 35px; 
+            margin-bottom: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
             position: relative;
         }
 
         .header-content {
             display: flex;
-            align-items: center;
-            justify-content: flex-start; /* Align Right in RTL */
+            align-items: flex-end;
+            justify-content: space-between;
             width: 100%;
+            padding-bottom: 10px;
         }
-        
-        .user-pill {
-            display: flex; 
-            align-items: center; 
-            gap: 15px;
-            background: rgba(30, 41, 59, 0.85); /* Darker background for elegance */
-            backdrop-filter: blur(15px);
-            padding: 12px 20px; 
+
+        /* Minimalist User Info */
+        .user-minimal {
+            display: flex; flex-direction: column; gap: 5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+        .user-minimal h1 { margin: 0; font-size: 24px; font-weight: 800; color: #fff; line-height: 1.2; }
+        .user-minimal .role-badge { 
+            background: rgba(37, 99, 235, 0.9); 
+            color: white; 
+            padding: 4px 12px; 
             border-radius: 20px; 
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            width: 100%;
+            font-size: 11px; 
+            font-weight: 700;
+            width: fit-content;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
         }
-        .user-pill img { 
-            width: 55px; height: 55px; 
-            border-radius: 50%; 
-            border: 2px solid var(--primary); 
-            object-fit: cover; 
-            box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+
+        .user-avatar-container {
+            position: relative;
         }
-        .user-info { flex: 1; }
-        .user-info h2 { margin: 0; font-size: 18px; color: #fff; font-weight: 800; letter-spacing: 0.5px; }
-        .user-info .role-display { font-size: 12px; color: var(--gold); display: block; margin-top: 2px; font-weight: 600; }
-        .user-info .id-display { font-size: 11px; color: var(--text-muted); font-family: monospace; background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 8px; margin-top: 4px; display: inline-block; }
+        .user-avatar-container img {
+            width: 75px; height: 75px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.2);
+            object-fit: cover;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s;
+        }
+        .user-avatar-container img:active { transform: scale(0.95); }
 
         /* --- Cards --- */
         .glass-card {
             background: var(--surface); 
             border: 1px solid var(--border);
-            border-radius: 20px; 
-            padding: 20px; 
+            border-radius: 24px; 
+            padding: 24px; 
             margin: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4); 
             position: relative; 
             overflow: hidden; 
             transition: 0.2s;
@@ -110,122 +124,152 @@
         .request-card { 
             cursor: pointer; 
             border-right: 4px solid transparent; 
+            margin-bottom: 12px;
+            background: linear-gradient(145deg, #1e293b, #172030);
         }
-        .request-card:active { transform: scale(0.98); background: #263345; }
+        .request-card:active { transform: scale(0.98); }
 
-        /* --- Inputs & Buttons --- */
-        .input-group { margin-bottom: 15px; }
+        /* --- Inputs & Modern Forms --- */
+        .input-group { margin-bottom: 18px; position: relative; }
         .input-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; }
         
-        /* Modern Select & Inputs */
         input, select, textarea {
-            width: 100%; padding: 14px; 
-            background: rgba(0, 0, 0, 0.3); 
+            width: 100%; padding: 16px; 
+            background: rgba(0, 0, 0, 0.2); 
             border: 1px solid var(--border);
-            border-radius: 12px; 
+            border-radius: 16px; 
             color: white; 
-            font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 600;
+            font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 600;
+            transition: 0.3s;
         }
         
-        /* Remove default arrow & add modern one */
+        /* Modern Select Arrow */
         select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
+            -webkit-appearance: none; appearance: none;
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
             background-position: left 1rem center;
-            background-size: 1em;
-            cursor: pointer;
+            background-size: 1.2em;
         }
 
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); background: rgba(0, 0, 0, 0.5); }
+        /* Modern Date/Time (No default ugly icon) */
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(1); opacity: 0.6; cursor: pointer;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); background: rgba(0, 0, 0, 0.4); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
 
+        /* Priority Cards */
+        .priority-grid { display: flex; gap: 10px; }
+        .prio-radio { display: none; }
+        .prio-card {
+            flex: 1; padding: 15px 5px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            text-align: center; cursor: pointer;
+            transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 5px;
+        }
+        .prio-card i { font-size: 18px; margin-bottom: 5px; }
+        .prio-card span { font-size: 12px; font-weight: 700; }
+        
+        .prio-radio:checked + .prio-card.p-low { background: rgba(16, 185, 129, 0.2); border-color: var(--success); color: var(--success); }
+        .prio-radio:checked + .prio-card.p-med { background: rgba(245, 158, 11, 0.2); border-color: var(--warning); color: var(--warning); }
+        .prio-radio:checked + .prio-card.p-high { background: rgba(239, 68, 68, 0.2); border-color: var(--error); color: var(--error); }
+
+        /* Buttons */
         .btn-main {
-            width: 100%; padding: 14px; 
+            width: 100%; padding: 16px; 
             background: var(--primary);
-            border: none; border-radius: 12px; 
+            border: none; border-radius: 16px; 
             color: white; font-weight: 700; cursor: pointer;
-            display: flex; justify-content: center; align-items: center; gap: 8px;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); 
-            font-size: 14px; font-family: 'Cairo', sans-serif;
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25); 
+            font-size: 15px; font-family: 'Cairo', sans-serif;
+            transition: transform 0.1s;
         }
-        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-muted); box-shadow: none; border-radius: 12px; font-family: 'Cairo', sans-serif;}
-        .btn-danger { background: var(--error); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
-        .btn-sm { padding: 8px 16px; font-size: 12px; width: auto; margin: 0; }
+        .btn-main:active { transform: scale(0.97); }
+        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-muted); box-shadow: none; border-radius: 14px; font-family: 'Cairo', sans-serif;}
+        .btn-danger { background: var(--error); box-shadow: 0 8px 20px rgba(239, 68, 68, 0.25); }
+        .btn-sm { padding: 8px 16px; font-size: 12px; width: auto; margin: 0; border-radius: 10px; }
 
-        /* --- Modern Tabs --- */
+        /* --- Navigation Tabs (Top) --- */
         .tabs-container { 
             display: flex; margin: 15px; 
             background: rgba(0,0,0,0.2); 
-            padding: 5px; 
-            border-radius: 16px; 
+            padding: 6px; 
+            border-radius: 20px; 
             border: 1px solid var(--border);
         }
         .tab-btn { 
             flex: 1; padding: 12px; 
             text-align: center; color: var(--text-muted); 
-            font-size: 12px; font-weight: 700; 
-            cursor: pointer; border-radius: 12px; 
+            font-size: 13px; font-weight: 700; 
+            cursor: pointer; border-radius: 14px; 
             transition: 0.3s; background: transparent; border: none; font-family: 'Cairo', sans-serif;
         }
-        .tab-btn.active { background: var(--surface); color: var(--primary); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .tab-btn.active { background: var(--surface-light); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 
-        /* --- Bottom Nav --- */
+        /* --- Bottom Nav (Redesigned with Central Button) --- */
         .bottom-nav { 
             position: fixed; bottom: 0; left: 0; right: 0; max-width: 550px; margin: 0 auto; 
-            background: rgba(30, 41, 59, 0.98); 
+            background: rgba(15, 23, 42, 0.95); 
+            backdrop-filter: blur(10px);
             border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; padding: 15px 0; z-index: 900; 
+            display: flex; justify-content: space-between; align-items: flex-end; padding: 10px 20px 25px; z-index: 900; 
+            border-top-left-radius: 25px; border-top-right-radius: 25px;
         }
-        .nav-item { text-align: center; color: #64748b; font-size: 10px; cursor: pointer; transition: 0.3s; flex: 1; }
-        .nav-item i { font-size: 22px; margin-bottom: 5px; display: block; }
-        .nav-item.active { color: var(--primary); transform: translateY(-5px); }
+        .nav-item { text-align: center; color: #64748b; font-size: 10px; cursor: pointer; transition: 0.3s; width: 60px; }
+        .nav-item i { font-size: 20px; margin-bottom: 6px; display: block; transition: 0.3s; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item.active i { transform: translateY(-3px); }
 
-        /* --- Timeline (Detailed Tracking) --- */
-        .timeline-box { position: relative; padding: 0 10px; margin: 30px 0; }
-        .timeline-line { position: absolute; top: 15px; left: 5%; right: 5%; height: 2px; background: #334155; z-index: 1; }
-        .timeline-fill { position: absolute; top: 15px; right: 5%; height: 2px; background: var(--success); z-index: 2; transition: width 0.5s; width: 0%; }
-        .timeline-points { display: flex; justify-content: space-between; position: relative; z-index: 3; flex-direction: row-reverse; } /* RTL fix */
-        .t-point { text-align: center; width: 25%; }
-        .t-dot { width: 32px; height: 32px; background: #1e293b; border: 2px solid #475569; border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #94a3b8; transition: 0.3s; }
-        .t-label { font-size: 10px; color: #94a3b8; font-weight: 700; }
-        .t-point.active .t-dot { background: var(--success); border-color: var(--success); color: #fff; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
-        .t-point.active .t-label { color: var(--text); }
-        .t-point.rejected .t-dot { background: var(--error); border-color: var(--error); color: #fff; }
+        /* Central Add Button */
+        .nav-add-btn {
+            width: 55px; height: 55px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 24px;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+            transform: translateY(-20px);
+            border: 4px solid var(--dark);
+            cursor: pointer; transition: 0.2s;
+        }
+        .nav-add-btn:active { transform: translateY(-18px) scale(0.95); }
 
         /* --- Friend Item --- */
         .friend-item { 
             display: flex; align-items: center; gap: 15px; 
             padding: 15px; 
             background: rgba(255,255,255,0.03); 
-            border-radius: 16px; 
+            border-radius: 18px; 
             margin-bottom: 10px; 
             cursor: pointer; 
             border: 1px solid transparent; 
             transition: 0.2s; 
         }
-        .friend-item:hover { border-color: var(--primary); background: rgba(255,255,255,0.05); }
+        .friend-item:hover { border-color: var(--border); background: rgba(255,255,255,0.05); }
 
         /* --- Modals --- */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
-        .modal-content { width: 100%; max-width: 450px; background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 25px; max-height: 90vh; overflow-y: auto; position: relative; }
-        .close-btn { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.1); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px); }
+        .modal-content { width: 100%; max-width: 450px; background: #161f32; border: 1px solid var(--border); border-radius: 30px; padding: 30px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .close-btn { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.05); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; transition: 0.2s; }
+        .close-btn:hover { background: rgba(255,255,255,0.1); }
 
         /* --- Status Pills --- */
-        .status-pill { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-        /* Green Pending for Employee as requested */
-        .st-pending { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
-        .st-approved { background: rgba(37, 99, 235, 0.15); color: var(--primary); border: 1px solid var(--primary); }
-        .st-working { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
-        .st-done { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
-        .st-rejected { background: rgba(239, 68, 68, 0.15); color: var(--error); border: 1px solid var(--error); }
+        .status-pill { padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 5px; width: fit-content; }
+        .st-pending { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .st-approved { background: rgba(59, 130, 246, 0.15); color: var(--primary); border: 1px solid rgba(59, 130, 246, 0.3); }
+        .st-working { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .st-done { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .st-rejected { background: rgba(239, 68, 68, 0.15); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.3); }
 
         /* Media Grid */
-        .media-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
-        .media-item { aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid var(--border); position: relative; }
+        .media-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .media-item { aspect-ratio: 1; border-radius: 14px; overflow: hidden; background: #000; border: 1px solid var(--border); position: relative; }
         .media-item img, .media-item video { width: 100%; height: 100%; object-fit: cover; }
-        .remove-file { position: absolute; top: 2px; right: 2px; background: var(--error); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; }
+        .remove-file { position: absolute; top: 4px; right: 4px; background: var(--error); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
@@ -233,21 +277,20 @@
 <div class="app-wrapper">
     
     <div id="loader" style="position:fixed; inset:0; background:var(--dark); z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-        <i class="fa-solid fa-spinner fa-spin fa-3x" style="color:var(--primary);"></i>
-        <p style="margin-top:20px; color:var(--text-muted); font-size:12px;">جاري التحميل...</p>
+        <i class="fa-solid fa-circle-notch fa-spin fa-3x" style="color:var(--primary);"></i>
+        <p style="margin-top:20px; color:var(--text-muted); font-size:14px; letter-spacing: 1px;">Smart Maintenance V21</p>
     </div>
 
-    <div id="auth-screen" class="hidden" style="min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:30px;">
-        <div class="glass-card" style="text-align:center; padding: 40px 20px;">
-            <div style="width:70px; height:70px; background:var(--primary); border-radius:20px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);">
-                <i class="fa-solid fa-shield-halved fa-2x" style="color:white;"></i>
+    <div id="auth-screen" class="hidden" style="min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:25px;">
+        <div class="glass-card" style="text-align:center; padding: 40px 25px; border: 1px solid rgba(255,255,255,0.1);">
+            <div style="width:80px; height:80px; background:linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius:24px; margin:0 auto 25px; display:flex; align-items:center; justify-content:center; box-shadow: 0 15px 30px rgba(37, 99, 235, 0.4); transform: rotate(-5deg);">
+                <i class="fa-solid fa-screwdriver-wrench fa-2x" style="color:white; transform: rotate(5deg);"></i>
             </div>
-            <h2 style="margin-bottom:5px; font-weight:900;">Smart Maintenance</h2>
-            <p style="color:var(--text-muted); font-size:12px; margin-bottom:30px;">نظام الصيانة الذكي - V20</p>
+            <h2 style="margin-bottom:5px; font-weight:900; font-size: 26px;">مرحباً بك</h2>
+            <p style="color:var(--text-muted); font-size:13px; margin-bottom:35px; line-height:1.6;">سجل دخولك لمتابعة أعمال الصيانة<br>بكل سهولة واحترافية</p>
 
             <div id="reg-fields" class="hidden">
                 <div class="input-group">
-                    <label>النوع</label>
                     <select id="reg-gender" onchange="selectedGender = this.value">
                         <option value="male">ذكر</option>
                         <option value="female">أنثى</option>
@@ -269,8 +312,14 @@
             <div class="input-group"><input type="email" id="email" placeholder="البريد الإلكتروني"></div>
             <div class="input-group"><input type="password" id="password" placeholder="كلمة المرور"></div>
             
-            <button onclick="handleAuth()" id="auth-btn" class="btn-main" style="margin-top:20px;">تسجيل الدخول</button>
-            <p onclick="toggleAuth()" style="margin-top:20px; cursor:pointer; color:var(--text-muted); font-size:12px; text-decoration:underline;">ليس لديك حساب؟ إنشاء حساب جديد</p>
+            <div id="confirm-pass-field" class="hidden input-group"><input type="password" id="confirm-password" placeholder="تأكيد كلمة المرور"></div>
+            
+            <button onclick="handleAuth()" id="auth-btn" class="btn-main" style="margin-top:25px;">تسجيل الدخول</button>
+            
+            <div style="margin-top:25px; display:flex; justify-content:center; gap:5px; font-size:13px;">
+                <span style="color:var(--text-muted);">ليس لديك حساب؟</span>
+                <span onclick="toggleAuth()" style="color:var(--primary); font-weight:700; cursor:pointer; text-decoration:underline;">إنشاء حساب جديد</span>
+            </div>
         </div>
     </div>
 
@@ -278,8 +327,14 @@
         
         <div class="main-banner">
             <div class="header-content">
-                <div id="header-user" class="user-pill" onclick="nav('profile', document.querySelector('.nav-item:nth-child(3)'))">
-                    </div>
+                <div class="user-minimal">
+                    <h1 id="banner-name">Guest</h1>
+                    <span id="banner-role" class="role-badge">User</span>
+                    <span id="banner-id" style="color:rgba(255,255,255,0.6); font-family:monospace; font-size:12px;">ID: --</span>
+                </div>
+                <div class="user-avatar-container" onclick="nav('profile', document.querySelector('.nav-item:nth-child(4)'))">
+                    <img id="banner-img" src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png">
+                </div>
             </div>
         </div>
         
@@ -287,44 +342,6 @@
             
             <div id="page-home" class="page-section">
                 
-                <div id="create-card" class="glass-card hidden" style="border-right: 4px solid var(--primary);">
-                    <h3 style="margin:0 0 15px; font-weight:800; color:var(--primary);"><i class="fa-solid fa-plus-circle"></i> إضافة بلاغ</h3>
-                    
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
-                        <div class="input-group"><label>التاريخ</label><input type="date" id="req-date"></div>
-                        <div class="input-group"><label>الوقت</label><input type="time" id="req-time"></div>
-                    </div>
-
-                    <div class="input-group">
-                        <label>الأهمية</label>
-                        <div style="display:flex; gap:10px;">
-                            <label style="flex:1; cursor:pointer; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px; text-align:center; border:1px solid var(--border);"><input type="radio" name="prio" value="low" checked> <span style="color:var(--success)">عادي</span></label>
-                            <label style="flex:1; cursor:pointer; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px; text-align:center; border:1px solid var(--border);"><input type="radio" name="prio" value="medium"> <span style="color:var(--warning)">متوسط</span></label>
-                            <label style="flex:1; cursor:pointer; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px; text-align:center; border:1px solid var(--border);"><input type="radio" name="prio" value="high"> <span style="color:var(--error)">عاجل</span></label>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label>تفاصيل الموقع</label>
-                        <select id="req-faculty" onchange="updateBuildings()" style="margin-bottom:10px;"><option value="">القطاع/الكلية...</option><option value="eng">هندسة</option><option value="sci">علوم</option><option value="art">آداب</option><option value="admin">إدارة</option></select>
-                        <select id="req-building" style="margin-bottom:10px;"><option value="">المبنى...</option></select>
-                        <input type="text" id="req-room" placeholder="رقم الغرفة / القاعة">
-                    </div>
-
-                    <div class="input-group">
-                        <label>الوصف</label>
-                        <textarea id="req-desc" rows="3" placeholder="اشرح المشكلة بالتفصيل..."></textarea>
-                    </div>
-
-                    <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px dashed var(--text-muted); text-align:center; cursor:pointer; margin-bottom:15px;" onclick="document.getElementById('req-files').click()">
-                        <i class="fa-solid fa-cloud-upload fa-lg"></i> <span style="font-size:12px; margin-right:5px;">إرفاق صور/فيديو (40 ثانية)</span>
-                        <input type="file" id="req-files" hidden multiple accept="image/*,video/*" onchange="handleFiles(this)">
-                    </div>
-                    <div id="preview-grid" class="media-grid" style="margin-bottom:15px;"></div>
-
-                    <button onclick="openSupModal()" class="btn-main">إرسال الطلب</button>
-                </div>
-
                 <div class="tabs-container">
                     <button class="tab-btn active" onclick="switchTab('active', this)">المهام الجارية</button>
                     <button class="tab-btn" onclick="switchTab('history', this)">الأرشيف</button>
@@ -336,10 +353,66 @@
                 </div>
                 
                 <div id="archive-actions" class="hidden" style="padding:0 15px 15px;">
-                     <button onclick="downloadArchive()" class="btn-main btn-sm" style="background:var(--success); width:100%;"><i class="fa-solid fa-file-excel"></i> تحميل سجل الأرشيف</button>
+                     <button onclick="downloadArchivePDF()" class="btn-main btn-sm" style="background:var(--success); width:100%; box-shadow:0 5px 15px rgba(16,185,129,0.3);"><i class="fa-solid fa-file-pdf"></i> تحميل تقرير الأرشيف (PDF)</button>
                 </div>
 
-                <div id="requests-feed" style="padding-bottom:20px;"></div>
+                <div id="requests-feed" style="padding-bottom:100px;"></div>
+            </div>
+
+            <div id="page-create" class="page-section hidden">
+                <div class="glass-card" style="margin-top:0;">
+                    <h3 style="margin:0 0 20px; font-weight:800; color:white; border-right:4px solid var(--primary); padding-right:15px; font-size:20px;">بلاغ جديد</h3>
+                    
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:15px;">
+                        <div class="input-group">
+                            <label>التاريخ</label>
+                            <input type="date" id="req-date">
+                        </div>
+                        <div class="input-group">
+                            <label>الوقت</label>
+                            <input type="time" id="req-time">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>الأهمية</label>
+                        <div class="priority-grid">
+                            <label class="prio-label" style="flex:1">
+                                <input type="radio" name="prio" value="low" class="prio-radio" checked>
+                                <div class="prio-card p-low"><i class="fa-regular fa-face-smile"></i><span>عادي</span></div>
+                            </label>
+                            <label class="prio-label" style="flex:1">
+                                <input type="radio" name="prio" value="medium" class="prio-radio">
+                                <div class="prio-card p-med"><i class="fa-regular fa-face-meh"></i><span>متوسط</span></div>
+                            </label>
+                            <label class="prio-label" style="flex:1">
+                                <input type="radio" name="prio" value="high" class="prio-radio">
+                                <div class="prio-card p-high"><i class="fa-solid fa-fire"></i><span>عاجل</span></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>الموقع</label>
+                        <select id="req-faculty" onchange="updateBuildings()" style="margin-bottom:12px;"><option value="">القطاع/الكلية...</option><option value="eng">هندسة</option><option value="sci">علوم</option><option value="art">آداب</option><option value="admin">إدارة</option></select>
+                        <select id="req-building" style="margin-bottom:12px;"><option value="">المبنى...</option></select>
+                        <input type="text" id="req-room" placeholder="رقم الغرفة / القاعة">
+                    </div>
+
+                    <div class="input-group">
+                        <label>الوصف</label>
+                        <textarea id="req-desc" rows="4" placeholder="اكتب تفاصيل المشكلة هنا..."></textarea>
+                    </div>
+
+                    <div style="background:rgba(255,255,255,0.03); padding:20px; border-radius:16px; border:2px dashed var(--border); text-align:center; cursor:pointer; margin-bottom:20px; transition:0.3s;" onclick="document.getElementById('req-files').click()" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+                        <i class="fa-solid fa-cloud-arrow-up fa-2x" style="color:var(--text-muted); margin-bottom:10px;"></i>
+                        <p style="font-size:12px; margin:0; color:var(--text-muted);">اضغط لرفع صور أو فيديو (40 ثانية)</p>
+                        <input type="file" id="req-files" hidden multiple accept="image/*,video/*" onchange="handleFiles(this)">
+                    </div>
+                    <div id="preview-grid" class="media-grid" style="margin-bottom:20px;"></div>
+
+                    <button onclick="openSupModal()" class="btn-main">التالي: اختيار المشرف <i class="fa-solid fa-arrow-left"></i></button>
+                </div>
             </div>
 
             <div id="page-team" class="page-section hidden">
@@ -362,15 +435,15 @@
             </div>
 
             <div id="page-profile" class="page-section hidden">
-                <div class="glass-card" style="margin-top:20px; border-top:3px solid var(--success);">
+                <div class="glass-card" style="margin-top:20px; background: linear-gradient(180deg, var(--surface), rgba(15,23,42,0.8));">
                     <div style="text-align:center;">
-                        <div style="position:relative; width:120px; height:120px; margin:0 auto 20px;">
-                            <img id="edit-current-pic" src="" style="width:100%; height:100%; border-radius:50%; object-fit:cover; border:3px solid var(--primary);">
-                            <div onclick="document.getElementById('edit-profile-file').click()" style="position:absolute; bottom:5px; right:5px; background:var(--primary); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid #fff;"><i class="fa-solid fa-camera"></i></div>
+                        <div style="position:relative; width:130px; height:130px; margin:0 auto 25px;">
+                            <img id="edit-current-pic" src="" style="width:100%; height:100%; border-radius:50%; object-fit:cover; border:4px solid var(--primary); box-shadow:0 10px 20px rgba(0,0,0,0.5);">
+                            <div onclick="document.getElementById('edit-profile-file').click()" style="position:absolute; bottom:5px; right:5px; background:var(--primary); width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; border:3px solid #fff; box-shadow:0 5px 10px rgba(0,0,0,0.3);"><i class="fa-solid fa-camera"></i></div>
                         </div>
                         <input type="file" id="edit-profile-file" hidden accept="image/*" onchange="previewProfilePic(this)">
                         
-                        <div style="font-family:monospace; background:rgba(255,255,255,0.05); display:inline-block; padding:8px 20px; border-radius:20px; font-size:14px; margin-bottom:25px; color:var(--gold); border:1px solid var(--border); cursor:pointer;" onclick="copyId()">ID: <span id="edit-id-display">--</span> <i class="fa-regular fa-copy"></i></div>
+                        <div style="font-family:monospace; background:rgba(0,0,0,0.4); display:inline-block; padding:10px 25px; border-radius:30px; font-size:16px; margin-bottom:30px; color:var(--gold); border:1px solid var(--border); cursor:pointer; letter-spacing:1px;" onclick="copyId()">ID: <span id="edit-id-display">--</span> <i class="fa-regular fa-copy"></i></div>
 
                         <div style="text-align:right;">
                             <div class="input-group"><label>الاسم الكامل</label><input type="text" id="edit-name"></div>
@@ -397,7 +470,7 @@
                     
                     <div class="input-group">
                         <label>الإشعارات والتنبيهات</label>
-                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2); padding:15px; border-radius:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2); padding:15px; border-radius:16px;">
                             <span>تفعيل التنبيهات</span>
                             <button onclick="reqNotifyPerm()" class="btn-sm btn-main" style="width:auto;">تفعيل</button>
                         </div>
@@ -412,8 +485,13 @@
         </div>
 
         <div class="bottom-nav">
-            <div class="nav-item active" onclick="nav('home', this)"><i class="fa-solid fa-bars-progress"></i>المهام</div>
-            <div class="nav-item" onclick="nav('team', this)"><i class="fa-solid fa-user-group"></i>الفريق</div>
+            <div class="nav-item active" onclick="nav('home', this)"><i class="fa-solid fa-list-check"></i>المهام</div>
+            <div class="nav-item" onclick="nav('team', this)"><i class="fa-solid fa-users"></i>الفريق</div>
+            
+            <div class="nav-add-btn" onclick="nav('create', null)">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            
             <div class="nav-item" onclick="nav('profile', this)"><i class="fa-solid fa-user"></i>حسابي</div>
             <div class="nav-item" onclick="nav('settings', this)"><i class="fa-solid fa-gear"></i>الإعدادات</div>
         </div>
@@ -428,14 +506,18 @@
     <div id="friend-profile-modal" class="modal-overlay hidden">
         <div class="modal-content" style="text-align:center;">
             <div class="close-btn" onclick="closeModal('friend-profile-modal')"><i class="fa-solid fa-xmark"></i></div>
-            <img id="fp-pic" src="" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--primary); margin-bottom:15px; object-fit:cover;">
-            <h3 id="fp-name" style="margin:0; font-size:18px;">-</h3>
-            <span id="fp-role" style="background:var(--primary); padding:4px 10px; border-radius:10px; font-size:11px; display:inline-block; margin:5px 0 20px;">-</span>
+            <img id="fp-pic" src="" style="width:110px; height:110px; border-radius:50%; border:4px solid var(--primary); margin-bottom:15px; object-fit:cover; box-shadow:0 10px 20px rgba(0,0,0,0.5);">
+            <h3 id="fp-name" style="margin:0; font-size:20px; font-weight:800;">-</h3>
+            <span id="fp-role" style="background:var(--primary); padding:5px 15px; border-radius:20px; font-size:12px; display:inline-block; margin:8px 0 25px; font-weight:700;">-</span>
             
-            <div style="text-align:right; background:rgba(255,255,255,0.03); padding:20px; border-radius:20px; border:1px solid var(--border);">
-                <p style="margin:10px 0;"><i class="fa-solid fa-briefcase" style="color:var(--text-muted); width:20px;"></i> <span id="fp-job">-</span></p>
-                <p style="margin:10px 0;"><i class="fa-solid fa-location-dot" style="color:var(--text-muted); width:20px;"></i> <span id="fp-loc">-</span></p>
-                <p style="margin:10px 0;"><i class="fa-solid fa-envelope" style="color:var(--text-muted); width:20px;"></i> <span id="fp-email">-</span></p>
+            <a id="fp-call-btn" href="#" class="btn-main" style="margin-bottom:20px; background:var(--success); width:auto; display:inline-flex;">
+                <i class="fa-solid fa-phone"></i> اتصال
+            </a>
+            
+            <div style="text-align:right; background:rgba(255,255,255,0.03); padding:25px; border-radius:24px; border:1px solid var(--border);">
+                <p style="margin:12px 0;"><i class="fa-solid fa-briefcase" style="color:var(--text-muted); width:25px;"></i> <span id="fp-job">-</span></p>
+                <p style="margin:12px 0;"><i class="fa-solid fa-location-dot" style="color:var(--text-muted); width:25px;"></i> <span id="fp-loc">-</span></p>
+                <p style="margin:12px 0;"><i class="fa-solid fa-envelope" style="color:var(--text-muted); width:25px;"></i> <span id="fp-email">-</span></p>
             </div>
         </div>
     </div>
@@ -443,9 +525,9 @@
     <div id="sup-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="close-btn" onclick="closeModal('sup-modal')"><i class="fa-solid fa-xmark"></i></div>
-            <h3 style="margin-bottom:20px; border-right:4px solid var(--gold); padding-right:10px;">اختر المشرف</h3>
+            <h3 style="margin-bottom:20px; border-right:4px solid var(--gold); padding-right:15px;">اختر المشرف</h3>
             <div id="sup-list" style="max-height:300px; overflow-y:auto; margin-bottom:20px;"></div>
-            <button onclick="sendRequestFinal()" class="btn-main" id="confirm-send-btn">تأكيد الإرسال</button>
+            <button onclick="sendRequestFinal()" class="btn-main" id="confirm-send-btn">تأكيد وإرسال</button>
         </div>
     </div>
 
@@ -483,7 +565,7 @@
         </div>
     </div>
 
-    <div id="toast" style="position:fixed; top:30px; left:50%; transform:translateX(-50%); background:rgba(30, 41, 59, 0.95); color:white; padding:12px 30px; border-radius:50px; border:1px solid rgba(255,255,255,0.1); z-index:9999; display:none; font-size:13px; font-weight:bold; box-shadow:0 10px 40px rgba(0,0,0,0.5); font-family:'Cairo';"></div>
+    <div id="toast" style="position:fixed; top:30px; left:50%; transform:translateX(-50%); background:rgba(15, 23, 42, 0.95); color:white; padding:12px 30px; border-radius:50px; border:1px solid rgba(255,255,255,0.1); z-index:9999; display:none; font-size:13px; font-weight:bold; box-shadow:0 10px 40px rgba(0,0,0,0.5); font-family:'Cairo'; backdrop-filter:blur(5px);"></div>
 
 </div>
 
@@ -521,12 +603,17 @@
     let selectedGender = 'male';
     let selectedTech = null;
     let newProfilePicFile = null;
-    let isFirstLoad = true; // Added for Notification Logic
+    let isFirstLoad = true;
 
     // --- Auth Listener ---
     auth.onAuthStateChanged(async u => {
         document.getElementById('loader').classList.add('hidden');
         if(u) {
+            // Email Verification Check (Optional: enforce strictness)
+            if(!u.emailVerified) {
+                toast("⚠️ البريد الإلكتروني غير مفعل. يرجى التحقق من صندوق الوارد.");
+                // For smoother UX in testing, we allow entry, but in production you might use: auth.signOut(); return;
+            }
             currentUser = u;
             await loadUser();
         } else {
@@ -546,16 +633,13 @@
                     userData.shortId = Math.random().toString(36).substr(2,6).toUpperCase();
                     await db.collection('users').doc(currentUser.uid).update({shortId: userData.shortId});
                 }
-                if(!userData.gender) {
-                    userData.gender = 'male';
-                    await db.collection('users').doc(currentUser.uid).update({gender: 'male'});
-                }
+                if(!userData.gender) await db.collection('users').doc(currentUser.uid).update({gender: 'male'});
 
                 renderHeader();
                 showScreen('app-container');
                 
                 // Role Based UI
-                if(userData.role === 'employee') document.getElementById('create-card').classList.remove('hidden');
+                // Employees see "Create" in nav logic, Admins filter
                 if(userData.role === 'supervisor') document.getElementById('filter-container').classList.remove('hidden');
                 
                 // Data Loading
@@ -571,17 +655,13 @@
         } catch(e) { toast("⚠️ خطأ في تحميل بيانات المستخدم"); }
     }
 
-    // --- Elegant Header Renderer (Right Aligned) ---
+    // --- Elegant Header Renderer (Minimalist) ---
     function renderHeader() {
         const roleMap = {'employee':'موظف', 'supervisor':'مشرف', 'technician':'فني'};
-        document.getElementById('header-user').innerHTML = `
-             <img src="${userData.photoUrl}">
-             <div class="user-info">
-                <h2>${userData.fullName}</h2>
-                <span class="role-display">${roleMap[userData.role]}</span>
-                <span class="id-display">ID: ${userData.shortId}</span>
-            </div>
-        `;
+        document.getElementById('banner-name').innerText = userData.fullName;
+        document.getElementById('banner-role').innerText = roleMap[userData.role];
+        document.getElementById('banner-id').innerText = "ID: " + userData.shortId;
+        document.getElementById('banner-img').src = userData.photoUrl;
     }
 
     // --- Profile Page Logic (Full Page) ---
@@ -589,7 +669,7 @@
         document.getElementById('edit-current-pic').src = userData.photoUrl;
         document.getElementById('edit-id-display').innerText = userData.shortId;
         document.getElementById('edit-name').value = userData.fullName;
-        document.getElementById('edit-gender').value = userData.gender;
+        document.getElementById('edit-gender').value = userData.gender || 'male';
         document.getElementById('edit-phone').value = userData.phone;
         document.getElementById('edit-job').value = userData.jobTitle;
         document.getElementById('edit-loc').value = userData.location;
@@ -649,7 +729,6 @@
         
         let users = [];
         let s1 = await db.collection('users').where('shortId','==',q).get();
-        // Fallback email search
         let s2 = await db.collection('users').where('email','==',q).get();
         
         s1.forEach(d=>users.push({id:d.id, ...d.data()}));
@@ -725,7 +804,7 @@
                 const d = doc.data();
                 div.innerHTML += `
                 <div class="friend-item" onclick="viewFriendProfile('${d.friendId}')">
-                    <img src="${d.pic}" style="width:40px; height:40px; border-radius:50%; border:1px solid var(--border);">
+                    <img src="${d.pic}" style="width:40px; height:40px; border-radius:50%; border:1px solid var(--border); object-fit:cover;">
                     <div><b style="font-size:12px;">${d.name}</b></div>
                     <i class="fa-solid fa-chevron-left" style="margin-right:auto; font-size:10px; color:#666;"></i>
                 </div>`;
@@ -748,6 +827,15 @@
             document.getElementById('fp-loc').innerText = d.location || 'غير محدد';
             document.getElementById('fp-email').innerText = d.email;
             
+            // Set phone call action
+            const callBtn = document.getElementById('fp-call-btn');
+            if(d.phone) {
+                callBtn.href = `tel:${d.phone}`;
+                callBtn.classList.remove('hidden');
+            } else {
+                callBtn.classList.add('hidden');
+            }
+            
             document.getElementById('friend-profile-modal').classList.remove('hidden');
         }
     }
@@ -765,13 +853,9 @@
             snap.forEach(doc => requestsCache.push({id: doc.id, ...doc.data()}));
             requestsCache.sort((a,b) => (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
             
-            // Notification Logic (Real)
-            if(!isFirstLoad) {
-               // Check if new items added or status changed - Simple trigger
-               if(requestsCache.length > prevLen) {
-                   new Notification("Smart Maintenance", { body: "لديك طلبات أو تحديثات جديدة", icon: "https://cdn-icons-png.flaticon.com/512/3602/3602145.png" });
-                   toast("🔔 تحديث جديد في القائمة");
-               }
+            if(!isFirstLoad && requestsCache.length > prevLen) {
+                new Notification("Smart Maintenance", { body: "لديك طلبات أو تحديثات جديدة", icon: "https://cdn-icons-png.flaticon.com/512/3602/3602145.png" });
+                toast("🔔 تحديث جديد في القائمة");
             }
             isFirstLoad = false;
             
@@ -784,42 +868,58 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
         el.classList.add('active'); 
         
-        // Show Archive Download Button only in history tab
+        // Show PDF Download Button only in history tab
         if(tab === 'history') document.getElementById('archive-actions').classList.remove('hidden');
         else document.getElementById('archive-actions').classList.add('hidden');
         
         renderFeed();
     }
 
-    function downloadArchive() {
+    // --- PDF Download Function ---
+    function downloadArchivePDF() {
         let list = requestsCache.filter(r => ['done','rejected'].includes(r.status));
         if(list.length === 0) return toast("⚠️ لا يوجد بيانات للأرشفة");
 
-        let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // UTF-8 BOM
-        csvContent += "ID,Date,Time,Status,Description,Location,Technician,Supervisor Comment\r\n";
+        // Create a temporary element to render the PDF content
+        const element = document.createElement('div');
+        element.style.padding = '20px';
+        element.style.fontFamily = 'Cairo, sans-serif';
+        element.dir = 'rtl';
         
+        let html = `
+            <div style="text-align:center; margin-bottom:20px; border-bottom:2px solid #333; padding-bottom:10px;">
+                <h1>تقرير أرشيف الصيانة</h1>
+                <p>تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG')}</p>
+                <p>المستخدم: ${userData.fullName}</p>
+            </div>
+        `;
+
         list.forEach(r => {
-            let row = [
-                r.id,
-                r.date,
-                r.time,
-                getStatusLabel(r.status),
-                `"${r.description.replace(/"/g, '""')}"`, // Escape quotes
-                r.location,
-                r.technicianName || "N/A",
-                `"${(r.supervisorComment || "").replace(/"/g, '""')}"`
-            ];
-            csvContent += row.join(",") + "\r\n";
+            html += `
+            <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px; border-radius:5px; page-break-inside: avoid;">
+                <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:5px;">
+                    <span>${r.userData.fullName}</span>
+                    <span>${r.date} | ${r.time}</span>
+                </div>
+                <div style="font-size:12px; color:#555; margin-bottom:5px;">الحالة: ${getStatusLabel(r.status)}</div>
+                <div style="margin-bottom:5px;">${r.description}</div>
+                <div style="font-size:12px; color:#666;">الموقع: ${r.location}</div>
+                ${r.supervisorComment ? `<div style="margin-top:5px; color:red; font-size:12px;">ملاحظات مشرف: ${r.supervisorComment}</div>` : ''}
+            </div>`;
         });
 
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "maintenance_archive.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        toast("✅ تم تحميل الأرشيف");
+        element.innerHTML = html;
+
+        // Generate PDF
+        html2pdf().from(element).set({
+            margin: 10,
+            filename: 'archive_report.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        }).save();
+        
+        toast("✅ جاري تحضير ملف PDF...");
     }
 
     function getStatusLabel(s) {
@@ -838,7 +938,7 @@
         const container = document.getElementById('requests-feed'); container.innerHTML = "";
         let list = requestsCache;
 
-        // Filtering
+        // Filtering Logic
         if(currentTab === 'trash') list = list.filter(r => r.isDeleted === true);
         else {
             list = list.filter(r => r.isDeleted !== true);
@@ -849,23 +949,20 @@
         const facFilter = document.getElementById('feed-filter').value;
         if(userData.role === 'supervisor' && facFilter !== 'all') list = list.filter(r => r.faculty === facFilter);
 
-        if(list.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px; color:#555;"><i class="fa-solid fa-folder-open fa-2x"></i><p>لا يوجد بيانات</p></div>`; return; }
+        if(list.length === 0) { container.innerHTML = `<div style="text-align:center; padding:50px 20px; color:#555; display:flex; flex-direction:column; align-items:center;"><i class="fa-regular fa-clipboard fa-3x" style="opacity:0.3; margin-bottom:10px;"></i><p>لا يوجد بيانات لعرضها</p></div>`; return; }
 
         list.forEach(d => {
             let statusClass = 'st-' + d.status;
             let statusText = getStatusLabel(d.status);
             
-            // Time Formatting (AM/PM) with Date
             let timeParts = d.time.split(':');
             let dateObj = new Date(); dateObj.setHours(timeParts[0]); dateObj.setMinutes(timeParts[1]);
             let timeDisplay = dateObj.toLocaleTimeString('ar-EG', {hour: 'numeric', minute:'numeric', hour12: true});
 
-            // Action Buttons Logic
             let actionBtns = "";
             let deleteBtn = "";
 
             if(currentTab !== 'trash') {
-                // Delete Option added
                 if(userData.role === 'employee' || userData.role === 'supervisor') {
                      deleteBtn = `<button onclick="event.stopPropagation(); softDelete('${d.id}')" class="btn-ghost btn-sm" style="color:var(--error); border-color:var(--border); margin-left:10px;"><i class="fa-solid fa-trash"></i></button>`;
                 }
@@ -892,13 +989,16 @@
                 </div>`;
             }
 
-            // Clickable Card
+            // Priority Indicator
+            let prioColor = d.priority === 'high' ? 'var(--error)' : d.priority === 'medium' ? 'var(--warning)' : 'var(--success)';
+            let prioIcon = d.priority === 'high' ? '<i class="fa-solid fa-fire"></i>' : '';
+
             container.innerHTML += `
-            <div class="glass-card request-card" onclick="openRequestDetails('${d.id}')" style="border-right-color:${d.status==='done'?'var(--success)': d.status==='rejected'?'var(--error)':'var(--primary)'}">
+            <div class="glass-card request-card" onclick="openRequestDetails('${d.id}')" style="border-right-color:${prioColor};">
                 
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
                     <div style="display:flex; align-items:center; gap:10px;">
-                        <img src="${d.userData.photoUrl}" class="avatar" style="width:40px; height:40px; border-radius:50%;">
+                        <img src="${d.userData.photoUrl}" class="avatar" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
                         <div>
                             <b style="font-size:13px; display:block;">${d.userData.fullName}</b>
                             <span style="font-size:10px; color:var(--text-muted); direction:ltr; display:inline-block;"><i class="fa-regular fa-clock"></i> ${timeDisplay} | ${d.date}</span>
@@ -907,7 +1007,7 @@
                     <span class="status-pill ${statusClass}">${statusText}</span>
                 </div>
                 
-                <div style="margin:10px 0; font-size:13px; line-height:1.5;">${d.description}</div>
+                <div style="margin:10px 0; font-size:14px; line-height:1.5;">${prioIcon} ${d.description}</div>
                 <div style="font-size:11px; color:#aaa; margin-bottom:10px;"><i class="fa-solid fa-location-dot"></i> ${d.location}</div>
                 
                 <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -918,7 +1018,7 @@
         });
     }
 
-    // --- Action Modal System ---
+    // --- Action Logic ---
     async function openAction(id, type) {
         tempActionData = { id, type };
         document.getElementById('action-modal').classList.remove('hidden');
@@ -942,7 +1042,7 @@
     
     function selTech(el, id, name) {
         document.querySelectorAll('#tech-list-action div').forEach(d=>d.style.background='transparent');
-        el.style.background='rgba(37, 99, 235, 0.3)'; selectedTech={id, name};
+        el.style.background='rgba(59, 130, 246, 0.3)'; selectedTech={id, name};
     }
 
     async function submitAction() {
@@ -956,8 +1056,6 @@
         btn.disabled=true;
         try {
             let updateData = { supervisorComment: comment };
-            
-            // Workflow Logic (Strict)
             if(type === 'approve') { 
                 updateData.status = 'approved'; 
                 updateData.technicianId = selectedTech.id; 
@@ -965,55 +1063,28 @@
             }
             else if(type === 'reject') { 
                 updateData.status = 'rejected'; 
-                updateData.rejectedBy = userData.fullName; // Tracking who rejected
+                updateData.rejectedBy = userData.fullName;
             }
             else if(type === 'startWork') { updateData.status = 'working'; }
             else if(type === 'done') { updateData.status = 'done'; }
 
             await db.collection('requests').doc(id).update(updateData);
-            
             toast("✅ تم تنفيذ الإجراء"); closeModal('action-modal');
         } catch(e) { toast("❌ خطأ"); } finally { btn.disabled=false; }
     }
 
-    // --- Details & Tracking Modal ---
+    // --- Details Modal ---
     function openRequestDetails(id) {
         const d = requestsCache.find(r => r.id === id);
         document.getElementById('request-details-modal').classList.remove('hidden');
         
-        // Media
         let mediaHtml = "";
         if(d.media && d.media.length > 0) d.media.forEach(m => mediaHtml += `<div class="media-item" onclick="openMediaViewer('${m.url}','${m.type}')">${m.type==='video' ? `<video src="${m.url}"></video><div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-play"></i></div>` : `<img src="${m.url}">`}</div>`);
         else mediaHtml = "<p style='color:#777; font-size:12px; grid-column:span 3; text-align:center;'>لا توجد مرفقات</p>";
 
-        // Tracking Steps Logic
-        let step = 0; // 1=Sent, 2=Approved/InMaint, 3=Working, 4=Done
-        let isRejected = d.status === 'rejected';
-        
-        if(d.status === 'pending') step = 1;
-        else if(d.status === 'approved') step = 2;
-        else if(d.status === 'working') step = 3;
-        else if(d.status === 'done') step = 4;
-
-        let barW = step === 1 ? '0%' : step === 2 ? '33%' : step === 3 ? '66%' : '100%';
-        if(isRejected) barW = '0%'; 
-
-        // Timeline HTML
-        let timelineHtml = `
-        <div class="timeline-box">
-            <div class="timeline-line"></div>
-            <div class="timeline-fill" style="width:${barW}; background:${isRejected?'var(--error)':'var(--success)'}"></div>
-            <div class="timeline-points" style="flex-direction: row;">
-                <div class="t-point ${step>=1?'active':''}"><div class="t-dot"><i class="fa-solid fa-paper-plane"></i></div><div class="t-label">تم الإرسال</div></div>
-                <div class="t-point ${step>=2?'active':''} ${isRejected?'rejected':''}"><div class="t-dot"><i class="fa-solid fa-user-check"></i></div><div class="t-label">${isRejected?'تم الرفض':'قبول الطلب'}</div></div>
-                <div class="t-point ${step>=3?'active':''}"><div class="t-dot"><i class="fa-solid fa-screwdriver-wrench"></i></div><div class="t-label">جاري الإصلاح</div></div>
-                <div class="t-point ${step>=4?'active':''}"><div class="t-dot"><i class="fa-solid fa-check"></i></div><div class="t-label">تم الإصلاح</div></div>
-            </div>
-        </div>`;
-
-        // Rejection Details Block
+        let statusText = getStatusLabel(d.status);
         let rejectionHtml = "";
-        if(isRejected) {
+        if(d.status === 'rejected') {
             rejectionHtml = `
             <div style="background:rgba(239, 68, 68, 0.1); border:1px solid var(--error); padding:15px; border-radius:12px; margin-bottom:15px;">
                 <h5 style="color:var(--error); margin:0 0 5px;"><i class="fa-solid fa-circle-exclamation"></i> تم رفض الطلب</h5>
@@ -1022,30 +1093,38 @@
             </div>`;
         }
 
-        // Content
         document.getElementById('req-details-content').innerHTML = `
-            ${timelineHtml}
-            ${rejectionHtml}
-
-            <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; margin-bottom:15px;">
-                <p style="margin:0; font-size:14px; line-height:1.6;">${d.description}</p>
+            <div style="text-align:center; margin-bottom:20px;">
+                <span class="status-pill st-${d.status}" style="margin:0 auto;">${statusText}</span>
             </div>
-            
+            ${rejectionHtml}
+            <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; margin-bottom:15px;">
+                <p style="margin:0; font-size:15px; line-height:1.6;">${d.description}</p>
+            </div>
             <div style="display:flex; justify-content:space-between; font-size:12px; color:#aaa; margin-bottom:10px;">
                <span><i class="fa-solid fa-calendar"></i> ${d.date}</span>
                <span><i class="fa-solid fa-map-pin"></i> ${d.location.split('-')[1] || 'غير محدد'}</span>
             </div>
-
             ${d.technicianName ? `<div style="background:rgba(37, 99, 235, 0.1); color:var(--primary); padding:10px; border-radius:10px; font-size:12px; margin-bottom:15px;"><i class="fa-solid fa-helmet-safety"></i> الفني المسؤول: ${d.technicianName}</div>` : ''}
-
             <h5 style="margin:0 0 10px; color:#888;">المرفقات:</h5>
             <div class="media-grid">${mediaHtml}</div>
         `;
     }
 
-    // --- Standard Helpers ---
+    // --- Helpers ---
     function reqNotifyPerm() { Notification.requestPermission().then(p => { if(p==="granted") toast("تم تفعيل الإشعارات"); }); }
-    function nav(p, el) { document.querySelectorAll('.page-section').forEach(x=>x.classList.add('hidden')); document.getElementById('page-'+p).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active')); el.classList.add('active'); if(p==='profile') loadProfilePageData(); }
+    function nav(p, el) { 
+        document.querySelectorAll('.page-section').forEach(x=>x.classList.add('hidden')); 
+        document.getElementById('page-'+p).classList.remove('hidden'); 
+        
+        // Handle Nav Items Styling
+        if(p !== 'create') {
+            document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active')); 
+            if(el) el.classList.add('active'); 
+        }
+
+        if(p==='profile') loadProfilePageData(); 
+    }
     function showScreen(id) { ['auth-screen','app-container'].forEach(x => document.getElementById(x).classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
     function logout() { auth.signOut(); location.reload(); }
@@ -1054,16 +1133,37 @@
     async function restoreReq(id) { await db.collection('requests').doc(id).update({isDeleted:false}); toast("تم الاستعادة"); }
     async function hardDelete(id) { if(confirm("حذف نهائي؟")) await db.collection('requests').doc(id).delete(); }
 
-    // --- Auth & File Handlers ---
-    function toggleAuth() { isLoginMode = !isLoginMode; document.getElementById('reg-fields').classList.toggle('hidden', !isLoginMode); document.getElementById('auth-btn').innerText = isLoginMode?"تسجيل الدخول":"إنشاء حساب"; }
+    // --- Auth Handlers ---
+    function toggleAuth() { 
+        isLoginMode = !isLoginMode; 
+        document.getElementById('reg-fields').classList.toggle('hidden', !isLoginMode);
+        document.getElementById('confirm-pass-field').classList.toggle('hidden', !isLoginMode);
+        document.getElementById('auth-btn').innerText = isLoginMode?"تسجيل الدخول":"إنشاء حساب"; 
+    }
     
     async function handleAuth() {
-        const email = document.getElementById('email').value; const pass = document.getElementById('password').value;
-        const btn = document.getElementById('auth-btn'); btn.disabled=true;
+        const email = document.getElementById('email').value; 
+        const pass = document.getElementById('password').value;
+        const confirmPass = document.getElementById('confirm-password').value;
+        const btn = document.getElementById('auth-btn'); 
+
+        // Validation for new accounts
+        if(!isLoginMode) {
+             if(pass !== confirmPass) return toast("❌ كلمة المرور غير متطابقة");
+             if(pass.length < 6) return toast("❌ كلمة المرور ضعيفة (6 أحرف على الأقل)");
+        }
+
+        btn.disabled=true; btn.innerText = "جاري المعالجة...";
         try {
-            if(isLoginMode) await auth.signInWithEmailAndPassword(email, pass);
-            else {
+            if(isLoginMode) {
+                await auth.signInWithEmailAndPassword(email, pass);
+            } else {
                 const cred = await auth.createUserWithEmailAndPassword(email, pass);
+                
+                // Send Verification Email
+                await cred.user.sendEmailVerification();
+                toast("✅ تم إنشاء الحساب. تم إرسال رابط التفعيل لبريدك الإلكتروني.");
+
                 const defaultPic = selectedGender === 'male' ? 'https://cdn-icons-png.flaticon.com/512/4140/4140048.png' : 'https://cdn-icons-png.flaticon.com/512/4140/4140047.png';
                 await db.collection('users').doc(cred.user.uid).set({
                     email, role: document.getElementById('reg-role').value, fullName:document.getElementById('reg-name').value, 
@@ -1072,7 +1172,7 @@
                     jobTitle: document.getElementById('reg-job').value, location: document.getElementById('reg-loc').value, phone: document.getElementById('reg-phone').value
                 });
             }
-        } catch(e) { toast(e.message); btn.disabled=false; }
+        } catch(e) { toast(e.message); btn.disabled=false; btn.innerText = isLoginMode?"تسجيل الدخول":"إنشاء حساب"; }
     }
 
     function updateBuildings() { 
@@ -1116,7 +1216,9 @@
                 createdAt: firebase.firestore.FieldValue.serverTimestamp() 
             }); 
             
-            toast("✅ تم الإرسال"); closeModal('sup-modal'); document.getElementById('create-card').classList.add('hidden'); 
+            toast("✅ تم الإرسال"); closeModal('sup-modal'); 
+            // Return to tasks
+            nav('home', document.querySelector('.nav-item:first-child'));
             uploadQueue=[]; document.getElementById('preview-grid').innerHTML=""; document.getElementById('req-desc').value="";
         } catch(e){toast("❌ خطأ"); console.error(e);} finally{btn.disabled=false; btn.innerText="تأكيد";} 
     }

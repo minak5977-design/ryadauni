@@ -3,186 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Maintenance V4 (Profile & ID)</title>
+    <title>Smart Maintenance V5 (Team Network)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* ==================== 1. التصميم (Glassmorphism UI) ==================== */
         :root {
-            --primary: #4cc9f0; --secondary: #4361ee;
-            --success: #06d6a0; --warning: #f72585; --danger: #e63946;
-            --dark-bg: #0f172a; --glass-bg: rgba(15, 23, 42, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #4cc9f0; --secondary: #4361ee; --success: #06d6a0; --warning: #f72585; --danger: #e63946;
+            --dark-bg: #0f172a; --glass-bg: rgba(15, 23, 42, 0.85); --glass-border: rgba(255, 255, 255, 0.1);
             --text-main: #f8fafc; --text-muted: #94a3b8;
         }
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         body {
-            font-family: 'Cairo', sans-serif; background-color: var(--dark-bg);
-            background-image: linear-gradient(120deg, #0f172a 0%, #1e293b 100%);
-            color: var(--text-main); margin: 0; min-height: 100vh;
+            font-family: 'Cairo', sans-serif; background-color: var(--dark-bg); color: var(--text-main); margin: 0; min-height: 100vh;
+            background-image: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
-        .app-wrapper { max-width: 500px; margin: 0 auto; min-height: 100vh; position: relative; background: rgba(0,0,0,0.2); box-shadow: 0 0 50px #000; }
+        .app-wrapper { max-width: 500px; margin: 0 auto; min-height: 100vh; background: rgba(0,0,0,0.2); padding-bottom: 70px; }
         .hidden { display: none !important; }
 
         /* الكروت */
         .glass-card {
-            background: var(--glass-bg); backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border); border-radius: 20px;
-            padding: 20px; margin: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            animation: slideUp 0.4s ease-out;
+            background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border);
+            border-radius: 16px; padding: 15px; margin: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: fadeIn 0.4s ease;
         }
-
-        /* المدخلات */
-        .input-group { margin-bottom: 15px; position: relative; }
-        .input-group label { display: block; margin-bottom: 5px; font-size: 12px; color: var(--text-muted); }
+        
+        /* المدخلات والأزرار */
         input, select, textarea {
-            width: 100%; padding: 12px; background: rgba(0,0,0,0.3);
-            border: 1px solid var(--glass-border); border-radius: 10px;
-            color: white; font-family: inherit; transition: 0.3s;
+            width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border);
+            border-radius: 10px; color: white; font-family: inherit; margin-bottom: 10px;
         }
-        input:focus { border-color: var(--primary); }
-
-        /* الأزرار */
         .btn-main {
-            width: 100%; padding: 14px; background: linear-gradient(to right, var(--secondary), var(--primary));
-            border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer;
-            display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            width: 100%; padding: 12px; background: var(--primary); border: none; border-radius: 10px;
+            color: #0f172a; font-weight: bold; cursor: pointer; display: flex; justify-content: center; gap: 8px;
         }
+        .btn-outline { background: transparent; border: 1px solid var(--glass-border); color: var(--text-muted); }
 
-        /* صورة البروفايل */
-        .profile-upload {
-            width: 100px; height: 100px; margin: 0 auto 15px; border-radius: 50%;
-            border: 2px dashed var(--glass-border); display: flex; align-items: center; justify-content: center;
-            cursor: pointer; overflow: hidden; position: relative; background: rgba(0,0,0,0.2);
+        /* الشريط السفلي (Navigation) */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; max-width: 500px; margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--glass-border);
+            display: flex; justify-content: space-around; padding: 10px 0; z-index: 999;
         }
-        .profile-upload img { width: 100%; height: 100%; object-fit: cover; }
-        .profile-header { display: flex; align-items: center; gap: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border); margin-bottom: 15px; }
-        .profile-pic-small { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+        .nav-item { text-align: center; color: var(--text-muted); font-size: 10px; cursor: pointer; flex: 1; }
+        .nav-item i { font-size: 20px; margin-bottom: 2px; display: block; }
+        .nav-item.active { color: var(--primary); }
 
-        /* شريط التتبع */
-        .timeline { display: flex; justify-content: space-between; margin: 15px 0; position: relative; }
-        .timeline::before { content:''; position: absolute; top: 10px; left: 0; right: 0; height: 2px; background: #333; z-index: 0; }
-        .step { position: relative; z-index: 1; text-align: center; }
-        .dot { width: 22px; height: 22px; background: #333; border-radius: 50%; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; border: 2px solid #555; }
-        .step.active .dot { background: var(--primary); border-color: white; box-shadow: 0 0 10px var(--primary); }
-        .step.done .dot { background: var(--success); border-color: var(--success); color: black; }
+        /* بطاقة الصديق / الزميل */
+        .user-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid var(--glass-border); }
+        .user-item:last-child { border-bottom: none; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--secondary); }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); display: inline-block; margin-right: 5px; }
 
-        @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-        #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; width: 90%; max-width: 400px; }
-        .toast { background: #222; color: white; padding: 12px; border-radius: 10px; margin-top: 5px; border-left: 4px solid var(--primary); display: flex; align-items: center; gap: 10px; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; }
+        .toast { background: #333; color: white; padding: 10px 20px; border-radius: 20px; border-bottom: 3px solid var(--primary); }
     </style>
 </head>
 <body>
 
 <div class="app-wrapper">
     
-    <div id="loader" style="position:fixed; inset:0; background:var(--dark-bg); z-index:999; display:flex; justify-content:center; align-items:center;">
+    <div id="loader" style="position:fixed; inset:0; background:var(--dark-bg); z-index:2000; display:flex; justify-content:center; align-items:center;">
         <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color:var(--primary)"></i>
     </div>
 
-    <div id="verify-screen" class="hidden" style="height:100vh; display:flex; flex-direction:column; justify-content:center; padding:20px; text-align:center;">
-        <i class="fa-solid fa-envelope-circle-check fa-4x" style="color:var(--success); margin-bottom:20px;"></i>
-        <h2>تفعيل الحساب</h2>
-        <p style="color:var(--text-muted);">تم إرسال رابط تفعيل إلى بريدك الإلكتروني.<br>يرجى الضغط على الرابط ثم تسجيل الدخول.</p>
-        <button onclick="logout()" class="btn-main" style="margin-top:20px;">العودة لتسجيل الدخول</button>
-    </div>
-
     <div id="auth-screen" class="hidden" style="min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:20px;">
-        <div class="glass-card">
-            <h2 id="auth-title" style="text-align:center; margin-bottom:5px;">تسجيل الدخول</h2>
-            <p id="auth-subtitle" style="text-align:center; color:var(--text-muted); font-size:12px; margin-bottom:20px;">أدخل بياناتك للمتابعة</p>
+        <div class="glass-card" style="text-align:center;">
+            <i class="fa-solid fa-users-gear fa-3x" style="color:var(--primary); margin-bottom:15px;"></i>
+            <h2 id="auth-title">تسجيل الدخول</h2>
             
             <div id="register-fields" class="hidden">
-                <div class="profile-upload" onclick="document.getElementById('profile-img').click()">
-                    <img id="preview-img" src="https://via.placeholder.com/100?text=Photo" alt="Profile">
-                    <input type="file" id="profile-img" hidden onchange="previewProfileImage()">
-                </div>
-                
-                <div class="input-group">
-                    <label>الاسم بالكامل</label>
-                    <input type="text" id="reg-name" placeholder="محمد أحمد">
-                </div>
-                
-                <div style="display:flex; gap:10px;">
-                    <div class="input-group" style="flex:1">
-                        <label>السن</label>
-                        <input type="number" id="reg-age" placeholder="25">
-                    </div>
-                    <div class="input-group" style="flex:1">
-                        <label>المهنة</label>
-                        <input type="text" id="reg-job" placeholder="فني كهرباء">
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label>مكان العمل (الموقع)</label>
-                    <input type="text" id="reg-location" placeholder="المبنى الرئيسي - الدور 3">
-                </div>
-
-                <div class="input-group">
-                    <label>نوع الحساب</label>
-                    <select id="user-role" onchange="toggleSupervisorSelect()">
-                        <option value="employee">موظف (يرسل طلبات)</option>
-                        <option value="supervisor">مشرف (يستقبل طلبات)</option>
-                        <option value="technician">فني (ينفذ)</option>
-                    </select>
-                </div>
-
-                <div class="input-group hidden" id="supervisor-select-group">
-                    <label>المشرف المسؤول عنك</label>
-                    <select id="supervisor-select">
-                        <option value="">جاري تحميل المشرفين...</option>
-                    </select>
-                </div>
+                <input type="text" id="reg-name" placeholder="الاسم الكامل">
+                <input type="text" id="reg-job" placeholder="المسمى الوظيفي">
+                <select id="user-role">
+                    <option value="employee">موظف</option>
+                    <option value="supervisor">مشرف</option>
+                    <option value="technician">فني</option>
+                </select>
             </div>
 
-            <div class="input-group">
-                <label>البريد الإلكتروني</label>
-                <input type="email" id="email" placeholder="name@company.com">
-            </div>
-            <div class="input-group">
-                <label>كلمة المرور</label>
-                <input type="password" id="password" placeholder="******">
-            </div>
+            <input type="email" id="email" placeholder="البريد الإلكتروني">
+            <input type="password" id="password" placeholder="كلمة المرور">
             
             <button onclick="handleAuth()" id="auth-btn" class="btn-main">دخول</button>
-            <p onclick="toggleAuthMode()" class="switch-auth" style="text-align:center; margin-top:15px; cursor:pointer; color:var(--primary); font-size:14px;">ليس لديك حساب؟ سجل الآن</p>
+            <p onclick="toggleAuthMode()" style="margin-top:15px; cursor:pointer; color:var(--primary); font-size:14px;">
+                <span id="switch-text">ليس لديك حساب؟ إنشاء حساب جديد</span>
+            </p>
         </div>
     </div>
 
     <div id="app-container" class="hidden">
         
-        <div style="padding:20px; background: rgba(15,23,42,0.95); position:sticky; top:0; z-index:100; border-bottom:1px solid var(--glass-border);">
-            <div class="profile-header" style="margin:0; border:none; padding:0;">
-                <img id="display-pic" src="" class="profile-pic-small">
-                <div style="flex:1;">
-                    <h3 id="display-name" style="margin:0; font-size:16px;"></h3>
-                    <div style="font-size:11px; color:var(--text-muted);">
-                        <span id="display-job"></span> | <span id="display-id"></span>
+        <div class="glass-card" style="margin:0; border-radius:0; border:none; border-bottom:1px solid var(--glass-border); display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <img id="my-pic" src="https://via.placeholder.com/40" class="user-avatar">
+                <div>
+                    <h4 id="my-name" style="margin:0; font-size:14px;"></h4>
+                    <small style="color:var(--primary); font-weight:bold; cursor:pointer;" onclick="copyId()" title="اضغط للنسخ">
+                        ID: <span id="my-short-id">...</span> <i class="fa-regular fa-copy"></i>
+                    </small>
+                </div>
+            </div>
+            <button onclick="logout()" style="background:none; border:none; color:var(--danger);"><i class="fa-solid fa-power-off"></i></button>
+        </div>
+
+        <div id="content-pages">
+            
+            <div id="page-home" class="page-view">
+                <div class="glass-card hidden" id="create-box">
+                    <h4 style="margin:0 0 10px;"><i class="fa-solid fa-plus-circle"></i> طلب صيانة جديد</h4>
+                    <input type="text" id="req-title" placeholder="عنوان البلاغ">
+                    <textarea id="req-desc" rows="2" placeholder="التفاصيل..."></textarea>
+                    <button onclick="submitRequest()" class="btn-main">إرسال</button>
+                </div>
+                <div id="requests-list"></div>
+            </div>
+
+            <div id="page-team" class="page-view hidden">
+                
+                <div class="glass-card">
+                    <h4 style="margin:0 0 10px;"><i class="fa-solid fa-user-plus"></i> إضافة زميل</h4>
+                    <div style="display:flex; gap:5px;">
+                        <input type="text" id="search-input" placeholder="اكتب الـ ID أو الإيميل" style="margin:0;">
+                        <button onclick="searchUser()" class="btn-main" style="width:auto;"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </div>
                 </div>
-                <button onclick="logout()" style="background:rgba(255,255,255,0.1); border:none; color:white; width:35px; height:35px; border-radius:50%;"><i class="fa-solid fa-right-from-bracket"></i></button>
+
+                <div id="friend-requests-box" class="hidden">
+                    <h5 style="margin:10px 15px; color:var(--warning);">طلبات واردة <i class="fa-solid fa-bell"></i></h5>
+                    <div id="incoming-requests" class="glass-card" style="background:rgba(247, 37, 133, 0.1);"></div>
+                </div>
+
+                <h5 style="margin:10px 15px;">قائمة زملائي</h5>
+                <div id="team-list" class="glass-card" style="padding:0;"></div>
+            </div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="navTo('home')">
+                <i class="fa-solid fa-list-check"></i> المهام
+            </div>
+            <div class="nav-item" onclick="navTo('team')">
+                <i class="fa-solid fa-users"></i> الفريق
             </div>
         </div>
 
-        <div style="padding:10px; padding-bottom:80px;">
-            
-            <div id="create-view" class="glass-card hidden">
-                <h4 style="margin-top:0;"><i class="fa-solid fa-pen-to-square"></i> تقديم بلاغ صيانة</h4>
-                <input type="text" id="req-title" placeholder="نوع العطل (مثال: تكييف)">
-                <textarea id="req-desc" rows="3" placeholder="وصف المشكلة..."></textarea>
-                <input type="file" id="req-file" class="hidden" onchange="document.getElementById('file-label').innerText = 'تم اختيار الصورة'">
-                <button onclick="document.getElementById('req-file').click()" class="btn-main" style="background:transparent; border:1px solid var(--glass-border); margin-bottom:10px;">
-                    <i class="fa-solid fa-camera"></i> <span id="file-label">إرفاق صورة</span>
-                </button>
-                <button onclick="submitRequest()" class="btn-main">إرسال للمشرف</button>
-            </div>
-
-            <div id="requests-container"></div>
-        </div>
     </div>
 
     <div id="toast-container"></div>
@@ -202,8 +171,6 @@
         messagingSenderId: "858244114090",
         appId: "1:858244114090:web:42cee8e98e3984164392d3"
     };
-    const CLOUD_NAME = "djzfruh22"; 
-    const CLOUD_PRESET = "udyvggup";
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -216,253 +183,237 @@
     // 2. إدارة الدخول
     auth.onAuthStateChanged(user => {
         document.getElementById('loader').classList.add('hidden');
-        if (user) {
-            // التحقق من تفعيل الإيميل
-            if (!user.emailVerified) {
-                document.getElementById('verify-screen').classList.remove('hidden');
-                document.getElementById('auth-screen').classList.add('hidden');
-                return;
-            }
+        if(user) {
             currentUser = user;
-            loadUserProfile(user.uid);
+            initApp();
         } else {
             showScreen('auth');
-            loadSupervisorsList(); // تحميل قائمة المشرفين للتسجيل
         }
     });
 
-    async function loadUserProfile(uid) {
-        try {
-            const doc = await db.collection('users').doc(uid).get();
-            if (doc.exists) {
-                userData = doc.data();
-                setupDashboard();
-            }
-        } catch(e) { showToast("فشل تحميل البروفايل", "error"); }
-    }
-
-    function setupDashboard() {
+    async function initApp() {
+        const doc = await db.collection('users').doc(currentUser.uid).get();
+        userData = doc.data();
+        
+        // عرض البيانات في الهيدر
+        document.getElementById('my-name').innerText = userData.fullName;
+        document.getElementById('my-short-id').innerText = userData.shortId || "---";
+        document.getElementById('my-pic').src = userData.photoUrl || "https://via.placeholder.com/40";
+        
         showScreen('app');
-        // ملء بيانات الهوية
-        document.getElementById('display-name').innerText = userData.fullName || "مستخدم";
-        document.getElementById('display-job').innerText = userData.jobTitle || userData.role;
-        document.getElementById('display-id').innerText = "ID: " + currentUser.uid.substring(0,6).toUpperCase();
-        document.getElementById('display-pic').src = userData.photoUrl || "https://via.placeholder.com/50";
-        
-        if(userData.role === 'employee') document.getElementById('create-view').classList.remove('hidden');
-        
-        listenToRequests();
+        if(userData.role === 'employee') document.getElementById('create-box').classList.remove('hidden');
+
+        // تحميل البيانات
+        loadMaintenanceRequests();
+        loadTeamData();
     }
 
-    // 3. منطق التسجيل والبروفايل
+    // 3. التسجيل مع إنشاء ID قصير
     function toggleAuthMode() {
         isLoginMode = !isLoginMode;
-        const fields = document.getElementById('register-fields');
-        const title = document.getElementById('auth-title');
-        const btn = document.getElementById('auth-btn');
-        
-        if (isLoginMode) {
-            fields.classList.add('hidden');
-            title.innerText = "تسجيل الدخول";
-            btn.innerText = "دخول";
-        } else {
-            fields.classList.remove('hidden');
-            title.innerText = "إنشاء بروفايل جديد";
-            btn.innerText = "تسجيل وتفعيل";
-        }
-    }
-
-    function toggleSupervisorSelect() {
-        const role = document.getElementById('user-role').value;
-        const group = document.getElementById('supervisor-select-group');
-        if(role === 'employee') group.classList.remove('hidden');
-        else group.classList.add('hidden');
-    }
-
-    async function loadSupervisorsList() {
-        // جلب المشرفين لملء القائمة المنسدلة
-        const select = document.getElementById('supervisor-select');
-        select.innerHTML = '<option value="">اختر المشرف...</option>';
-        const snap = await db.collection('users').where('role', '==', 'supervisor').get();
-        snap.forEach(doc => {
-            select.innerHTML += `<option value="${doc.id}">${doc.data().fullName} (${doc.data().location})</option>`;
-        });
-    }
-
-    function previewProfileImage() {
-        const file = document.getElementById('profile-img').files[0];
-        if(file) document.getElementById('preview-img').src = URL.createObjectURL(file);
+        document.getElementById('register-fields').classList.toggle('hidden', isLoginMode);
+        document.getElementById('auth-title').innerText = isLoginMode ? "تسجيل الدخول" : "حساب جديد";
+        document.getElementById('auth-btn').innerText = isLoginMode ? "دخول" : "إنشاء الحساب";
+        document.getElementById('switch-text').innerText = isLoginMode ? "ليس لديك حساب؟ إنشاء حساب جديد" : "لديك حساب؟ دخول";
     }
 
     async function handleAuth() {
-        const email = document.getElementById('email').value;
-        const pass = document.getElementById('password').value;
+        const email = document.getElementById('email').value.toLowerCase().trim();
+        const password = document.getElementById('password').value;
         const btn = document.getElementById('auth-btn');
-        
-        if(!email || !pass) return showToast("املأ البيانات الأساسية", "error");
 
-        btn.disabled = true;
+        if(!email || !password) return showToast("بيانات ناقصة", "error");
+        
         btn.innerText = "جاري العمل...";
+        btn.disabled = true;
 
         try {
             if(isLoginMode) {
-                await auth.signInWithEmailAndPassword(email, pass);
+                await auth.signInWithEmailAndPassword(email, password);
             } else {
-                // تسجيل جديد
+                // إنشاء ID قصير عشوائي (6 حروف)
+                const shortId = Math.random().toString(36).substring(2, 8).toUpperCase();
                 const name = document.getElementById('reg-name').value;
-                const role = document.getElementById('user-role').value;
-                const age = document.getElementById('reg-age').value;
                 const job = document.getElementById('reg-job').value;
-                const loc = document.getElementById('reg-location').value;
-                const file = document.getElementById('profile-img').files[0];
-                const supId = document.getElementById('supervisor-select').value;
+                const role = document.getElementById('user-role').value;
 
-                if(!name || !job) { btn.disabled=false; return showToast("الاسم والمهنة مطلوبان", "error"); }
-                if(role === 'employee' && !supId) { btn.disabled=false; return showToast("يجب اختيار مشرف", "error"); }
+                if(!name) throw new Error("الاسم مطلوب");
 
-                // 1. رفع الصورة
-                let photoUrl = "https://via.placeholder.com/100";
-                if(file) photoUrl = await uploadFile(file);
-
-                // 2. إنشاء الحساب
-                const cred = await auth.createUserWithEmailAndPassword(email, pass);
+                const cred = await auth.createUserWithEmailAndPassword(email, password);
                 
-                // 3. حفظ بيانات البروفايل
                 await db.collection('users').doc(cred.user.uid).set({
-                    email, role, fullName: name, age, jobTitle: job, location: loc,
-                    photoUrl, supervisorId: supId || null,
+                    email, role, fullName: name, jobTitle: job, 
+                    shortId: shortId, // الـ ID المهم
+                    photoUrl: "https://via.placeholder.com/100",
                     createdAt: new Date()
                 });
-
-                // 4. إرسال رابط التفعيل
-                await cred.user.sendEmailVerification();
                 
-                alert("تم إنشاء الحساب! تم إرسال رابط تفعيل إلى بريدك الإلكتروني. يرجى التفعيل قبل الدخول.");
-                location.reload();
+                // إضافة المستخدم لقائمة الاتصالات الخاصة به (عشان السيرش يشتغل عليه)
+                showToast(`تم التسجيل! معرفك هو ${shortId}`, "success");
             }
         } catch(e) {
-            showToast("خطأ: " + e.message, "error");
+            showToast(e.message, "error");
+            btn.innerText = isLoginMode ? "دخول" : "إنشاء الحساب";
             btn.disabled = false;
-            btn.innerText = isLoginMode ? "دخول" : "تسجيل وتفعيل";
         }
     }
 
-    // 4. نظام الطلبات
+    // 4. نظام الفريق (الإضافة والبحث)
+    async function searchUser() {
+        const input = document.getElementById('search-input').value.trim();
+        if(!input) return;
+
+        showToast("جاري البحث...", "info");
+        
+        let querySnapshot;
+        // البحث بالـ ID القصير أو الإيميل
+        if(input.includes('@')) {
+            querySnapshot = await db.collection('users').where('email', '==', input.toLowerCase()).get();
+        } else {
+            querySnapshot = await db.collection('users').where('shortId', '==', input.toUpperCase()).get();
+        }
+
+        if(querySnapshot.empty) return showToast("مستخدم غير موجود", "error");
+
+        const targetUser = querySnapshot.docs[0];
+        if(targetUser.id === currentUser.uid) return showToast("لا يمكن إضافة نفسك", "error");
+
+        // إرسال طلب
+        await db.collection('friend_requests').add({
+            fromId: currentUser.uid,
+            fromName: userData.fullName,
+            fromShortId: userData.shortId,
+            toId: targetUser.id,
+            status: 'pending',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        showToast("تم إرسال طلب الإضافة", "success");
+        document.getElementById('search-input').value = "";
+    }
+
+    function loadTeamData() {
+        // 1. الاستماع للطلبات الواردة
+        db.collection('friend_requests')
+          .where('toId', '==', currentUser.uid)
+          .where('status', '==', 'pending')
+          .onSnapshot(snap => {
+              const box = document.getElementById('incoming-requests');
+              const container = document.getElementById('friend-requests-box');
+              box.innerHTML = "";
+              
+              if(snap.empty) { container.classList.add('hidden'); return; }
+              container.classList.remove('hidden');
+
+              snap.forEach(doc => {
+                  const d = doc.data();
+                  box.innerHTML += `
+                    <div class="user-item">
+                        <div style="flex:1">
+                            <strong>${d.fromName}</strong>
+                            <div style="font-size:10px; color:#ccc;">ID: ${d.fromShortId}</div>
+                        </div>
+                        <button onclick="acceptRequest('${doc.id}')" class="btn-main" style="width:auto; padding:5px 10px; font-size:12px;">قبول</button>
+                    </div>`;
+              });
+          });
+
+        // 2. الاستماع لقائمة الأصدقاء (المقبولة)
+        // ملاحظة: لتبسيط الكود سنبحث عن الطلبات التي قبلتها أنا أو قبلها الطرف الآخر
+        // الحل المثالي في التطبيقات الكبيرة هو عمل collection اسمه 'contacts' داخل كل يوزر
+        // هنا سنعرض "من أرسل لي وقبلته"
+        db.collection('friend_requests')
+          .where('toId', '==', currentUser.uid)
+          .where('status', '==', 'accepted')
+          .onSnapshot(snap => renderTeamList(snap));
+    }
+
+    function renderTeamList(snap) {
+        const list = document.getElementById('team-list');
+        list.innerHTML = "";
+        if(snap.empty) { list.innerHTML = "<p style='text-align:center; padding:10px; font-size:12px;'>لا يوجد زملاء مضافين</p>"; return; }
+        
+        snap.forEach(doc => {
+            const d = doc.data();
+            list.innerHTML += `
+                <div class="user-item">
+                    <img src="https://via.placeholder.com/40" class="user-avatar">
+                    <div style="flex:1">
+                        <h4 style="margin:0;">${d.fromName}</h4>
+                        <small style="color:var(--text-muted);">ID: ${d.fromShortId}</small>
+                    </div>
+                    <a href="mailto:?" class="btn-outline" style="padding:5px; border-radius:50%;"><i class="fa-solid fa-envelope"></i></a>
+                </div>`;
+        });
+    }
+
+    async function acceptRequest(docId) {
+        await db.collection('friend_requests').doc(docId).update({ status: 'accepted' });
+        showToast("تمت الإضافة لقائمتك", "success");
+    }
+
+    // 5. وظائف الصيانة (مختصرة من الكود السابق)
     async function submitRequest() {
         const title = document.getElementById('req-title').value;
         const desc = document.getElementById('req-desc').value;
-        const file = document.getElementById('req-file').files[0];
-
-        if(!title) return showToast("اكتب العنوان", "error");
-
-        let imgUrl = "";
-        if(file) imgUrl = await uploadFile(file);
-
-        // إرسال الطلب للمشرف المربوط فقط
+        if(!title) return;
+        
         await db.collection('requests').add({
-            userId: currentUser.uid,
-            userName: userData.fullName,
-            userPhoto: userData.photoUrl,
-            targetSupervisorId: userData.supervisorId, // التوجيه للمشرف المحدد
-            title, desc, imageUrl: imgUrl,
-            status: 'pending',
+            userId: currentUser.uid, userName: userData.fullName, title, desc, status: 'pending',
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-
-        showToast("تم إرسال البلاغ للمشرف الخاص بك", "success");
+        showToast("تم الإرسال", "success");
         document.getElementById('req-title').value = "";
-        document.getElementById('req-desc').value = "";
     }
 
-    async function uploadFile(file) {
-        const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', CLOUD_PRESET);
-        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {method:'POST', body:fd});
-        const data = await res.json();
-        return data.secure_url;
-    }
+    function loadMaintenanceRequests() {
+        let q = db.collection('requests').orderBy('createdAt', 'desc');
+        if(userData.role === 'employee') q = q.where('userId', '==', currentUser.uid);
 
-    function listenToRequests() {
-        let q = db.collection('requests');
-
-        if(userData.role === 'employee') {
-            q = q.where('userId', '==', currentUser.uid);
-        } else if(userData.role === 'supervisor') {
-            // المشرف يرى فقط الطلبات الموجهة إليه
-            q = q.where('targetSupervisorId', '==', currentUser.uid);
-        }
-        // الفني يرى المهام الموجهة إليه (سنفترض الموافق عليه مؤقتاً)
-        else if(userData.role === 'technician') {
-            q = q.where('status', '==', 'approved');
-        }
-
-        q.orderBy('createdAt', 'desc').onSnapshot(snap => {
-            const container = document.getElementById('requests-container');
-            container.innerHTML = "";
-            if(snap.empty) container.innerHTML = "<p style='text-align:center; color:#777;'>لا توجد بيانات</p>";
-            
+        q.onSnapshot(snap => {
+            const list = document.getElementById('requests-list');
+            list.innerHTML = "";
             snap.forEach(doc => {
-                const data = doc.data();
-                renderCard(container, doc.id, data);
+                const d = doc.data();
+                let badge = d.status==='pending'?'warning': d.status==='done'?'success':'primary';
+                list.innerHTML += `
+                    <div class="glass-card">
+                        <div style="display:flex; justify-content:space-between;">
+                            <strong>${d.title}</strong>
+                            <span style="color:var(--${badge}); font-size:12px;">${d.status}</span>
+                        </div>
+                        <p style="font-size:13px; color:#ccc; margin:5px 0;">${d.desc}</p>
+                        <small style="color:var(--text-muted); font-size:10px;">${d.userName}</small>
+                    </div>`;
             });
         });
     }
 
-    function renderCard(container, id, data) {
-        let statusClass = data.status === 'done' ? 'done' : (data.status === 'approved' ? 'active' : '');
-        
-        let actions = "";
-        if(userData.role === 'supervisor' && data.status === 'pending') {
-            actions = `<div style="display:flex; gap:10px; margin-top:10px;">
-                <button onclick="updateStatus('${id}','approved')" class="btn-main" style="background:var(--success)">قبول</button>
-                <button onclick="updateStatus('${id}','rejected')" class="btn-main" style="background:var(--danger)">رفض</button>
-            </div>`;
-        } else if(userData.role === 'technician' && data.status === 'approved') {
-            actions = `<button onclick="updateStatus('${id}','done')" class="btn-main">إتمام</button>`;
-        }
-
-        const html = `
-        <div class="glass-card">
-            <div class="profile-header" style="border:none; padding-bottom:0;">
-                <img src="${data.userPhoto}" class="profile-pic-small">
-                <div>
-                    <h4 style="margin:0;">${data.userName}</h4>
-                    <span style="font-size:12px; color:var(--text-muted);">قدم بلاغاً منذ قليل</span>
-                </div>
-            </div>
-            <div style="margin:10px 0;">
-                <h3 style="margin:5px 0;">${data.title}</h3>
-                <p style="color:#ddd; font-size:14px;">${data.desc}</p>
-                ${data.imageUrl ? `<img src="${data.imageUrl}" style="width:100%; border-radius:10px; margin-top:10px;">` : ''}
-            </div>
-            
-            <div class="timeline">
-                <div class="step ${data.status!='rejected'?'active':''}"><div class="dot"></div><small>إرسال</small></div>
-                <div class="step ${['approved','done'].includes(data.status)?'active':''}"><div class="dot"></div><small>موافقة</small></div>
-                <div class="step ${data.status=='done'?'done':''}"><div class="dot"></div><small>تنفيذ</small></div>
-            </div>
-            ${actions}
-        </div>`;
-        container.innerHTML += html;
+    // أدوات
+    function navTo(page) {
+        document.querySelectorAll('.page-view').forEach(p => p.classList.add('hidden'));
+        document.getElementById(`page-${page}`).classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        event.currentTarget.classList.add('active');
     }
-
-    async function updateStatus(id, st) {
-        await db.collection('requests').doc(id).update({status: st});
+    
+    function copyId() {
+        navigator.clipboard.writeText(userData.shortId);
+        showToast("تم نسخ الـ ID", "success");
     }
 
     function showScreen(id) {
         document.getElementById('auth-screen').classList.add('hidden');
         document.getElementById('app-container').classList.add('hidden');
-        document.getElementById('verify-screen').classList.add('hidden');
-        
         if(id==='auth') document.getElementById('auth-screen').classList.remove('hidden');
         if(id==='app') document.getElementById('app-container').classList.remove('hidden');
     }
-
+    
     function logout() { auth.signOut(); location.reload(); }
     function showToast(m, t) {
-        const el = document.getElementById('toast-container');
-        el.innerHTML = `<div class="toast" style="border-color:${t==='error'? 'var(--danger)':'var(--success)'}">${m}</div>`;
-        setTimeout(()=>el.innerHTML='', 3000);
+        const c = document.getElementById('toast-container');
+        c.innerHTML = `<div class="toast" style="border-color:var(--${t==='error'?'danger':'success'})">${m}</div>`;
+        setTimeout(()=>c.innerHTML='', 3000);
     }
 </script>
 </body>

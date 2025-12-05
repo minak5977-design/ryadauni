@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Maintenance V8 (Full System)</title>
+    <title>Smart Maintenance V10 (Secure)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -12,21 +12,33 @@
     <style>
         /* ==================== Design System ==================== */
         :root {
-            --primary: #3a86ff; --secondary: #8338ec; --accent: #ff006e;
-            --success: #38b000; --warning: #ffbe0b; --dark: #101014;
+            --primary: #3a86ff; --dark: #101014;
+            --gold: #ffd700; --bronze: #cd7f32; --silver: #e0e0e0;
             --glass: rgba(25, 25, 30, 0.95); --border: rgba(255, 255, 255, 0.15);
             --text: #e0e0e0; --text-muted: #9e9e9e;
+            --error: #ff006e;
         }
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         body {
             font-family: 'Cairo', sans-serif; background-color: var(--dark); color: var(--text); margin: 0; min-height: 100vh;
-            background-image: radial-gradient(circle at 10% 20%, rgba(58, 134, 255, 0.1) 0%, transparent 50%),
-                              radial-gradient(circle at 90% 80%, rgba(255, 0, 110, 0.1) 0%, transparent 50%);
+            background-image: radial-gradient(circle at 50% 0%, rgba(58, 134, 255, 0.1) 0%, transparent 60%);
         }
         .app-wrapper { max-width: 550px; margin: 0 auto; min-height: 100vh; background: rgba(0,0,0,0.2); position: relative; padding-bottom: 80px; overflow-x: hidden; }
         .hidden { display: none !important; }
 
-        /* Components */
+        /* Roles Styles */
+        .role-supervisor .avatar { border-color: var(--gold) !important; box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); }
+        .role-supervisor .role-badge { background: linear-gradient(45deg, #ffd700, #ffb900); color: #000; }
+        .role-supervisor .role-icon::after { content: '\f521'; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; top: -8px; right: -5px; color: var(--gold); font-size: 14px; text-shadow: 0 2px 2px #000; transform: rotate(15deg); }
+
+        .role-technician .avatar { border-color: var(--bronze) !important; }
+        .role-technician .role-badge { background: linear-gradient(45deg, #cd7f32, #a05a2c); color: #fff; }
+        .role-technician .role-icon::after { content: '\f013'; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; bottom: -2px; right: -5px; color: var(--bronze); font-size: 12px; background: #222; border-radius: 50%; padding: 2px; }
+
+        .role-employee .avatar { border-color: var(--primary) !important; }
+        .role-employee .role-badge { background: rgba(255,255,255,0.1); color: var(--text-muted); border: 1px solid var(--border); }
+
+        /* UI Components */
         .glass-card {
             background: var(--glass); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin: 15px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.4); animation: slideUp 0.4s ease-out;
@@ -38,37 +50,35 @@
             border-radius: 10px; color: white; font-family: inherit; font-size: 14px;
         }
         input:focus { border-color: var(--primary); }
-
+        
         .btn-main {
-            width: 100%; padding: 12px; background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 100%; padding: 12px; background: linear-gradient(135deg, var(--primary), #2a6fdb);
             border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;
             display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 5px;
         }
-        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
 
-        /* Navigation */
+        /* Profile Header */
+        .user-header { display: flex; align-items: center; gap: 12px; position: relative; }
+        .avatar-container { position: relative; width: 45px; height: 45px; }
+        .avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); transition: 0.3s; }
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { font-weight: bold; font-size: 14px; line-height: 1.2; }
+        .user-role-text { font-size: 10px; margin-top: 2px; display: inline-block; padding: 2px 6px; border-radius: 4px; width: fit-content; }
+
+        /* Bottom Nav */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0; max-width: 550px; margin: 0 auto;
             background: #1a1a1e; border-top: 1px solid var(--border); display: flex; justify-content: space-around;
             padding: 10px 0; z-index: 900;
         }
-        .nav-item { text-align: center; color: var(--text-muted); font-size: 10px; cursor: pointer; flex: 1; opacity: 0.7; transition: 0.3s; }
-        .nav-item i { font-size: 20px; margin-bottom: 3px; display: block; }
-        .nav-item.active { color: var(--primary); opacity: 1; transform: translateY(-2px); }
-
-        /* Team Items */
-        .user-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-        .user-row:last-child { border: none; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); }
+        .nav-item { text-align: center; color: var(--text-muted); font-size: 10px; cursor: pointer; flex: 1; opacity: 0.7; }
+        .nav-item.active { color: var(--primary); opacity: 1; }
 
         /* Modals */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .modal-content { width: 100%; max-width: 400px; background: #202025; border: 1px solid var(--border); border-radius: 20px; padding: 20px; max-height: 80vh; overflow-y: auto; }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Media */
-        video, img.req-media { width: 100%; border-radius: 8px; margin-top: 10px; max-height: 250px; object-fit: cover; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -76,41 +86,54 @@
 <div class="app-wrapper">
 
     <div id="loader" style="position:fixed; inset:0; background:var(--dark); z-index:3000; display:flex; justify-content:center; align-items:center;">
-        <i class="fa-solid fa-circle-notch fa-spin fa-3x" style="color:var(--primary)"></i>
+        <i class="fa-solid fa-crown fa-spin fa-3x" style="color:var(--gold)"></i>
     </div>
 
     <div id="verify-screen" class="hidden" style="min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:30px; text-align:center;">
-        <i class="fa-solid fa-envelope-open-text fa-4x" style="color:var(--warning); margin-bottom:20px;"></i>
-        <h2>تأكيد البريد الإلكتروني</h2>
-        <p style="color:var(--text-muted); font-size:14px; margin-bottom:30px;">
-            تم إرسال رابط التفعيل إلى: <br><b style="color:white" id="verify-email-display"></b><br>
-            يجب الضغط على الرابط في الإيميل أولاً.
-        </p>
-        <button onclick="checkVerification()" class="btn-main">تحديث الحالة</button>
-        <button onclick="logout()" class="btn-main btn-ghost" style="margin-top:10px;">تسجيل خروج</button>
+        <div class="glass-card" style="margin:0;">
+            <i class="fa-solid fa-envelope-shield fa-4x" style="color:var(--gold); margin-bottom:20px;"></i>
+            <h2>تأكيد الحساب</h2>
+            <p style="color:var(--text-muted); font-size:14px; margin-bottom:20px;">
+                أهلاً بك! لضمان أمان النظام، قمنا بإرسال رابط تفعيل إلى:
+                <br><br>
+                <b style="color:var(--primary); background:rgba(255,255,255,0.1); padding:5px 10px; border-radius:5px;" id="verify-email-display"></b>
+            </p>
+            <p style="font-size:12px; color:#aaa; margin-bottom:30px;">
+                1. اذهب لبريدك الإلكتروني (افحص الـ Spam أيضاً).<br>
+                2. اضغط على رابط التفعيل.<br>
+                3. عد هنا واضغط الزر بالأسفل.
+            </p>
+            <button onclick="checkVerification()" class="btn-main">✅ لقد قمت بالتفعيل</button>
+            <button onclick="logout()" class="btn-main" style="margin-top:10px; background:transparent; border:1px solid #333; color:#aaa;">رجوع / خروج</button>
+        </div>
     </div>
 
     <div id="auth-screen" class="hidden" style="min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:20px;">
         <div class="glass-card" style="text-align:center;">
-            <i class="fa-solid fa-helmet-safety fa-3x" style="color:var(--primary); margin-bottom:15px;"></i>
+            <i class="fa-solid fa-shield-cat fa-3x" style="color:var(--primary); margin-bottom:15px;"></i>
             <h2 id="auth-title" style="margin-bottom:5px;">تسجيل الدخول</h2>
             
             <div id="reg-fields" class="hidden">
                 <div class="input-group"><input type="text" id="reg-name" placeholder="الاسم ثلاثي (أحمد محمد علي)"></div>
-                <div class="input-group"><input type="tel" id="reg-phone" placeholder="رقم الهاتف (01xxxxxxxxx)"></div>
+                <div class="input-group"><input type="tel" id="reg-phone" placeholder="رقم الهاتف (إجباري)"></div>
                 <div class="input-group">
                     <select id="reg-role">
-                        <option value="employee">موظف (تقديم طلب)</option>
-                        <option value="supervisor">مشرف (استقبال)</option>
-                        <option value="technician">فني (تنفيذ)</option>
+                        <option value="employee">موظف (فضـي)</option>
+                        <option value="supervisor">مشرف (ذهبـي 👑)</option>
+                        <option value="technician">فني (برونـزي ⚙️)</option>
                     </select>
                 </div>
                 <div class="input-group"><input type="text" id="reg-job" placeholder="المسمى الوظيفي"></div>
-                <div class="input-group"><input type="text" id="reg-loc" placeholder="مكان العمل (المبنى - الدور)"></div>
+                <div class="input-group"><input type="text" id="reg-loc" placeholder="مكان العمل"></div>
             </div>
 
             <div class="input-group"><input type="email" id="email" placeholder="البريد الإلكتروني"></div>
+            
             <div class="input-group"><input type="password" id="password" placeholder="كلمة المرور"></div>
+
+            <div id="confirm-pass-group" class="input-group hidden">
+                <input type="password" id="confirm-password" placeholder="تأكيد كلمة المرور" style="border-color:var(--primary);">
+            </div>
             
             <button onclick="handleAuth()" id="auth-btn" class="btn-main">دخول</button>
             <p onclick="toggleAuth()" style="margin-top:20px; cursor:pointer; color:var(--text-muted); font-size:13px; text-decoration: underline;">
@@ -122,72 +145,54 @@
     <div id="app-container" class="hidden">
         
         <div style="padding:15px; background:#1a1a1e; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <img id="head-pic" src="" class="avatar" onclick="openProfileEdit()">
-                <div>
-                    <div id="head-name" style="font-weight:bold; font-size:13px;"></div>
-                    <div id="head-id" style="font-size:10px; color:var(--primary); cursor:pointer;" onclick="copyId()"></div>
-                </div>
-            </div>
-            <button onclick="logout()" style="background:none; border:none; color:var(--accent);"><i class="fa-solid fa-power-off"></i></button>
+            <div class="user-header" id="header-user-display"></div>
+            <button onclick="logout()" style="background:none; border:none; color:#e63946;"><i class="fa-solid fa-power-off"></i></button>
         </div>
 
         <div id="pages-content">
             
             <div id="page-home" class="page-section">
-                
                 <div id="create-card" class="glass-card hidden">
                     <h3 style="margin:0 0 10px; color:var(--primary);">📝 بلاغ جديد</h3>
-                    
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                         <div class="input-group"><label>التاريخ</label><input type="date" id="req-date"></div>
                         <div class="input-group"><label>الوقت</label><input type="time" id="req-time"></div>
                     </div>
-                    
                     <div class="input-group">
-                        <label>القطاع / الكلية</label>
+                        <label>القطاع</label>
                         <select id="req-faculty" onchange="updateBuildings()">
-                            <option value="">اختر...</option>
-                            <option value="eng">هندسة</option><option value="sci">علوم</option><option value="art">آداب</option><option value="admin">إدارة</option>
+                            <option value="">اختر...</option><option value="eng">هندسة</option><option value="sci">علوم</option><option value="art">آداب</option><option value="admin">إدارة</option>
                         </select>
                     </div>
                     <div class="input-group"><label>المبنى</label><select id="req-building"><option value="">اختر المبنى...</option></select></div>
-                    <div class="input-group"><label>المكان بالتفصيل</label><input type="text" id="req-room" placeholder="القاعة / الدور"></div>
+                    <div class="input-group"><label>المكان</label><input type="text" id="req-room" placeholder="القاعة / الدور"></div>
                     <div class="input-group"><label>الوصف</label><textarea id="req-desc" rows="2"></textarea></div>
 
-                    <div style="border:1px dashed var(--border); padding:10px; text-align:center; border-radius:10px; margin-bottom:10px;" onclick="document.getElementById('req-file').click()">
-                        <i class="fa-solid fa-camera" style="color:var(--text-muted);"></i> <span style="font-size:12px; color:var(--text-muted);">صورة / فيديو</span>
+                    <div style="border:1px dashed var(--border); padding:10px; text-align:center; border-radius:10px; margin-bottom:10px; cursor:pointer;" onclick="document.getElementById('req-file').click()">
+                        <i class="fa-solid fa-camera" style="color:var(--text-muted);"></i> <span style="font-size:12px; color:var(--text-muted);">صورة / فيديو (40 ثانية)</span>
                         <input type="file" id="req-file" hidden accept="image/*,video/*" onchange="document.getElementById('file-msg').innerText='تم الاختيار'">
                         <div id="file-msg" style="font-size:10px; color:var(--success);"></div>
                     </div>
-
                     <button onclick="openSupervisorModal()" class="btn-main">اختيار الوجهة والإرسال</button>
                 </div>
-
                 <div id="requests-feed"></div>
             </div>
 
             <div id="page-team" class="page-section hidden">
                 <div class="glass-card">
-                    <h3>👥 فريقي والاتصالات</h3>
-                    
+                    <h3>👥 فريقي</h3>
                     <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; margin-bottom:15px;">
-                        <label>إضافة زميل أو مشرف جديد</label>
+                        <label>إضافة زميل</label>
                         <div style="display:flex; gap:5px;">
                             <input type="text" id="search-query" placeholder="ابحث بالـ ID أو الإيميل" style="margin:0;">
                             <button onclick="searchUser()" class="btn-main" style="width:auto;"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </div>
-
-                    <div id="friend-reqs" class="hidden" style="margin-bottom:15px; border:1px solid var(--warning); padding:10px; border-radius:10px;">
-                        <small style="color:var(--warning);">طلبات واردة:</small>
+                    <div id="friend-reqs" class="hidden" style="margin-bottom:15px; border:1px solid #ffbe0b; padding:10px; border-radius:10px;">
+                        <small style="color:#ffbe0b;">طلبات واردة:</small>
                         <div id="friend-reqs-list"></div>
                     </div>
-
-                    <label>قائمة الزملاء والمشرفين</label>
-                    <div id="team-list">
-                        <p style="text-align:center; font-size:12px; color:#555;">لا يوجد زملاء مضافين</p>
-                    </div>
+                    <div id="team-list"><p style="text-align:center; font-size:12px; color:#555;">لا يوجد زملاء</p></div>
                 </div>
             </div>
 
@@ -197,16 +202,14 @@
             <div class="nav-item active" onclick="nav('home', this)"><i class="fa-solid fa-list-check"></i>الرئيسية</div>
             <div class="nav-item" onclick="nav('team', this)"><i class="fa-solid fa-users"></i>الفريق</div>
         </div>
-
     </div>
 
     <div id="sup-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <h3>توجيه البلاغ</h3>
-            <p style="font-size:12px; color:#aaa;">اختر المشرف المسؤول:</p>
             <div id="sup-list-container" style="max-height:200px; overflow-y:auto; margin:15px 0;"></div>
             <div style="display:flex; gap:10px;">
-                <button onclick="closeModal('sup-modal')" class="btn-main btn-ghost">إلغاء</button>
+                <button onclick="closeModal('sup-modal')" class="btn-main" style="background:transparent; border:1px solid #333;">إلغاء</button>
                 <button onclick="sendRequestFinal()" class="btn-main">تأكيد الإرسال</button>
             </div>
         </div>
@@ -214,18 +217,18 @@
 
     <div id="profile-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <h3>تعديل الملف الشخصي</h3>
+            <h3>تعديل الملف</h3>
             <div style="text-align:center;">
-                <img id="edit-pic" src="" style="width:70px; height:70px; border-radius:50%; border:2px solid var(--primary);">
-                <br><button onclick="document.getElementById('edit-file').click()" class="btn-ghost btn-sm" style="margin-top:5px;">تغيير الصورة</button>
+                <div id="edit-pic-container" style="width:80px; height:80px; margin:0 auto; position:relative;"></div>
+                <br><button onclick="document.getElementById('edit-file').click()" class="btn-main" style="width:auto; font-size:12px; margin:0 auto; padding:5px 15px;">تغيير الصورة</button>
                 <input type="file" id="edit-file" hidden>
             </div>
             <div class="input-group"><label>الاسم</label><input type="text" id="edit-name"></div>
-            <div class="input-group"><label>رقم الهاتف <span style="color:red">*</span></label><input type="tel" id="edit-phone"></div>
+            <div class="input-group"><label>الهاتف</label><input type="tel" id="edit-phone"></div>
             <div class="input-group"><label>الوظيفة</label><input type="text" id="edit-job"></div>
             <div class="input-group"><label>المكان</label><input type="text" id="edit-loc"></div>
             <button onclick="saveProfile()" class="btn-main">حفظ</button>
-            <button onclick="closeModal('profile-modal')" class="btn-main btn-ghost" style="margin-top:5px;">إغلاق</button>
+            <button onclick="closeModal('profile-modal')" class="btn-main" style="margin-top:5px; background:transparent; border:1px solid #333;">إغلاق</button>
         </div>
     </div>
 
@@ -254,12 +257,12 @@
 
     let currentUser=null, userData=null, isLoginMode=true, selectedSup=null;
 
-    // --- Auth ---
     auth.onAuthStateChanged(async u => {
         document.getElementById('loader').classList.add('hidden');
         if(u) {
+            // Strict Verification Check
             if(!u.emailVerified) {
-                document.getElementById('verify-screen').classList.remove('hidden');
+                showScreen('verify-screen');
                 document.getElementById('verify-email-display').innerText = u.email;
                 return;
             }
@@ -272,24 +275,41 @@
         const doc = await db.collection('users').doc(currentUser.uid).get();
         if(doc.exists) {
             userData = doc.data();
-            updateHead();
+            renderUserHeader(userData, 'header-user-display', true);
             showScreen('app-container');
             if(userData.role==='employee') document.getElementById('create-card').classList.remove('hidden');
-            
-            // Initial Data Load
-            loadFeed();
-            loadTeam();
-            
-            // Set Date
+            loadFeed(); loadTeam();
             document.getElementById('req-date').valueAsDate = new Date();
             document.getElementById('req-time').value = new Date().toTimeString().slice(0,5);
         }
     }
 
+    function renderUserHeader(data, containerId, isHeader = false) {
+        const role = data.role;
+        let roleClass = role === 'supervisor' ? 'role-supervisor' : role === 'technician' ? 'role-technician' : 'role-employee';
+        let roleText = role === 'supervisor' ? 'مشرف' : role === 'technician' ? 'فني' : 'موظف';
+        const html = `
+            <div class="${roleClass} user-header">
+                <div class="avatar-container role-icon" onclick="${isHeader ? 'openProfileEdit()' : ''}">
+                    <img src="${data.photoUrl}" class="avatar">
+                </div>
+                <div class="user-info">
+                    <span class="user-name">${data.fullName}</span>
+                    <span class="user-role-text role-badge">${roleText}</span>
+                    ${isHeader ? `<span style="font-size:10px; color:#666; cursor:pointer;" onclick="copyId()">ID: ${data.shortId}</span>` : ''}
+                </div>
+            </div>`;
+        document.getElementById(containerId).innerHTML = html;
+    }
+
+    // --- Auth with Confirmation Logic ---
     function toggleAuth() {
         isLoginMode = !isLoginMode;
         document.getElementById('reg-fields').classList.toggle('hidden', isLoginMode);
+        document.getElementById('confirm-pass-group').classList.toggle('hidden', isLoginMode); // Toggle Confirm Password
+        
         document.getElementById('auth-btn').innerText = isLoginMode ? "دخول" : "إنشاء حساب";
+        document.getElementById('auth-title').innerText = isLoginMode ? "تسجيل الدخول" : "حساب جديد";
         document.getElementById('switch-text').innerText = isLoginMode ? "مستخدم جديد؟" : "لديك حساب؟";
     }
 
@@ -305,20 +325,20 @@
         try {
             if(isLoginMode) {
                 const cred = await auth.signInWithEmailAndPassword(email, pass);
-                if(!cred.user.emailVerified) {
-                    toast("يجب تفعيل الإيميل"); auth.signOut();
-                }
+                if(!cred.user.emailVerified) { toast("يجب تفعيل الإيميل"); auth.signOut(); }
             } else {
-                // Registration
+                // Registration Checks
+                const confirmPass = document.getElementById('confirm-password').value;
+                if(pass !== confirmPass) throw new Error("كلمة المرور غير متطابقة ❌");
+
                 const name = document.getElementById('reg-name').value.trim();
                 const phone = document.getElementById('reg-phone').value.trim();
                 const role = document.getElementById('reg-role').value;
                 const job = document.getElementById('reg-job').value;
                 const loc = document.getElementById('reg-loc').value;
 
-                // Validation
-                if(name.split(' ').length < 2) throw new Error("الاسم يجب أن يكون ثنائي على الأقل");
-                if(phone.length < 10) throw new Error("رقم الهاتف غير صحيح");
+                if(name.split(' ').length < 2) throw new Error("الاسم يجب أن يكون ثنائي");
+                if(phone.length < 10) throw new Error("رقم الهاتف مطلوب");
 
                 const cred = await auth.createUserWithEmailAndPassword(email, pass);
                 await db.collection('users').doc(cred.user.uid).set({
@@ -328,186 +348,167 @@
                 });
                 
                 await cred.user.sendEmailVerification();
-                toast("تم التسجيل! افحص بريدك"); auth.signOut();
+                auth.signOut(); // Force logout so user goes to Verify Screen on next check
+                showScreen('verify-screen');
+                document.getElementById('verify-email-display').innerText = email;
             }
         } catch(e) { toast(e.message); btn.disabled=false; btn.innerText="محاولة مجدداً"; }
     }
 
-    async function checkVerification() { await currentUser.reload(); if(currentUser.emailVerified) location.reload(); else toast("لم يتم التفعيل بعد"); }
+    async function checkVerification() { 
+        // Force reload user to check verification status
+        if(currentUser) await currentUser.reload();
+        // If we are on verify screen but user object is null (signed out), try to sign in silently or just tell user to login
+        if(!currentUser) { toast("يرجى تسجيل الدخول أولاً"); showScreen('auth-screen'); return; }
 
-    // --- Maintenance System ---
+        if(currentUser.emailVerified) location.reload(); 
+        else toast("لم يتم التفعيل بعد"); 
+    }
+
+    // --- Core Logic ---
     function updateBuildings() {
         const f = document.getElementById('req-faculty').value;
         const b = document.getElementById('req-building');
         b.innerHTML = "<option>اختر...</option>";
-        const d = {
-            'eng': ['مبنى 1','ورش','عمارة'],
-            'sci': ['معامل','كيمياء'],
-            'art': ['لغات','جغرافيا'],
-            'admin': ['رئيسي']
-        };
+        const d = {'eng':['مبنى 1','ورش','عمارة'], 'sci':['معامل','كيمياء'], 'art':['لغات','جغرافيا'], 'admin':['رئيسي']};
         if(d[f]) d[f].forEach(x => b.innerHTML+=`<option>${x}</option>`);
     }
 
     async function openSupervisorModal() {
-        const desc = document.getElementById('req-desc').value;
-        if(!desc) return toast("يجب كتابة الوصف");
-
+        if(!document.getElementById('req-desc').value) return toast("اكتب الوصف");
         document.getElementById('sup-modal').classList.remove('hidden');
         const box = document.getElementById('sup-list-container');
         box.innerHTML = "جاري البحث...";
-        
         const snap = await db.collection('users').where('role','==','supervisor').get();
         box.innerHTML = "";
-        if(snap.empty) { box.innerHTML = "لا يوجد مشرفين حالياً"; return; }
-
+        if(snap.empty) { box.innerHTML = "لا يوجد مشرفين"; return; }
         snap.forEach(doc => {
             const d = doc.data();
-            box.innerHTML += `
-            <div class="user-row" onclick="selectSup(this, '${doc.id}')" style="cursor:pointer; border:1px solid #333; border-radius:10px; padding:10px; margin-bottom:5px;">
-                <img src="${d.photoUrl}" class="avatar">
-                <div><b>${d.fullName}</b><br><small>${d.jobTitle}</small></div>
+            // Use render helper manually
+            let roleClass='role-supervisor';
+            box.innerHTML += `<div class="${roleClass} user-header" onclick="selectSup(this, '${doc.id}')" style="cursor:pointer; border:1px solid #333; border-radius:10px; padding:10px; margin-bottom:5px;">
+                <div class="avatar-container role-icon"><img src="${d.photoUrl}" class="avatar"></div>
+                <div class="user-info"><span class="user-name">${d.fullName}</span><span class="user-role-text role-badge">مشرف</span></div>
             </div>`;
         });
     }
 
     function selectSup(el, id) {
-        document.querySelectorAll('.user-row').forEach(x => x.style.borderColor='#333');
-        el.style.borderColor='var(--primary)';
+        document.querySelectorAll('.user-header').forEach(x => x.style.borderColor='#333');
+        el.style.borderColor='var(--gold)';
         selectedSup = id;
     }
 
     async function sendRequestFinal() {
         if(!selectedSup) return toast("اختر مشرف");
-        
         const btn = document.querySelector('#sup-modal button:last-child');
-        btn.innerText = "جاري الإرسال..."; btn.disabled = true;
-
+        btn.innerText = "جاري..."; btn.disabled = true;
         try {
             const fac = document.getElementById('req-faculty');
             const loc = `${fac.options[fac.selectedIndex].text} - ${document.getElementById('req-building').value} - ${document.getElementById('req-room').value}`;
             const file = document.getElementById('req-file').files[0];
-            
             let url="", type="none";
             if(file) {
                 const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', CLOUD_PRESET);
                 const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {method:'POST', body:fd});
                 const d = await res.json(); url = d.secure_url; type = file.type.includes('video')?'video':'image';
             }
-
             await db.collection('requests').add({
-                userId: currentUser.uid, userName: userData.fullName, userPic: userData.photoUrl,
+                userId: currentUser.uid, userData: { fullName: userData.fullName, role: userData.role, photoUrl: userData.photoUrl },
                 supervisorId: selectedSup, location: loc, description: document.getElementById('req-desc').value,
                 date: document.getElementById('req-date').value, time: document.getElementById('req-time').value,
                 mediaUrl: url, mediaType: type, status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            
             toast("تم الإرسال"); closeModal('sup-modal'); btn.disabled=false; btn.innerText="تأكيد";
             document.getElementById('req-desc').value="";
-        } catch(e) { toast("خطأ في الإرسال"); btn.disabled=false; }
+        } catch(e) { toast("خطأ"); btn.disabled=false; }
     }
 
     function loadFeed() {
         let q = db.collection('requests').orderBy('createdAt', 'desc');
         if(userData.role==='employee') q = q.where('userId','==',currentUser.uid);
         else if(userData.role==='supervisor') q = q.where('supervisorId','==',currentUser.uid);
-
         q.onSnapshot(snap => {
-            const f = document.getElementById('requests-feed');
-            f.innerHTML = "";
+            const f = document.getElementById('requests-feed'); f.innerHTML = "";
             snap.forEach(doc => {
                 const d = doc.data();
-                let m = "";
-                if(d.mediaUrl) m = d.mediaType==='video' ? `<video controls src="${d.mediaUrl}"></video>` : `<img src="${d.mediaUrl}" class="req-media">`;
+                let m = d.mediaUrl ? (d.mediaType==='video' ? `<video controls src="${d.mediaUrl}"></video>` : `<img src="${d.mediaUrl}" class="req-media">`) : '';
+                let btns = (userData.role==='supervisor' && d.status==='pending') ? `<div style="display:flex; gap:10px; margin-top:10px;"><button onclick="setStatus('${doc.id}','approved')" class="btn-main" style="background:var(--success)">قبول</button><button onclick="setStatus('${doc.id}','rejected')" class="btn-main" style="background:var(--error)">رفض</button></div>` : '';
                 
-                let acts = "";
-                if(userData.role==='supervisor' && d.status==='pending') {
-                    acts = `<div style="display:flex; gap:10px; margin-top:10px;"><button onclick="setStatus('${doc.id}','approved')" class="btn-main" style="background:var(--success)">قبول</button><button onclick="setStatus('${doc.id}','rejected')" class="btn-main" style="background:var(--accent)">رفض</button></div>`;
-                }
-                
+                // Determine style for sender
+                const sRole = d.userData ? d.userData.role : 'employee';
+                let roleClass = sRole === 'supervisor' ? 'role-supervisor' : sRole === 'technician' ? 'role-technician' : 'role-employee';
+                let roleLabel = sRole === 'supervisor' ? 'مشرف' : sRole === 'technician' ? 'فني' : 'موظف';
+
                 f.innerHTML += `
-                <div class="glass-card">
-                    <div class="user-row" style="border:none; padding:0;">
-                        <img src="${d.userPic}" class="avatar">
-                        <div><b>${d.userName}</b><br><small>${d.location}</small></div>
+                <div class="glass-card ${roleClass}">
+                    <div class="user-header">
+                        <div class="avatar-container role-icon"><img src="${d.userData ? d.userData.photoUrl : ''}" class="avatar"></div>
+                        <div class="user-info"><span class="user-name">${d.userData ? d.userData.fullName : 'User'}</span><span class="user-role-text role-badge">${roleLabel}</span></div>
+                        <div style="margin-right:auto; font-size:10px; color:#aaa;">${d.status}</div>
                     </div>
-                    <p style="background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;">${d.description}</p>
+                    <div style="margin-top:10px;">${d.description}</div>
                     ${m}
-                    <div style="font-size:10px; color:var(--primary); margin-top:5px;">${d.date} | ${d.time}</div>
-                    <div style="margin-top:10px; display:flex; gap:5px;">
-                        <span style="font-size:10px; padding:3px 8px; border-radius:5px; background:${d.status==='pending'?'#444':d.status==='approved'?'var(--primary)':'var(--success)'}">${d.status}</span>
-                    </div>
-                    ${acts}
+                    <div style="font-size:10px; color:var(--primary); margin-top:5px;">📅 ${d.date} | ⏰ ${d.time}</div>
+                    ${btns}
                 </div>`;
             });
         });
     }
-
     async function setStatus(id, s) { await db.collection('requests').doc(id).update({status:s}); }
 
-    // --- Team System ---
+    // --- Team & Utils ---
     async function searchUser() {
         const q = document.getElementById('search-query').value.trim();
         if(!q) return;
-        
         let snap = await db.collection('users').where('shortId','==',q.toUpperCase()).get();
         if(snap.empty) snap = await db.collection('users').where('email','==',q.toLowerCase()).get();
-        
         if(snap.empty) return toast("غير موجود");
         const target = snap.docs[0];
-        if(target.id === currentUser.uid) return toast("لا يمكن إضافة نفسك");
-
+        if(target.id === currentUser.uid) return toast("لا يمكن");
         await db.collection('friend_requests').add({
-            fromId: currentUser.uid, fromName: userData.fullName, fromShort: userData.shortId,
-            toId: target.id, status: 'pending'
+            fromId: currentUser.uid, fromName: userData.fullName, fromShort: userData.shortId, 
+            fromRole: userData.role, fromPic: userData.photoUrl, toId: target.id, status: 'pending'
         });
         toast("تم الإرسال");
     }
-
     function loadTeam() {
-        // Incoming Requests
-        db.collection('friend_requests').where('toId','==',currentUser.uid).where('status','==','pending')
-          .onSnapshot(snap => {
-              const b = document.getElementById('friend-reqs');
-              const l = document.getElementById('friend-reqs-list');
-              l.innerHTML = "";
-              if(snap.empty) b.classList.add('hidden');
-              else {
-                  b.classList.remove('hidden');
-                  snap.forEach(doc => {
-                      l.innerHTML += `<div class="user-row"><span>${doc.data().fromName}</span><button class="btn-main" style="width:auto; padding:5px 10px;" onclick="acceptReq('${doc.id}')">قبول</button></div>`;
-                  });
-              }
-          });
-          
-        // Friends List
-        db.collection('friend_requests').where('toId','==',currentUser.uid).where('status','==','accepted')
-          .onSnapshot(snap => {
-              const l = document.getElementById('team-list');
-              l.innerHTML = "";
-              if(snap.empty) l.innerHTML = "<p style='text-align:center; font-size:12px; color:#555'>القائمة فارغة</p>";
-              snap.forEach(doc => {
-                  l.innerHTML += `<div class="user-row"><div class="avatar" style="background:#444"></div><div><b>${doc.data().fromName}</b><br><small>ID: ${doc.data().fromShort}</small></div></div>`;
-              });
-          });
+        db.collection('friend_requests').where('toId','==',currentUser.uid).where('status','==','pending').onSnapshot(s => {
+            const l = document.getElementById('friend-reqs-list'); l.innerHTML="";
+            if(s.empty) document.getElementById('friend-reqs').classList.add('hidden');
+            else {
+                document.getElementById('friend-reqs').classList.remove('hidden');
+                s.forEach(d => l.innerHTML += `<div>${d.data().fromName} <button onclick="acceptReq('${d.id}')">قبول</button></div>`);
+            }
+        });
+        db.collection('friend_requests').where('toId','==',currentUser.uid).where('status','==','accepted').onSnapshot(s => {
+            const l = document.getElementById('team-list'); l.innerHTML="";
+            s.forEach(doc => {
+                const d=doc.data();
+                // Render friend with badge
+                let rc = d.fromRole==='supervisor'?'role-supervisor':d.fromRole==='technician'?'role-technician':'role-employee';
+                l.innerHTML += `<div class="${rc} user-header" style="margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px;">
+                    <div class="avatar-container role-icon"><img src="${d.fromPic}" class="avatar"></div>
+                    <div class="user-info"><span class="user-name">${d.fromName}</span><span class="user-role-text role-badge">ID: ${d.fromShort}</span></div>
+                </div>`;
+            });
+        });
     }
     async function acceptReq(id) { await db.collection('friend_requests').doc(id).update({status:'accepted'}); }
 
-    // --- Profile ---
     function openProfileEdit() {
         document.getElementById('profile-modal').classList.remove('hidden');
         document.getElementById('edit-name').value = userData.fullName;
         document.getElementById('edit-phone').value = userData.phone || "";
         document.getElementById('edit-job').value = userData.jobTitle;
         document.getElementById('edit-loc').value = userData.location;
-        document.getElementById('edit-pic').src = userData.photoUrl;
+        let roleClass = userData.role === 'supervisor' ? 'role-supervisor' : userData.role === 'technician' ? 'role-technician' : 'role-employee';
+        document.getElementById('edit-pic-container').innerHTML = `<div class="${roleClass}" style="width:100%; height:100%;"><div class="avatar-container role-icon" style="width:100%; height:100%;"><img src="${userData.photoUrl}" class="avatar"></div></div>`;
     }
-
     async function saveProfile() {
         const name = document.getElementById('edit-name').value;
         const phone = document.getElementById('edit-phone').value;
         const file = document.getElementById('edit-file').files[0];
-        
         let url = userData.photoUrl;
         if(file) {
             toast("رفع الصورة...");
@@ -515,29 +516,16 @@
             const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {method:'POST', body:fd});
             const d = await res.json(); url = d.secure_url;
         }
-
         await db.collection('users').doc(currentUser.uid).update({fullName:name, phone:phone, photoUrl:url, jobTitle:document.getElementById('edit-job').value, location:document.getElementById('edit-loc').value});
         location.reload();
     }
-
-    // --- Navigation & Utils ---
     function nav(page, el) {
         document.querySelectorAll('.page-section').forEach(x => x.classList.add('hidden'));
         document.getElementById(`page-${page}`).classList.remove('hidden');
         document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
         el.classList.add('active');
     }
-
-    function updateHead() {
-        document.getElementById('head-name').innerText = userData.fullName;
-        document.getElementById('head-id').innerText = "ID: " + userData.shortId;
-        document.getElementById('head-pic').src = userData.photoUrl;
-    }
-
-    function showScreen(id) {
-        ['auth-screen','app-container','verify-screen'].forEach(x => document.getElementById(x).classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
-    }
+    function showScreen(id) { ['auth-screen','app-container','verify-screen'].forEach(x => document.getElementById(x).classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
     function copyId() { navigator.clipboard.writeText(userData.shortId); toast("تم نسخ الـ ID"); }
     function logout() { auth.signOut(); location.reload(); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }

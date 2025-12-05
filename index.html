@@ -195,7 +195,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // --- 1. إعدادات Firebase (مفاتيحك جاهزة) ---
+        // --- 1. إعدادات Firebase ---
         const firebaseConfig = {
             apiKey: "AIzaSyABwJfEkkbNB8GurZkyj67R8ksVNEXZ11I",
             authDomain: "ryadanur1-375a8.firebaseapp.com",
@@ -205,11 +205,8 @@
             appId: "1:858244114090:web:42cee8e98e3984164392d3"
         };
 
-        // --- 2. إعدادات Cloudinary (تم وضع اسم الكلاود والبريست بنجاح) ---
-        
-        // ✅ تم تحديث اسم الكلاود بناءً على الصورة
+        // --- 2. إعدادات Cloudinary ---
         const CLOUDINARY_CLOUD_NAME = "djzfruh22"; 
-        
         const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`;
         const CLOUDINARY_PRESET = "udyvggup"; 
 
@@ -383,9 +380,13 @@
             } catch (error) { alert("خطأ: " + error.message); }
         }
 
+        // --- الاستماع للبيانات (تم التعديل هنا) ---
         function listenToRequests(role) {
             let query;
-            const col = db.collection('requests').orderBy('createdAt', 'desc');
+            
+            // ✅ تعديل هام: تم إزالة .orderBy('createdAt', 'desc') مؤقتاً لحل مشكلة الفهرسة
+            const col = db.collection('requests');
+            
             let targetId = '';
 
             if (role === 'employee') {

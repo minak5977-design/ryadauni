@@ -3,708 +3,888 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Maintenance V18 (Pro Max)</title>
+    <title>Smart Maintenance V17 (Ultimate Edition)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* ==================== Design System V18 ==================== */
+        /* ==================== 1. Reality Core & Theme ==================== */
         :root {
-            --primary: #4cc9f0; --secondary: #4361ee;
-            --bg-dark: #0f1014; --glass-bg: rgba(30, 30, 35, 0.70);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text-main: #ffffff; --text-sec: #94a3b8;
-            --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
-            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+            --primary: #3a86ff; --dark: #0a0a0f; --gold: #ffd700; --bronze: #cd7f32;
+            --glass-surface: rgba(30, 30, 40, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text: #e0e0e0; --text-muted: #9aa0a6;
+            --success: #00b894; --error: #ff4757; --warning: #ffa502;
+            --bg-image: url('https://a.top4top.io/p_36115ao3o1.jpg');
         }
-
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; font-family: 'Tajawal', sans-serif; }
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         
         body {
-            background-color: var(--bg-dark); color: var(--text-main); margin: 0; min-height: 100vh;
-            background-image: radial-gradient(circle at 10% 20%, rgba(67, 97, 238, 0.1) 0%, transparent 40%);
-            overflow-x: hidden; padding-bottom: 80px;
+            font-family: 'Cairo', sans-serif; background-color: var(--dark); color: var(--text); margin: 0; min-height: 100vh;
+            background-image: var(--bg-image);
+            background-size: cover; background-position: center; background-attachment: fixed;
+            position: relative; overflow-x: hidden;
         }
+        body::before { content: ''; position: fixed; inset: 0; background: rgba(8, 8, 12, 0.92); z-index: -1; }
 
-        .app-container { max-width: 600px; margin: 0 auto; padding: 15px; position: relative; }
+        .app-wrapper { max-width: 550px; margin: 0 auto; min-height: 100vh; position: relative; padding-bottom: 90px; }
         .hidden { display: none !important; }
 
-        /* --- Glass Cards & Inputs --- */
+        /* Banner */
+        .main-banner {
+            height: 140px; background-image: var(--bg-image); background-size: cover; background-position: center;
+            position: relative; border-bottom-left-radius: 35px; border-bottom-right-radius: 35px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.7); display: flex; align-items: flex-end; padding: 25px; overflow: hidden;
+        }
+        .main-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--dark), rgba(10,10,15,0.3)); }
+        .banner-content { position: relative; z-index: 2; width: 100%; display: flex; justify-content: space-between; align-items: flex-end; }
+        .banner-content h1 { margin: 0; font-size: 20px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
+        .banner-content .app-ver { font-size: 10px; color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; }
+
+        /* Modern Glass Card */
         .glass-card {
-            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; margin-bottom: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s; position: relative; overflow: hidden;
+            background: var(--glass-surface); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; margin: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); position: relative; overflow: visible; transition: 0.3s;
         }
-        
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; color: var(--text-sec); margin-bottom: 8px; font-weight: bold; }
+        .glass-card:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.2); }
+
+        .input-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; }
         input, select, textarea {
-            width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border);
-            border-radius: 12px; color: #fff; font-size: 14px; transition: 0.3s;
+            width: 100%; padding: 14px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border);
+            border-radius: 14px; color: white; font-family: inherit; font-size: 13px; transition: 0.3s;
         }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
-
-        /* --- Buttons --- */
-        .btn {
-            width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; font-size: 14px;
-        }
-        .btn:active { transform: scale(0.97); }
-        .btn-primary { background: var(--gradient); color: #fff; box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3); }
-        .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
-        .btn-ghost { background: transparent; border: 1px solid var(--glass-border); color: var(--text-sec); }
-        .btn-sm { padding: 8px 12px; font-size: 12px; width: auto; }
-
-        /* --- Header & Nav --- */
-        .top-header {
-            display: flex; justify-content: space-between; align-items: center; padding: 15px 0;
-            margin-bottom: 10px;
-        }
-        .user-mini { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .avatar-circle { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--glass-border); }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); background: rgba(0, 0, 0, 0.5); }
         
-        .bottom-nav {
-            position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 560px; margin: 0 auto;
-            background: rgba(20, 20, 25, 0.9); backdrop-filter: blur(20px); border: 1px solid var(--glass-border);
-            border-radius: 25px; display: flex; justify-content: space-around; padding: 15px; z-index: 100;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        .btn-main {
+            width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), #0056b3);
+            border: none; border-radius: 14px; color: white; font-weight: 700; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 10px;
+            box-shadow: 0 8px 20px rgba(58, 134, 255, 0.25); transition: 0.2s; font-size: 14px;
         }
-        .nav-item { color: var(--text-sec); font-size: 20px; cursor: pointer; transition: 0.3s; position: relative; }
-        .nav-item.active { color: var(--primary); transform: translateY(-3px); }
-        .nav-item.active::after {
-            content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
-            width: 5px; height: 5px; background: var(--primary); border-radius: 50%;
-        }
+        .btn-main:active { transform: scale(0.98); }
+        .btn-ghost { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); color: var(--text-muted); box-shadow: none; }
+        .btn-danger { background: linear-gradient(135deg, var(--error), #c01b2f); box-shadow: 0 5px 15px rgba(239, 35, 60, 0.3); }
 
-        /* --- Request Card Enhancements --- */
-        .req-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .req-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+        /* Enhanced Header & Avatars */
+        .user-header { display: flex; align-items: center; gap: 12px; position: relative; }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.1); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .badge { font-size: 9px; padding: 4px 8px; border-radius: 6px; display: inline-block; margin-top: 4px; font-weight: 800; letter-spacing: 0.5px; }
+
+        /* Absolute Badges for Cards */
+        .card-status-badge {
+            position: absolute; top: 15px; left: 15px;
+            font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
         
-        .badge { padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: bold; white-space: nowrap; }
-        .badge-high { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
-        .badge-medium { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); }
-        .badge-low { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
-        .badge-status { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid var(--glass-border); }
+        /* Timeline Tracker */
+        .timeline-container { margin: 25px 0; position: relative; padding: 0 10px; }
+        .timeline-progress { position: absolute; top: 15px; right: 10px; left: 10px; height: 2px; background: #333; z-index: 1; }
+        .timeline-bar { position: absolute; top: 15px; right: 10px; height: 2px; background: var(--success); z-index: 2; transition: width 0.5s; }
+        .timeline-steps { display: flex; justify-content: space-between; position: relative; z-index: 3; }
+        .step-item { text-align: center; width: 25%; }
+        .step-circle { width: 30px; height: 30px; background: #222; border: 2px solid #444; border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: 0.3s; color: #666; }
+        .step-label { font-size: 10px; color: #666; font-weight: 600; }
+        .step-item.active .step-circle { background: var(--success); border-color: var(--success); color: #fff; box-shadow: 0 0 15px rgba(0, 184, 148, 0.4); }
+        .step-item.active .step-label { color: var(--text); }
+        .step-item.rejected .step-circle { background: var(--error); border-color: var(--error); color: #fff; }
 
-        /* --- Tracking Steps --- */
-        .track-container { display: flex; justify-content: space-between; position: relative; margin: 25px 0; }
-        .track-container::before {
-            content: ''; position: absolute; top: 12px; left: 0; right: 0; height: 2px; background: #333; z-index: 0;
-        }
-        .step { position: relative; z-index: 1; text-align: center; }
-        .step-circle {
-            width: 25px; height: 25px; background: #222; border: 2px solid #444; border-radius: 50%;
-            margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; transition: 0.3s;
-        }
-        .step.active .step-circle { background: var(--primary); border-color: var(--primary); color: #000; box-shadow: 0 0 10px var(--primary); }
-        .step.done .step-circle { background: var(--success); border-color: var(--success); color: #fff; }
-        .step-label { font-size: 10px; color: var(--text-sec); }
+        /* Priority Colors */
+        .p-high { color: var(--error); background: rgba(239, 35, 60, 0.1); border: 1px solid var(--error); }
+        .p-medium { color: var(--warning); background: rgba(255, 159, 28, 0.1); border: 1px solid var(--warning); }
+        .p-low { color: var(--success); background: rgba(0, 184, 148, 0.1); border: 1px solid var(--success); }
 
-        /* --- Modals & Overlays --- */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
-            z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px;
-            opacity: 0; pointer-events: none; transition: 0.3s;
-        }
-        .modal-overlay.active { opacity: 1; pointer-events: all; }
-        .modal-content {
-            width: 100%; max-width: 450px; background: #16171c; border: 1px solid var(--glass-border);
-            border-radius: 24px; padding: 25px; max-height: 85vh; overflow-y: auto; transform: translateY(20px); transition: 0.3s;
-        }
-        .modal-overlay.active .modal-content { transform: translateY(0); }
+        /* Tabs */
+        .tabs-container { display: flex; gap: 8px; padding: 15px; background: rgba(20, 20, 25, 0.9); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 50; border-bottom: 1px solid var(--glass-border); overflow-x: auto; scrollbar-width: none; }
+        .tab-btn { flex: none; min-width: 90px; padding: 10px 15px; border-radius: 30px; border: 1px solid transparent; background: rgba(255,255,255,0.05); color: var(--text-muted); cursor: pointer; font-size: 12px; font-weight: 700; transition: 0.3s; }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(58, 134, 255, 0.3); }
 
-        /* --- Media Grid --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 550px; margin: 0 auto; background: rgba(15, 15, 20, 0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); display: flex; justify-content: space-around; padding: 10px 0 15px; z-index: 900; }
+        .nav-item { text-align: center; color: #555; font-size: 10px; cursor: pointer; flex: 1; transition: 0.3s; position: relative; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item.active::after { content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 30px; height: 3px; background: var(--primary); border-radius: 0 0 5px 5px; box-shadow: 0 2px 10px var(--primary); }
+        .nav-item i { font-size: 20px; margin-bottom: 5px; display: block; }
+
+        /* Modals Animation */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 15px; backdrop-filter: blur(8px); }
+        .modal-content { width: 100%; max-width: 450px; background: #1a1a20; border: 1px solid var(--glass-border); border-radius: 30px; padding: 30px 25px; max-height: 90vh; overflow-y: auto; position: relative; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 25px 50px rgba(0,0,0,0.8); }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close-modal { position: absolute; top: 20px; left: 20px; width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; transition: 0.2s; }
+        .close-modal:hover { background: var(--error); transform: rotate(90deg); }
+
+        /* Media Grid */
         .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 8px; margin-top: 10px; }
-        .media-thumb { width: 100%; height: 70px; object-fit: cover; border-radius: 10px; border: 1px solid var(--glass-border); cursor: pointer; }
+        .media-item { position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border); background: #000; }
+        .media-item img, .media-item video { width: 100%; height: 100%; object-fit: cover; }
+        .media-remove { position: absolute; top: 4px; right: 4px; background: rgba(239, 35, 60, 0.9); color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer; z-index: 5; }
+
+        /* Profile & ID */
+        .id-pill { background: rgba(255, 215, 0, 0.1); color: var(--gold); border: 1px solid var(--gold); padding: 5px 12px; border-radius: 20px; font-size: 14px; font-family: monospace; letter-spacing: 2px; margin: 10px 0; display: inline-block; cursor: pointer; }
+        .id-pill:active { background: var(--gold); color: #000; }
     </style>
 </head>
 <body>
 
-    <div id="loader" style="position:fixed; inset:0; background:#0f1014; z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-        <i class="fa-solid fa-bolt fa-bounce fa-3x" style="color:var(--primary); margin-bottom:15px;"></i>
-        <span style="font-size:12px; letter-spacing:2px; color:#555;">SMART SYSTEM</span>
+<div class="app-wrapper">
+    
+    <div id="loader" style="position:fixed; inset:0; background:#0a0a0f; z-index:3000; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+        <i class="fa-solid fa-cube fa-spin fa-3x" style="color:var(--primary);"></i>
+        <p style="margin-top:20px; color:var(--text-muted); font-size:12px; letter-spacing:3px; text-transform:uppercase;">Loading System...</p>
     </div>
 
-    <div id="auth-screen" class="app-container hidden" style="height:100vh; display:flex; flex-direction:column; justify-content:center;">
-        <div class="glass-card" style="text-align:center; padding: 40px 20px;">
-            <div style="width:70px; height:70px; background:var(--gradient); border-radius:20px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; box-shadow:0 10px 30px rgba(67,97,238,0.4);">
-                <i class="fa-solid fa-fingerprint fa-2x" style="color:white;"></i>
+    <div id="auth-screen" class="hidden" style="min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:25px;">
+        <div class="glass-card" style="text-align:center; padding: 40px 25px; border-top: 4px solid var(--primary);">
+            <div style="width:70px; height:70px; background:linear-gradient(135deg, var(--primary), #1a4f9c); border-radius:18px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; box-shadow: 0 10px 20px rgba(58,134,255,0.3);">
+                <i class="fa-solid fa-screwdriver-wrench fa-2x" style="color:white;"></i>
             </div>
-            <h2 style="margin-bottom:5px;">تسجيل الدخول</h2>
-            <p style="color:var(--text-sec); font-size:12px; margin-bottom:30px;">المنصة الذكية لإدارة الخدمات</p>
+            <h2 id="auth-title" style="font-weight:900; font-size:26px; margin-bottom:5px; color:#fff;">نظام الصيانة الذكي</h2>
+            <p style="color:var(--text-muted); font-size:12px; margin-bottom:30px; line-height:1.6;">سجل الدخول للمتابعة إلى النظام المركزي<br>V17 Ultimate Edition</p>
 
-            <div id="reg-form" class="hidden">
-                <div class="input-group">
-                    <input type="text" id="reg-name" placeholder="الاسم الكامل">
+            <div id="reg-fields" class="hidden">
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <div class="btn-ghost selected" onclick="selGender('male')" id="g-male" style="flex:1; padding:10px; cursor:pointer; border-radius:10px; text-align:center;"><i class="fa-solid fa-person"></i> ذكر</div>
+                    <div class="btn-ghost" onclick="selGender('female')" id="g-female" style="flex:1; padding:10px; cursor:pointer; border-radius:10px; text-align:center;"><i class="fa-solid fa-person-dress"></i> أنثى</div>
                 </div>
-                <div class="input-group">
-                    <select id="reg-role">
-                        <option value="employee">موظف (تقديم بلاغ)</option>
-                        <option value="supervisor">مشرف (إدارة)</option>
-                        <option value="technician">فني (صيانة)</option>
-                    </select>
-                </div>
+                <div class="input-group"><input type="text" id="reg-name" placeholder="الاسم الكامل"></div>
+                <div class="input-group"><input type="tel" id="reg-phone" placeholder="رقم الهاتف"></div>
+                <div class="input-group"><select id="reg-role" style="background:#15151a;"><option value="employee">موظف (مقدم طلبات)</option><option value="supervisor">مشرف (إدارة)</option><option value="technician">فني (تنفيذ)</option></select></div>
+                <div class="input-group"><input type="text" id="reg-job" placeholder="المسمى الوظيفي"></div>
+                <div class="input-group"><input type="text" id="reg-loc" placeholder="مقر العمل (المبنى - الغرفة)"></div>
             </div>
 
             <div class="input-group"><input type="email" id="email" placeholder="البريد الإلكتروني"></div>
-            <div class="input-group"><input type="password" id="pass" placeholder="كلمة المرور"></div>
-
-            <button onclick="authAction()" id="auth-btn" class="btn btn-primary">دخول للنظام</button>
-            <p onclick="toggleAuth()" style="margin-top:20px; font-size:12px; color:var(--text-sec); cursor:pointer;">
-                <span id="switch-txt">ليس لديك حساب؟ إنشاء جديد</span>
+            <div class="input-group"><input type="password" id="password" placeholder="كلمة المرور"></div>
+            
+            <button onclick="handleAuth()" id="auth-btn" class="btn-main" style="padding:16px; font-size:15px; margin-top:20px;">تسجيل الدخول <i class="fa-solid fa-arrow-left"></i></button>
+            <p onclick="toggleAuth()" style="margin-top:20px; cursor:pointer; color:var(--text-muted); font-size:12px;">
+                <span id="switch-text" style="border-bottom:1px solid #444; padding-bottom:2px;">ليس لديك حساب؟ إنشاء حساب</span>
             </p>
         </div>
     </div>
 
-    <div id="app-screen" class="hidden">
-        <div class="app-container">
-            
-            <header class="top-header">
-                <div class="user-mini" onclick="openMyProfile()">
-                    <img id="head-img" src="" class="avatar-circle">
-                    <div>
-                        <h4 id="head-name" style="margin:0; font-size:14px;">User</h4>
-                        <span id="head-role" style="font-size:10px; color:var(--primary);">Role</span>
-                    </div>
+    <div id="app-container" class="hidden">
+        
+        <div class="main-banner">
+            <div class="banner-content">
+                <div>
+                    <h1>Smart Maintenance</h1>
+                    <span class="app-ver">V17.0 PRO</span>
                 </div>
-                <div style="display:flex; gap:15px;">
-                    <i class="fa-regular fa-bell" style="font-size:20px;"></i>
-                    <i class="fa-solid fa-power-off" style="font-size:20px; color:var(--danger);" onclick="document.getElementById('logout-modal').classList.add('active')"></i>
-                </div>
-            </header>
+                <div id="header-user" onclick="openMyProfile()" style="cursor: pointer; display:flex; align-items:center; gap:10px;"></div>
+            </div>
+        </div>
+        
+        <div style="padding:10px 20px; background:rgba(20,20,25,0.8); backdrop-filter:blur(10px); display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--glass-border);">
+            <div style="font-size:12px; color:var(--text-muted);">أهلاً بك، في لوحة التحكم</div>
+            <div style="display:flex; gap:8px;">
+                 <button onclick="reqNotifyPerm()" style="background:rgba(255,215,0,0.1); border:1px solid var(--glass-border); color:var(--gold); width:36px; height:36px; border-radius:12px;"><i class="fa-solid fa-bell"></i></button>
+                 <button onclick="openSettings()" style="background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); color:var(--text); width:36px; height:36px; border-radius:12px;"><i class="fa-solid fa-sliders"></i></button>
+            </div>
+        </div>
 
-            <div id="page-home" class="page-sec">
-                <div id="add-req-box" class="glass-card hidden">
+        <div id="main-content">
+            <div id="page-home" class="page-section">
+                
+                <div id="create-card" class="glass-card hidden" style="border-right: 4px solid var(--primary);">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                        <h4 style="margin:0; color:var(--primary);"><i class="fa-solid fa-plus-circle"></i> بلاغ جديد</h4>
+                        <h4 style="margin:0; font-weight:800; font-size:16px;"><i class="fa-solid fa-circle-plus" style="color:var(--primary);"></i> بلاغ جديد</h4>
                     </div>
                     
-                    <div class="input-group">
-                        <label>الموقع (الكلية / المبنى / القاعة)</label>
-                        <input type="text" id="req-loc" placeholder="مثال: هندسة - معمل 3">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div class="input-group"><label>التاريخ</label><input type="date" id="req-date"></div>
+                        <div class="input-group"><label>الوقت</label><input type="time" id="req-time"></div>
                     </div>
                     
-                    <div class="input-group">
-                        <label>نوع الأهمية</label>
-                        <div style="display:flex; gap:10px;">
-                            <label style="flex:1; cursor:pointer; background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; text-align:center;">
-                                <input type="radio" name="prio" value="low" checked> عادي
-                            </label>
-                            <label style="flex:1; cursor:pointer; background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; text-align:center;">
-                                <input type="radio" name="prio" value="high"> <span style="color:var(--danger)">عاجل</span>
-                            </label>
+                    <div class="input-group" style="margin-top:10px;">
+                        <label>درجة الأهمية (Priority)</label>
+                        <div style="display:flex; gap:8px;">
+                            <label style="flex:1; cursor:pointer; background:rgba(255,255,255,0.03); padding:8px; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:5px; border:1px solid #333;"><input type="radio" name="prio" value="low" checked> <span style="color:var(--success); font-size:10px;">عادي</span></label>
+                            <label style="flex:1; cursor:pointer; background:rgba(255,255,255,0.03); padding:8px; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:5px; border:1px solid #333;"><input type="radio" name="prio" value="medium"> <span style="color:var(--warning); font-size:10px;">متوسط</span></label>
+                            <label style="flex:1; cursor:pointer; background:rgba(255,255,255,0.03); padding:8px; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:5px; border:1px solid #333;"><input type="radio" name="prio" value="high"> <span style="color:var(--error); font-size:10px;">عاجل</span></label>
                         </div>
                     </div>
 
-                    <div class="input-group">
-                        <label>تفاصيل العطل</label>
-                        <textarea id="req-desc" rows="3"></textarea>
-                    </div>
+                    <div class="input-group"><label>الكلية / القطاع</label><select id="req-faculty" onchange="updateBuildings()"><option value="">اختر القطاع...</option><option value="eng">كلية الهندسة</option><option value="sci">كلية العلوم</option><option value="art">كلية الآداب</option><option value="admin">المبنى الإداري</option></select></div>
+                    <div class="input-group"><label>المبنى</label><select id="req-building"><option value="">حدد القطاع أولاً...</option></select></div>
+                    <div class="input-group"><label>الغرفة / القاعة</label><input type="text" id="req-room" placeholder="مثال: القاعة 101"></div>
+                    <div class="input-group"><label>وصف العطل</label><textarea id="req-desc" rows="2" placeholder="اكتب تفاصيل المشكلة بدقة..."></textarea></div>
 
-                    <div class="input-group">
-                        <button onclick="document.getElementById('media-inp').click()" class="btn btn-ghost" style="border-style:dashed;">
-                            <i class="fa-solid fa-camera"></i> إرفاق صور/فيديو (40 ثانية)
-                        </button>
-                        <input type="file" id="media-inp" hidden multiple accept="image/*,video/*" onchange="previewFiles(this)">
-                        <div id="upload-preview" class="media-grid"></div>
+                    <div style="background:rgba(255,255,255,0.02); border:1px dashed #555; padding:20px; text-align:center; border-radius:15px; margin:15px 0; cursor:pointer; transition:0.3s;" onclick="document.getElementById('req-files').click()" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='#555'">
+                        <i class="fa-solid fa-cloud-arrow-up fa-2x" style="color:#666; margin-bottom:10px;"></i>
+                        <p style="margin:0; font-size:11px; color:#888;">إرفاق صور أو فيديو (40 ثانية)</p>
+                        <input type="file" id="req-files" hidden multiple accept="image/*,video/*" onchange="handleFiles(this)">
                     </div>
-
-                    <button onclick="submitReq()" class="btn btn-primary">إرسال للمشرف</button>
+                    <div id="preview-grid" class="media-grid"></div>
+                    
+                    <button onclick="openSupModal()" class="btn-main" id="send-req-btn">اختيار الوجهة والإرسال <i class="fa-solid fa-paper-plane"></i></button>
                 </div>
 
-                <div style="display:flex; gap:10px; margin-bottom:20px;">
-                    <button class="btn btn-ghost" onclick="filterFeed('active')" id="tab-active" style="flex:1; background:rgba(255,255,255,0.05);">الجارية</button>
-                    <button class="btn btn-ghost" onclick="filterFeed('history')" id="tab-hist" style="flex:1;">الأرشيف</button>
+                <div class="tabs-container">
+                    <button class="tab-btn active" onclick="switchTab('active', this)">الجارية</button>
+                    <button class="tab-btn" onclick="switchTab('history', this)">الأرشيف</button>
+                    <button class="tab-btn" onclick="switchTab('trash', this)" style="color:var(--error);"><i class="fa-solid fa-trash"></i> المحذوفات</button>
                 </div>
-
-                <div id="feed-area" style="padding-bottom:100px;"></div>
+                
+                <div id="filter-container" class="hidden" style="padding:10px 15px;">
+                    <select id="feed-filter" onchange="renderFeed()" style="padding:10px; font-size:12px; background:rgba(0,0,0,0.4);"><option value="all">عرض كافة القطاعات</option><option value="eng">هندسة</option><option value="sci">علوم</option><option value="art">آداب</option></select>
+                </div>
+                
+                <div id="requests-feed" style="padding-bottom:20px;"></div>
             </div>
 
-            <div id="page-team" class="page-sec hidden">
+            <div id="page-team" class="page-section hidden">
+                <div class="glass-card" style="border-top: 3px solid var(--gold);">
+                    <h4 style="margin-bottom:20px; font-weight:800; display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-users"></i> فريق العمل والأصدقاء</h4>
+                    <div style="display:flex; gap:10px; margin-bottom:20px; background:rgba(0,0,0,0.3); padding:8px; border-radius:12px; border:1px solid var(--glass-border);">
+                        <input type="text" id="search-query" placeholder="بحث بـ ID أو البريد الإلكتروني" style="margin:0; border:none; background:transparent;">
+                        <button onclick="searchUser()" class="btn-main" id="search-btn" style="width:auto; margin:0; padding:10px 18px; border-radius:10px;"><i class="fa-solid fa-search"></i></button>
+                    </div>
+                    <div id="search-results" class="hidden" style="margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:10px;"></div>
+                    <div id="friend-reqs" class="hidden" style="background:rgba(255,215,0,0.05); border:1px solid var(--gold); padding:15px; border-radius:12px; margin-bottom:20px;">
+                        <small style="color:var(--gold); font-weight:bold; display:block; margin-bottom:10px;">طلبات صداقة واردة:</small>
+                        <div id="reqs-list"></div>
+                    </div>
+                    <div style="font-size:11px; color:#666; margin-bottom:10px;">قائمة الأصدقاء:</div>
+                    <div id="team-list"></div>
+                </div>
+            </div>
+            
+            <div id="page-settings" class="page-section hidden">
                 <div class="glass-card">
-                    <h3 style="margin-bottom:15px;">🔍 البحث عن زملاء</h3>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="search-inp" placeholder="ابحث بالـ ID أو الإيميل">
-                        <button onclick="searchAndAdd()" class="btn btn-primary" style="width:auto;"><i class="fa-solid fa-search"></i></button>
+                    <h3 style="margin-bottom:20px;">الإعدادات</h3>
+                    <div class="input-group">
+                        <label>لغة النظام</label>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn-main" style="margin:0;">العربية</button>
+                            <button class="btn-ghost" style="width:100%; border-radius:12px;">English</button>
+                        </div>
                     </div>
+                    <hr style="border-color:var(--glass-border); margin:20px 0;">
+                    <div onclick="openMyProfile()" style="padding:15px; background:rgba(255,255,255,0.03); border-radius:12px; margin-bottom:10px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+                        <span>تعديل البيانات الشخصية</span>
+                        <i class="fa-solid fa-chevron-left" style="font-size:12px;"></i>
+                    </div>
+                    <button onclick="document.getElementById('logout-modal').classList.remove('hidden')" class="btn-main btn-danger"><i class="fa-solid fa-power-off"></i> تسجيل خروج</button>
                 </div>
-                <h4 style="margin:20px 0 10px;">فريق العمل</h4>
-                <div id="team-list"></div>
             </div>
-
-            <div id="page-trash" class="page-sec hidden">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h3>سلة المهملات</h3>
-                    <button class="btn btn-danger btn-sm" onclick="emptyTrash()">إفراغ الكل</button>
-                </div>
-                <div id="trash-list"></div>
-            </div>
-
         </div>
 
         <div class="bottom-nav">
-            <div class="nav-item active" onclick="nav('home', this)"><i class="fa-solid fa-list-check"></i></div>
-            <div class="nav-item" onclick="nav('team', this)"><i class="fa-solid fa-user-group"></i></div>
-            <div class="nav-item" onclick="nav('trash', this)"><i class="fa-solid fa-trash-can"></i></div>
+            <div class="nav-item active" onclick="nav('home', this)"><i class="fa-solid fa-bars-progress"></i>المهام</div>
+            <div class="nav-item" onclick="nav('team', this)"><i class="fa-solid fa-user-group"></i>الفريق</div>
+            <div class="nav-item" onclick="nav('settings', this)"><i class="fa-solid fa-gear"></i>الإعدادات</div>
         </div>
     </div>
 
-    <div id="profile-modal" class="modal-overlay">
-        <div class="modal-content text-center">
-            <div style="text-align:left;"><i class="fa-solid fa-xmark" style="cursor:pointer; font-size:20px;" onclick="closeModal('profile-modal')"></i></div>
-            
-            <div style="position:relative; width:80px; margin:0 auto 15px;">
-                <img id="p-img" src="" class="avatar-circle" style="width:80px; height:80px;">
-                <div style="position:absolute; bottom:0; right:0; background:var(--primary); width:25px; height:25px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="changePic()"><i class="fa-solid fa-pen" style="font-size:10px; color:#fff;"></i></div>
-            </div>
-            
-            <h3 id="p-name" style="margin:0;">Name</h3>
-            <div style="background:rgba(255,255,255,0.1); padding:5px 10px; border-radius:10px; display:inline-block; margin:5px 0; font-size:12px;">
-                ID: <span id="p-id" style="font-family:monospace; font-weight:bold; color:var(--primary);">---</span>
-            </div>
-
-            <div style="margin-top:20px; text-align:right;">
-                <div class="input-group">
-                    <label>الاسم</label>
-                    <input type="text" id="edit-name">
-                </div>
-                <div class="input-group">
-                    <label>الهاتف</label>
-                    <input type="tel" id="edit-phone">
-                </div>
-            </div>
-            <button onclick="updateProfile()" class="btn btn-primary">حفظ التعديلات</button>
-        </div>
-    </div>
-
-    <div id="details-modal" class="modal-overlay">
+    <div id="my-profile-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                <h3 style="margin:0;">تفاصيل الطلب</h3>
-                <i class="fa-solid fa-xmark" onclick="closeModal('details-modal')" style="cursor:pointer; font-size:20px;"></i>
+            <div class="close-modal" onclick="closeModal('my-profile-modal')"><i class="fa-solid fa-xmark"></i></div>
+            <div style="text-align:center;">
+                <div style="position:relative; width:110px; height:110px; margin:0 auto 15px;">
+                    <img id="edit-current-pic" src="" style="width:100%; height:100%; border-radius:50%; object-fit:cover; border:3px solid var(--primary); box-shadow:0 10px 20px rgba(0,0,0,0.5);">
+                    <div onclick="document.getElementById('edit-profile-file').click()" style="position:absolute; bottom:5px; right:5px; background:var(--gold); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.3); color:#000;"><i class="fa-solid fa-camera"></i></div>
+                </div>
+                <input type="file" id="edit-profile-file" hidden accept="image/*" onchange="previewProfilePic(this)">
+                
+                <h3 id="edit-display-name" style="margin:0;">-</h3>
+                <div id="edit-id-display" class="id-pill" onclick="copyId(this)">ID: ----</div>
+
+                <div style="text-align:right; margin-top:20px;">
+                    <div class="input-group"><label>الاسم</label><input type="text" id="edit-name"></div>
+                    <div class="input-group"><label>الهاتف</label><input type="tel" id="edit-phone"></div>
+                    <div class="input-group"><label>المسمى الوظيفي</label><input type="text" id="edit-job"></div>
+                    <div class="input-group"><label>المكان</label><input type="text" id="edit-loc"></div>
+                </div>
+                
+                <button onclick="saveProfile()" class="btn-main" id="save-profile-btn" style="margin-top:20px;">حفظ التعديلات <i class="fa-solid fa-check"></i></button>
             </div>
-
-            <div class="track-container">
-                <div class="step" id="step-1">
-                    <div class="step-circle"><i class="fa-solid fa-paper-plane"></i></div>
-                    <span class="step-label">تم الإرسال</span>
-                </div>
-                <div class="step" id="step-2">
-                    <div class="step-circle"><i class="fa-solid fa-user-gear"></i></div>
-                    <span class="step-label">المراجعة</span>
-                </div>
-                <div class="step" id="step-3">
-                    <div class="step-circle"><i class="fa-solid fa-check"></i></div>
-                    <span class="step-label">الإنجاز</span>
-                </div>
-            </div>
-
-            <div class="glass-card" style="border:none; background:rgba(255,255,255,0.03);">
-                <p style="margin:0 0 10px; color:var(--text-sec); font-size:12px;">وصف العطل:</p>
-                <p id="dt-desc" style="margin:0; line-height:1.6;"></p>
-                <div style="margin-top:15px; border-top:1px solid #333; padding-top:10px; display:flex; justify-content:space-between; font-size:12px;">
-                    <span id="dt-loc" style="color:var(--primary);"></span>
-                    <span id="dt-time" style="color:#777;"></span>
-                </div>
-            </div>
-
-            <p style="font-size:12px; font-weight:bold; margin-bottom:10px;">المرفقات:</p>
-            <div id="dt-media" class="media-grid"></div>
-
-            <div id="dt-actions" style="margin-top:20px;"></div>
         </div>
     </div>
 
-    <div id="action-modal" class="modal-overlay">
+    <div id="sup-modal" class="modal-overlay hidden">
         <div class="modal-content">
-            <h3 id="act-head">إجراء</h3>
+            <div class="close-modal" onclick="closeModal('sup-modal')"><i class="fa-solid fa-xmark"></i></div>
+            <h3 style="margin-bottom:15px; border-right:3px solid var(--gold); padding-right:10px;">إلى من تريد إرسال البلاغ؟</h3>
+            <div id="sup-list" style="max-height:300px; overflow-y:auto; margin-bottom:20px;"></div>
+            <button onclick="sendRequestFinal()" class="btn-main" id="confirm-send-btn">تأكيد وإرسال</button>
+        </div>
+    </div>
+    
+    <div id="action-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="close-modal" onclick="closeModal('action-modal')"><i class="fa-solid fa-xmark"></i></div>
+            <h3 id="act-title" style="margin-bottom:15px;">إجراء</h3>
+            <textarea id="act-comment" rows="3" placeholder="ملاحظات إدارية / سبب الرفض..."></textarea>
             
-            <div id="tech-select" class="hidden input-group">
-                <label>اختر الفني</label>
-                <select id="sel-tech"></select>
+            <div id="tech-select-area" class="hidden" style="margin-top:15px;">
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">اختر الفني المسؤول:</p>
+                <div id="tech-list-action" style="max-height:150px; overflow-y:auto; border:1px solid #333; border-radius:10px; padding:5px;"></div>
             </div>
 
-            <div class="input-group">
-                <label>ملاحظات / سبب الرفض</label>
-                <textarea id="act-note" rows="3"></textarea>
-            </div>
-
-            <div style="display:flex; gap:10px;">
-                <button id="act-btn" class="btn btn-primary">تأكيد</button>
-                <button onclick="closeModal('action-modal')" class="btn btn-ghost">إلغاء</button>
-            </div>
+            <button onclick="submitAction()" id="act-submit-btn" class="btn-main" style="margin-top:15px;">تنفيذ الإجراء</button>
         </div>
     </div>
 
-    <div id="logout-modal" class="modal-overlay">
-        <div class="modal-content text-center" style="max-width:300px;">
-            <h3>تأكيد الخروج؟</h3>
+    <div id="request-details-modal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width:500px;">
+            <div class="close-modal" onclick="closeModal('request-details-modal')"><i class="fa-solid fa-xmark"></i></div>
+            <h3 style="text-align:center; color:var(--primary); margin-bottom:25px; font-weight:900;">تفاصيل الطلب</h3>
+            <div id="req-details-content"></div>
+        </div>
+    </div>
+    
+    <div id="logout-modal" class="modal-overlay hidden">
+        <div class="modal-content" style="text-align:center;">
+            <i class="fa-solid fa-triangle-exclamation fa-3x" style="color:var(--warning); margin-bottom:15px;"></i>
+            <h3>تأكيد الخروج</h3>
             <div style="display:flex; gap:10px; margin-top:20px;">
-                <button onclick="auth.signOut(); location.reload()" class="btn btn-danger">خروج</button>
-                <button onclick="closeModal('logout-modal')" class="btn btn-ghost">إلغاء</button>
+                <button onclick="logout()" class="btn-main btn-danger">خروج</button>
+                <button onclick="closeModal('logout-modal')" class="btn-ghost" style="width:100%; border-radius:14px;">إلغاء</button>
             </div>
         </div>
     </div>
 
-    <div id="toast" style="position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#333; color:#fff; padding:10px 20px; border-radius:30px; font-size:12px; z-index:5000; display:none; border:1px solid var(--primary);"></div>
+    <div id="toast" style="position:fixed; top:30px; left:50%; transform:translateX(-50%); background:rgba(20,20,30,0.95); color:white; padding:12px 30px; border-radius:50px; border:1px solid rgba(255,255,255,0.1); z-index:5000; display:none; font-size:13px; backdrop-filter:blur(15px); box-shadow:0 10px 40px rgba(0,0,0,0.6); font-weight:600; white-space:nowrap;"></div>
+</div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
-    <script>
-        // --- 1. SETUP ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyABwJfEkkbNB8GurZkyj67R8ksVNEXZ11I", // Demo Key
-            authDomain: "ryadanur1-375a8.firebaseapp.com",
-            projectId: "ryadanur1-375a8",
-            storageBucket: "ryadanur1-375a8.firebasestorage.app",
-            messagingSenderId: "858244114090",
-            appId: "1:858244114090:web:42cee8e98e3984164392d3"
-        };
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyABwJfEkkbNB8GurZkyj67R8ksVNEXZ11I",
+        authDomain: "ryadanur1-375a8.firebaseapp.com",
+        projectId: "ryadanur1-375a8",
+        storageBucket: "ryadanur1-375a8.firebasestorage.app",
+        messagingSenderId: "858244114090",
+        appId: "1:858244114090:web:42cee8e98e3984164392d3"
+    };
+    const CLOUD_NAME = "djzfruh22"; const CLOUD_PRESET = "udyvggup";
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser=null, userData=null, isLoginMode=true, selectedSup=null;
+    let currentTab = 'active'; 
+    let requestsCache = [];
+    let uploadQueue = [];
+    let tempActionData = {};
+    let selectedGender = 'male';
+    let selectedTech = null;
+    let newProfilePicFile = null;
+
+    // Auth & Init
+    auth.onAuthStateChanged(async u => {
+        document.getElementById('loader').classList.add('hidden');
+        if(u) {
+            currentUser = u;
+            await loadUser();
+        } else showScreen('auth-screen');
+    });
+
+    async function loadUser() {
+        try {
+            const doc = await db.collection('users').doc(currentUser.uid).get();
+            if(doc.exists) {
+                userData = doc.data();
+                // Ensure Short ID exists
+                if(!userData.shortId) {
+                    userData.shortId = Math.random().toString(36).substr(2,6).toUpperCase();
+                    await db.collection('users').doc(currentUser.uid).update({shortId: userData.shortId});
+                }
+                renderHeader();
+                showScreen('app-container');
+                if(userData.role === 'employee') document.getElementById('create-card').classList.remove('hidden');
+                if(userData.role === 'supervisor') document.getElementById('filter-container').classList.remove('hidden');
+                loadFeed(); loadTeam(); loadFriendReqs();
+                
+                // Set default date/time
+                document.getElementById('req-date').valueAsDate = new Date();
+                document.getElementById('req-time').value = new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+            }
+        } catch(e) { toast("⚠️ خطأ في تحميل البيانات"); }
+    }
+
+    function renderHeader() {
+        document.getElementById('header-user').innerHTML = `
+            <div style="text-align:right;">
+                <b style="font-size:13px; display:block;">${userData.fullName}</b>
+                <span class="badge" style="background:rgba(255,255,255,0.1); color:#ccc;">${userData.shortId}</span>
+            </div>
+            <img src="${userData.photoUrl}" class="avatar">
+        `;
+    }
+
+    // --- Profile & Editing ---
+    function openMyProfile() {
+        document.getElementById('my-profile-modal').classList.remove('hidden');
+        document.getElementById('edit-current-pic').src = userData.photoUrl;
+        document.getElementById('edit-display-name').innerText = userData.fullName;
+        document.getElementById('edit-id-display').innerText = "ID: " + userData.shortId;
+        
+        document.getElementById('edit-name').value = userData.fullName;
+        document.getElementById('edit-phone').value = userData.phone;
+        document.getElementById('edit-job').value = userData.jobTitle;
+        document.getElementById('edit-loc').value = userData.location;
+    }
+
+    function previewProfilePic(input) {
+        if(input.files && input.files[0]) {
+            newProfilePicFile = input.files[0];
+            document.getElementById('edit-current-pic').src = URL.createObjectURL(newProfilePicFile);
+        }
+    }
+
+    async function saveProfile() {
+        const btn = document.getElementById('save-profile-btn');
+        const name = document.getElementById('edit-name').value;
+        const phone = document.getElementById('edit-phone').value;
+        const job = document.getElementById('edit-job').value;
+        const loc = document.getElementById('edit-loc').value;
+        
+        btn.disabled = true; btn.innerText = "...";
+        try {
+            let newUrl = userData.photoUrl;
+            if(newProfilePicFile) {
+                const fd = new FormData(); fd.append('file', newProfilePicFile); fd.append('upload_preset', CLOUD_PRESET);
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {method:'POST', body:fd});
+                const d = await res.json();
+                newUrl = d.secure_url;
+            }
+            
+            await db.collection('users').doc(currentUser.uid).update({
+                fullName: name, phone: phone, jobTitle: job, location: loc, photoUrl: newUrl
+            });
+            
+            userData.fullName = name; userData.phone = phone; userData.jobTitle = job; userData.location = loc; userData.photoUrl = newUrl;
+            renderHeader(); toast("✅ تم حفظ التغييرات"); closeModal('my-profile-modal');
+        } catch(e) { toast("❌ خطأ في الحفظ"); } 
+        finally { btn.disabled=false; btn.innerText = "حفظ التعديلات"; newProfilePicFile=null; }
+    }
+    
+    function copyId(el) {
+        navigator.clipboard.writeText(userData.shortId);
+        let old = el.innerText; el.innerText = "تم النسخ!"; setTimeout(()=>el.innerText=old, 1500);
+    }
+
+    // --- Friend System ---
+    async function searchUser() {
+        const q = document.getElementById('search-query').value.trim();
+        const resDiv = document.getElementById('search-results');
+        if(!q) return;
+        
+        resDiv.innerHTML = '<p style="text-align:center; font-size:12px;">جاري البحث...</p>'; resDiv.classList.remove('hidden');
+        
+        let users = [];
+        // Search by ShortID or Email
+        let s1 = await db.collection('users').where('shortId','==',q).get();
+        let s2 = await db.collection('users').where('email','==',q).get();
+        
+        s1.forEach(d=>users.push({id:d.id, ...d.data()}));
+        s2.forEach(d=> { if(!users.find(u=>u.id===d.id)) users.push({id:d.id, ...d.data()}); });
+        
+        resDiv.innerHTML = "";
+        if(users.length === 0) { resDiv.innerHTML = '<p style="text-align:center; color:#666; font-size:12px;">لم يتم العثور على مستخدم</p>'; return; }
+        
+        users.forEach(u => {
+            if(u.id === currentUser.uid) return;
+            resDiv.innerHTML += `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px; background:rgba(255,255,255,0.05); border-radius:10px; margin-bottom:5px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <img src="${u.photoUrl}" style="width:35px; height:35px; border-radius:50%;">
+                    <div><b style="font-size:12px;">${u.fullName}</b><br><span style="font-size:10px; color:#888;">${u.role}</span></div>
+                </div>
+                <button onclick="addFriend('${u.id}', '${u.fullName}', '${u.photoUrl}')" class="btn-main" style="width:auto; margin:0; padding:5px 12px; font-size:10px;">إضافة <i class="fa-solid fa-plus"></i></button>
+            </div>`;
+        });
+    }
+
+    async function addFriend(tid, tname, tpic) {
+        await db.collection('friend_requests').add({
+            fromId: currentUser.uid, toId: tid, status: 'pending',
+            fromData: { name: userData.fullName, pic: userData.photoUrl },
+            toData: { name: tname, pic: tpic }
+        });
+        toast("✅ تم إرسال الطلب"); document.getElementById('search-results').classList.add('hidden'); document.getElementById('search-query').value="";
+    }
+    
+    function loadFriendReqs() {
+        db.collection('friend_requests').where('toId','==',currentUser.uid).where('status','==','pending')
+        .onSnapshot(snap => {
+            const list = document.getElementById('reqs-list'); const container = document.getElementById('friend-reqs');
+            list.innerHTML = "";
+            if(snap.empty) container.classList.add('hidden');
+            else {
+                container.classList.remove('hidden');
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    list.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-bottom:1px solid rgba(255,215,0,0.2); padding-bottom:5px;">
+                        <span style="font-size:12px;">${d.fromData.name}</span>
+                        <div>
+                            <button onclick="ansFriend('${doc.id}', true)" style="background:none; border:none; color:var(--success); cursor:pointer;"><i class="fa-solid fa-check"></i></button>
+                            <button onclick="ansFriend('${doc.id}', false)" style="background:none; border:none; color:var(--error); cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>`;
+                });
+            }
+        });
+    }
+    
+    async function ansFriend(rid, accept) {
+        if(accept) {
+            const r = await db.collection('friend_requests').doc(rid).get();
+            const rd = r.data();
+            await db.collection('users').doc(currentUser.uid).collection('friends').add({friendId: rd.fromId, ...rd.fromData});
+            await db.collection('users').doc(rd.fromId).collection('friends').add({friendId: currentUser.uid, name: userData.fullName, pic: userData.photoUrl});
+            await db.collection('friend_requests').doc(rid).delete();
+            toast("✅ أصبحتم أصدقاء");
+        } else {
+            await db.collection('friend_requests').doc(rid).delete();
+        }
+    }
+    
+    function loadTeam() {
+        db.collection('users').doc(currentUser.uid).collection('friends').onSnapshot(snap => {
+            const div = document.getElementById('team-list'); div.innerHTML="";
+            if(snap.empty) div.innerHTML = "<small>لا يوجد أصدقاء</small>";
+            snap.forEach(doc => {
+                const d = doc.data();
+                div.innerHTML += `<div style="display:inline-block; margin:5px; text-align:center;"><img src="${d.pic}" style="width:40px; height:40px; border-radius:50%; border:2px solid #444;"><br><span style="font-size:10px;">${d.name.split(' ')[0]}</span></div>`;
+            });
+        });
+    }
+
+
+    // --- Core Logic (Requests) ---
+    function toggleAuth() {
+        isLoginMode = !isLoginMode;
+        document.getElementById('reg-fields').classList.toggle('hidden', isLoginMode);
+        document.getElementById('auth-btn').innerHTML = isLoginMode ? `تسجيل الدخول <i class="fa-solid fa-arrow-left"></i>` : `إنشاء حساب <i class="fa-solid fa-check"></i>`;
+        document.getElementById('auth-title').innerText = isLoginMode ? "نظام الصيانة الذكي" : "عضو جديد";
+        document.getElementById('switch-text').innerText = isLoginMode ? "ليس لديك حساب؟ إنشاء حساب" : "لديك حساب بالفعل؟ دخول";
+    }
+
+    function selGender(g) {
+        selectedGender = g;
+        document.querySelectorAll('#reg-fields .btn-ghost').forEach(el=>el.classList.remove('selected', 'btn-main')); // fix style logic
+        document.querySelectorAll('#reg-fields .btn-ghost').forEach(el=>el.style.borderColor='var(--glass-border)');
+        document.getElementById('g-'+g).style.borderColor = 'var(--primary)';
+    }
+
+    async function handleAuth() {
+        const btn = document.getElementById('auth-btn');
+        const email = document.getElementById('email').value.trim();
+        const pass = document.getElementById('password').value;
+        if(!email || !pass) return toast("⚠️ البيانات ناقصة");
+
+        btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
 
         try {
-            firebase.initializeApp(firebaseConfig);
-        } catch(e) { console.error("Firebase Init Error"); }
-
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-        
-        let currentUser, userData;
-        let tempMedia = [];
-        let tempAction = {};
-
-        // --- 2. AUTH & INIT ---
-        auth.onAuthStateChanged(async user => {
-            const loader = document.getElementById('loader');
-            if (user) {
-                currentUser = user;
-                const doc = await db.collection('users').doc(user.uid).get();
-                if(doc.exists) {
-                    userData = doc.data();
-                    initApp();
-                }
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('app-screen').classList.remove('hidden');
+            if(isLoginMode) {
+                await auth.signInWithEmailAndPassword(email, pass);
             } else {
-                document.getElementById('auth-screen').classList.remove('hidden');
-                document.getElementById('app-screen').classList.add('hidden');
+                const name = document.getElementById('reg-name').value.trim();
+                const phone = document.getElementById('reg-phone').value.trim();
+                if(!name || !phone) throw new Error("البيانات ناقصة");
+
+                const cred = await auth.createUserWithEmailAndPassword(email, pass);
+                const defaultPic = selectedGender === 'male' ? 'https://cdn-icons-png.flaticon.com/512/4140/4140048.png' : 'https://cdn-icons-png.flaticon.com/512/4140/4140047.png';
+                const sid = Math.random().toString(36).substr(2,6).toUpperCase();
+
+                await db.collection('users').doc(cred.user.uid).set({
+                    email, role: document.getElementById('reg-role').value, fullName:name, phone, 
+                    jobTitle: document.getElementById('reg-job').value, location: document.getElementById('reg-loc').value,
+                    shortId: sid, gender: selectedGender,
+                    photoUrl: defaultPic, createdAt: new Date()
+                });
+                toast("✅ أهلاً بك في الفريق");
             }
-            loader.style.display = 'none';
+        } catch(e) { toast("❌ " + e.message); } 
+        finally { btn.disabled = false; btn.innerText = isLoginMode ? "تسجيل الدخول" : "إنشاء حساب"; }
+    }
+
+    // Media
+    function handleFiles(input) {
+        const newFiles = Array.from(input.files);
+        // Basic check for video duration (client side is limited, usually need server or video metadata load)
+        // Here we just accept them visually
+        uploadQueue = uploadQueue.concat(newFiles);
+        renderMediaPreview();
+    }
+    function renderMediaPreview() {
+        const grid = document.getElementById('preview-grid'); grid.innerHTML = "";
+        uploadQueue.forEach((file, idx) => {
+            const url = URL.createObjectURL(file);
+            const content = file.type.startsWith('video') ? `<video src="${url}"></video>` : `<img src="${url}">`;
+            grid.innerHTML += `<div class="media-item" id="f-${idx}">${content}<div class="media-remove" onclick="removeFile(${idx})"><i class="fa-solid fa-xmark"></i></div></div>`;
         });
+    }
+    function removeFile(idx) { uploadQueue.splice(idx, 1); renderMediaPreview(); }
 
-        function toggleAuth() {
-            const reg = document.getElementById('reg-form');
-            reg.classList.toggle('hidden');
-            const isReg = !reg.classList.contains('hidden');
-            document.getElementById('auth-btn').innerText = isReg ? 'إنشاء حساب جديد' : 'دخول للنظام';
-            document.getElementById('switch-txt').innerText = isReg ? 'لديك حساب؟ تسجيل دخول' : 'ليس لديك حساب؟ إنشاء جديد';
-        }
+    function updateBuildings() {
+        const f = document.getElementById('req-faculty').value;
+        const b = document.getElementById('req-building'); b.innerHTML = "<option value=''>اختر...</option>";
+        const d = {'eng':['ورش','مبنى العمارة','مبنى الإعدادي'], 'sci':['المعامل المركزية','قسم الكيمياء'], 'art':['مبنى اللغات','الجغرافيا'], 'admin':['المبنى الرئيسي','شؤون الطلاب']};
+        if(d[f]) d[f].forEach(x => b.innerHTML+=`<option>${x}</option>`);
+    }
 
-        async function authAction() {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('pass').value;
-            const btn = document.getElementById('auth-btn');
+    async function openSupModal() {
+        if(!document.getElementById('req-desc').value) return toast("⚠️ الوصف مطلوب");
+        document.getElementById('sup-modal').classList.remove('hidden');
+        const list = document.getElementById('sup-list'); list.innerHTML = '<div style="text-align:center; padding:20px;"><i class="fa-solid fa-spinner fa-spin"></i></div>';
+        const snap = await db.collection('users').where('role','==','supervisor').get();
+        list.innerHTML = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            list.innerHTML += `<div onclick="selectSup(this, '${doc.id}')" style="display:flex; align-items:center; gap:15px; padding:15px; border:1px solid var(--glass-border); margin-bottom:8px; border-radius:12px; cursor:pointer; transition:0.2s; background:rgba(255,255,255,0.02);">
+                <img src="${d.photoUrl}" style="width:40px; height:40px; border-radius:50%; border:2px solid #555;">
+                <div><b style="font-size:14px; display:block;">${d.fullName}</b><span style="font-size:11px; color:#888;">${d.jobTitle}</span></div>
+                </div>`;
+        });
+    }
+
+    function selectSup(el, id) {
+        document.querySelectorAll('#sup-list div').forEach(x=> { x.style.borderColor='var(--glass-border)'; x.style.background='rgba(255,255,255,0.02)'; });
+        el.style.borderColor='var(--gold)'; el.style.background='rgba(255,215,0,0.05)'; selectedSup = id;
+    }
+
+    async function sendRequestFinal() {
+        if(!selectedSup) return toast("⚠️ اختر مشرف لاستلام الطلب");
+        const btn = document.getElementById('confirm-send-btn'); btn.disabled=true; btn.innerText="جاري الرفع والإرسال...";
+        try {
+            let mediaLinks = [];
+            for(const file of uploadQueue) {
+                const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', CLOUD_PRESET);
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {method:'POST', body:fd});
+                const d = await res.json();
+                mediaLinks.push({url: d.secure_url, type: file.type.startsWith('video')?'video':'image'});
+            }
+
+            const fac = document.getElementById('req-faculty');
+            const prio = document.querySelector('input[name="prio"]:checked').value;
+            const loc = `${fac.options[fac.selectedIndex].text} - ${document.getElementById('req-building').value} - ${document.getElementById('req-room').value}`;
             
-            if(!email || !pass) return showToast('أكمل البيانات');
-            btn.innerText = "...";
-
-            try {
-                const isReg = !document.getElementById('reg-form').classList.contains('hidden');
-                if(isReg) {
-                    const name = document.getElementById('reg-name').value;
-                    const role = document.getElementById('reg-role').value;
-                    // إنشاء shortID عشوائي
-                    const shortId = Math.floor(100000 + Math.random() * 900000).toString();
-                    
-                    const cred = await auth.createUserWithEmailAndPassword(email, pass);
-                    await db.collection('users').doc(cred.user.uid).set({
-                        name, role, email, shortId,
-                        photo: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
-                        createdAt: new Date()
-                    });
-                } else {
-                    await auth.signInWithEmailAndPassword(email, pass);
-                }
-            } catch(e) { showToast(e.message); btn.innerText = "حاول مرة أخرى"; }
-        }
-
-        // --- 3. APP LOGIC ---
-        function initApp() {
-            // Header Data
-            document.getElementById('head-name').innerText = userData.name;
-            document.getElementById('head-role').innerText = transRole(userData.role);
-            document.getElementById('head-img').src = userData.photo;
-
-            // Permissions
-            if(userData.role === 'employee') document.getElementById('add-req-box').classList.remove('hidden');
-
-            loadFeed();
-            loadTeam();
-        }
-
-        // --- Feed & Requests ---
-        function previewFiles(inp) {
-            const grid = document.getElementById('upload-preview');
-            grid.innerHTML = "";
-            tempMedia = [];
-            Array.from(inp.files).forEach(f => {
-                const url = URL.createObjectURL(f);
-                tempMedia.push({file:f, type: f.type.startsWith('video')?'video':'image', url: url}); // Mock logic
-                const el = f.type.startsWith('video') ? `<video src="${url}" class="media-thumb"></video>` : `<img src="${url}" class="media-thumb">`;
-                grid.innerHTML += el;
-            });
-        }
-
-        async function submitReq() {
-            const desc = document.getElementById('req-desc').value;
-            if(!desc) return showToast('اكتب وصف العطل');
-            
-            // Mock Upload (للتبسيط، نستخدم Local URL في العرض ولكن في الواقع نحتاج Cloudinary)
-            // سأقوم بتخزين نوع وهمي للبيانات ليعمل العرض
-            const mediaMeta = tempMedia.map(m => ({type: m.type, url: 'https://placehold.co/600x400?text=Media+File'})); 
-
             await db.collection('requests').add({
-                userId: currentUser.uid,
-                userData: { name: userData.name, photo: userData.photo, role: userData.role },
-                desc: desc,
-                location: document.getElementById('req-loc').value,
-                priority: document.querySelector('input[name="prio"]:checked').value,
-                status: 'pending', // Steps: pending -> approved -> done
-                media: mediaMeta,
-                isDeleted: false,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                userId: currentUser.uid, 
+                userData: { fullName: userData.fullName, role: userData.role, photoUrl: userData.photoUrl, phone: userData.phone, shortId: userData.shortId },
+                supervisorId: selectedSup, faculty: fac.value, location: loc, description: document.getElementById('req-desc').value,
+                date: document.getElementById('req-date').value, time: document.getElementById('req-time').value,
+                media: mediaLinks, status: 'pending', priority: prio, isDeleted: false,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            showToast('تم إرسال البلاغ بنجاح');
-            document.getElementById('req-desc').value = "";
-            document.getElementById('upload-preview').innerHTML = "";
+            toast("✅ تم إرسال البلاغ بنجاح"); closeModal('sup-modal'); document.getElementById('create-card').classList.add('hidden');
+            uploadQueue = []; renderMediaPreview(); document.getElementById('req-desc').value="";
+        } catch(e) { toast("❌ فشل الإرسال"); console.error(e); } finally { btn.disabled=false; btn.innerText="تأكيد وإرسال"; }
+    }
+
+    // Feed & Actions
+    function loadFeed() {
+        let q = db.collection('requests'); 
+        if(userData.role==='employee') q = q.where('userId','==',currentUser.uid);
+        else if(userData.role==='supervisor') q = q.where('supervisorId','==',currentUser.uid);
+        else if(userData.role==='technician') q = q.where('technicianId','==',currentUser.uid);
+        
+        q.onSnapshot(snap => {
+            requestsCache = [];
+            snap.forEach(doc => requestsCache.push({id: doc.id, ...doc.data()}));
+            requestsCache.sort((a,b) => (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+            renderFeed();
+        });
+    }
+
+    function switchTab(tab, el) {
+        currentTab = tab; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); renderFeed();
+    }
+
+    function renderFeed() {
+        const container = document.getElementById('requests-feed'); container.innerHTML = "";
+        let list = requestsCache;
+
+        if(currentTab === 'trash') list = list.filter(r => r.isDeleted === true);
+        else {
+            list = list.filter(r => r.isDeleted !== true);
+            if(currentTab === 'active') list = list.filter(r => ['pending','approved','suspended'].includes(r.status));
+            else if(currentTab === 'history') list = list.filter(r => ['done','rejected'].includes(r.status));
         }
 
-        function loadFeed() {
-            db.collection('requests').orderBy('timestamp', 'desc').onSnapshot(snap => {
-                const area = document.getElementById('feed-area');
-                const trash = document.getElementById('trash-list');
-                area.innerHTML = ""; trash.innerHTML = "";
+        const facFilter = document.getElementById('feed-filter').value;
+        if(userData.role === 'supervisor' && facFilter !== 'all') list = list.filter(r => r.faculty === facFilter);
 
-                snap.forEach(doc => {
-                    const r = { id: doc.id, ...doc.data() };
-                    if(r.isDeleted) {
-                        trash.innerHTML += createTrashCard(r);
-                    } else {
-                        // Filter logic based on user role can be added here
-                        area.innerHTML += createReqCard(r);
-                    }
-                });
-            });
-        }
+        if(list.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px; color:#555;"><i class="fa-solid fa-folder-open fa-2x"></i><p>لا يوجد بيانات</p></div>`; return; }
 
-        function createReqCard(r) {
-            const badgeCls = r.priority === 'high' ? 'badge-high' : 'badge-low';
-            const statusTxt = transStatus(r.status);
+        list.forEach(d => {
+            let pBadgeClass = d.priority==='high'? 'p-high' : d.priority==='medium'? 'p-medium' : 'p-low';
+            let pText = d.priority==='high'? 'عاجل جداً' : d.priority==='medium'? 'أولوية متوسطة' : 'عادي';
             
-            return `
-            <div class="glass-card">
-                <div class="req-card-header">
-                    <div class="user-mini">
-                        <img src="${r.userData.photo}" class="avatar-circle" style="width:35px;height:35px;">
-                        <div>
-                            <b style="font-size:13px;">${r.userData.name}</b>
-                            <div style="font-size:10px; color:#aaa;">${r.location}</div>
-                        </div>
-                    </div>
-                    <div class="req-badges">
-                        <span class="badge ${badgeCls}">${r.priority === 'high' ? 'عاجل 🔥' : 'عادي'}</span>
-                        <span class="badge badge-status">${statusTxt}</span>
-                    </div>
-                </div>
-                <p style="font-size:13px; margin-bottom:10px;">${r.desc}</p>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn btn-ghost btn-sm" onclick="openDetails('${r.id}')"><i class="fa-solid fa-eye"></i> التفاصيل والتتبع</button>
-                    ${userData.role === 'employee' && r.status==='pending' ? `<button class="btn btn-danger btn-sm" style="width:auto;" onclick="softDelete('${r.id}')"><i class="fa-solid fa-trash"></i></button>` : ''}
-                </div>
-            </div>`;
-        }
+            let statusText = {'pending':'انتظار','approved':'جار التنفيذ','done':'مكتمل','rejected':'مرفوض','suspended':'معلق'}[d.status];
+            let statusColor = {'pending':'#ffd700','approved':'#3a86ff','done':'#00b894','rejected':'#ff4757','suspended':'#ffa502'}[d.status];
 
-        // --- Details & Tracking ---
-        async function openDetails(id) {
-            const doc = await db.collection('requests').doc(id).get();
-            const r = { id: doc.id, ...doc.data() };
-            
-            // Populate Data
-            document.getElementById('dt-desc').innerText = r.desc;
-            document.getElementById('dt-loc').innerText = r.location;
-            
-            // Media
-            const mGrid = document.getElementById('dt-media'); mGrid.innerHTML = "";
-            if(r.media) r.media.forEach(m => {
-                mGrid.innerHTML += `<img src="${m.url}" class="media-thumb" onclick="window.open('${m.url}')">`;
-            });
-
-            // Tracking Logic
-            document.querySelectorAll('.step').forEach(s => s.className = 'step'); // reset
-            if(r.status === 'pending') {
-                document.getElementById('step-1').classList.add('active');
-            } else if(r.status === 'approved' || r.status === 'suspended') {
-                document.getElementById('step-1').classList.add('done');
-                document.getElementById('step-2').classList.add('active');
-            } else if(r.status === 'done') {
-                document.getElementById('step-1').classList.add('done');
-                document.getElementById('step-2').classList.add('done');
-                document.getElementById('step-3').classList.add('done');
-            } else if(r.status === 'rejected') {
-                document.getElementById('step-1').classList.add('done');
-                document.getElementById('step-2').innerHTML = `<div class="step-circle" style="background:var(--danger); border-color:var(--danger)"><i class="fa-solid fa-xmark"></i></div><span class="step-label">مرفوض</span>`;
-            }
-
-            // Actions Buttons based on Role
-            const actDiv = document.getElementById('dt-actions'); actDiv.innerHTML = "";
-            
-            if(userData.role === 'supervisor' && r.status === 'pending') {
-                actDiv.innerHTML = `
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn btn-primary" onclick="setupAction('${r.id}', 'approve')">قبول وتعيين فني</button>
-                        <button class="btn btn-danger" onclick="setupAction('${r.id}', 'reject')">رفض</button>
-                    </div>`;
-            } else if (userData.role === 'technician' && r.status === 'approved') {
-                actDiv.innerHTML = `
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn btn-primary" onclick="updateReqStatus('${r.id}', 'done')">تم الإصلاح ✅</button>
-                        <button class="btn btn-ghost" onclick="setupAction('${r.id}', 'suspend')">تعليق العمل ✋</button>
-                    </div>`;
-            }
-
-            document.getElementById('details-modal').classList.add('active');
-        }
-
-        // --- Action Logic (Modal) ---
-        async function setupAction(id, type) {
-            tempAction = { id, type };
-            document.getElementById('details-modal').classList.remove('active'); // Close details
-            document.getElementById('action-modal').classList.add('active'); // Open action
-            
-            const techSel = document.getElementById('tech-select');
-            const title = document.getElementById('act-head');
-            
-            if(type === 'approve') {
-                title.innerText = "تعيين فني للصيانة";
-                techSel.classList.remove('hidden');
-                // Load Technicians
-                const snap = await db.collection('users').where('role', '==', 'technician').get();
-                const sel = document.getElementById('sel-tech'); sel.innerHTML = "";
-                snap.forEach(d => {
-                    sel.innerHTML += `<option value="${d.id}">${d.data().name}</option>`;
-                });
+            // Action Buttons
+            let btns = "";
+            if(currentTab === 'trash') {
+                btns = `<div style="display:flex; gap:10px; margin-top:15px;">
+                    <button onclick="restoreReq('${d.id}')" class="btn-main btn-sm">استعادة</button>
+                    <button onclick="hardDelete('${d.id}')" class="btn-main btn-danger btn-sm">حذف نهائي</button>
+                </div>`;
             } else {
-                title.innerText = type === 'reject' ? "سبب الرفض" : "سبب التعليق";
-                techSel.classList.add('hidden');
+                if(userData.role === 'employee') btns = `<button onclick="softDelete('${d.id}')" class="btn-ghost btn-sm" style="color:var(--error); margin-top:15px; border-color:var(--error);">حذف الطلب</button>`;
+                else if(userData.role === 'supervisor' && d.status === 'pending') {
+                    btns = `<div style="display:flex; gap:10px; margin-top:15px;">
+                        <button onclick="openAction('${d.id}','approve')" class="btn-main btn-sm" style="background:var(--success);">قبول وتعيين فني</button>
+                        <button onclick="openAction('${d.id}','reject')" class="btn-main btn-danger btn-sm">رفض</button>
+                    </div>`;
+                } else if(userData.role === 'technician') {
+                    if(d.status === 'approved' || d.status === 'suspended') {
+                        btns = `<div style="display:flex; gap:8px; margin-top:15px;">
+                            <button onclick="openAction('${d.id}','done')" class="btn-main btn-sm" style="background:var(--success); flex:2;">إتمام الصيانة <i class="fa-solid fa-check-double"></i></button>
+                            ${d.status!=='suspended' ? `<button onclick="openAction('${d.id}','suspend')" class="btn-main btn-warning btn-sm" style="flex:1;">تعليق</button>` : ''}
+                        </div>`;
+                    }
+                }
             }
 
-            document.getElementById('act-btn').onclick = () => doAction();
-        }
+            container.innerHTML += `
+            <div class="glass-card">
+                <div class="card-status-badge ${pBadgeClass}">${pText}</div>
+                
+                <div style="display:flex; align-items:center; gap:10px; margin-top:15px;">
+                    <img src="${d.userData.photoUrl}" class="avatar">
+                    <div>
+                        <b style="font-size:13px;">${d.userData.fullName}</b>
+                        <div style="font-size:10px; color:#888;">${d.date} | ${d.time}</div>
+                    </div>
+                    <div style="margin-right:auto; text-align:left;">
+                        <span style="color:${statusColor}; font-weight:bold; font-size:12px;">${statusText}</span>
+                    </div>
+                </div>
 
-        async function doAction() {
-            const { id, type } = tempAction;
-            const note = document.getElementById('act-note').value;
-            
-            let data = { note: note };
-            if(type === 'approve') {
-                data.status = 'approved';
-                const sel = document.getElementById('sel-tech');
-                data.techId = sel.value;
-                data.techName = sel.options[sel.selectedIndex].text;
-            } else if (type === 'reject') data.status = 'rejected';
-            else if (type === 'suspend') data.status = 'suspended';
+                <div style="margin:12px 0; padding:12px; background:rgba(0,0,0,0.2); border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size:11px; color:#aaa; margin-bottom:5px;"><i class="fa-solid fa-location-dot"></i> ${d.location}</div>
+                    <p style="margin:0; font-size:13px; line-height:1.5;">${d.description}</p>
+                </div>
+                
+                ${d.supervisorComment ? `<div style="margin-top:5px; font-size:11px; color:var(--gold); padding:5px; background:rgba(255,215,0,0.1); border-radius:5px;"><i class="fa-solid fa-comment-dots"></i> ملاحظات: ${d.supervisorComment}</div>` : ''}
+                
+                <button onclick="openRequestDetails('${d.id}')" class="btn-ghost btn-sm" style="width:100%; margin-top:10px; border-radius:10px; font-size:11px;">عرض التفاصيل والمرفقات</button>
+                ${btns}
+            </div>`;
+        });
+    }
 
-            await db.collection('requests').doc(id).update(data);
-            closeModal('action-modal');
-            showToast('تم تحديث الحالة');
-        }
+    async function openAction(id, type) {
+        tempActionData = { id, type };
+        document.getElementById('action-modal').classList.remove('hidden');
+        document.getElementById('act-comment').value = "";
+        
+        const map = {'approve':'قبول وتعيين فني','reject':'رفض الطلب','suspend':'تعليق العمل لسبب','done':'إغلاق الطلب (تم)'};
+        document.getElementById('act-title').innerText = map[type];
 
-        async function updateReqStatus(id, st) {
-            await db.collection('requests').doc(id).update({status: st});
-            closeModal('details-modal');
-            showToast('تم التحديث');
-        }
-
-        // --- Profile & ID ---
-        function openMyProfile() {
-            document.getElementById('profile-modal').classList.add('active');
-            document.getElementById('p-img').src = userData.photo;
-            document.getElementById('p-name').innerText = userData.name;
-            document.getElementById('p-id').innerText = userData.shortId || '---';
-            document.getElementById('edit-name').value = userData.name;
-            document.getElementById('edit-phone').value = userData.phone || '';
-        }
-
-        async function updateProfile() {
-            const newName = document.getElementById('edit-name').value;
-            const newPhone = document.getElementById('edit-phone').value;
-            await db.collection('users').doc(currentUser.uid).update({
-                name: newName, phone: newPhone
+        if(type === 'approve') {
+            document.getElementById('tech-select-area').classList.remove('hidden');
+            const list = document.getElementById('tech-list-action'); list.innerHTML="<small>جاري التحميل...</small>";
+            const snap = await db.collection('users').where('role','==','technician').get();
+            list.innerHTML="";
+            snap.forEach(doc => {
+                 list.innerHTML += `<div onclick="selTech(this, '${doc.id}', '${doc.data().fullName}')" style="padding:10px; border-bottom:1px solid #444; cursor:pointer; font-size:12px; display:flex; justify-content:space-between;"><span>${doc.data().fullName}</span> <span style="color:#666;">${doc.data().shortId || ''}</span></div>`;
             });
-            userData.name = newName; userData.phone = newPhone;
-            initApp(); // refresh UI
-            closeModal('profile-modal');
-            showToast('تم حفظ الملف الشخصي');
+        } else {
+            document.getElementById('tech-select-area').classList.add('hidden');
         }
+    }
+    function selTech(el, id, name) {
+        document.querySelectorAll('#tech-list-action div').forEach(d=>d.style.background='transparent');
+        el.style.background='rgba(58, 134, 255, 0.2)'; selectedTech={id, name};
+    }
+    async function submitAction() {
+        const { id, type } = tempActionData;
+        const comment = document.getElementById('act-comment').value;
+        const btn = document.getElementById('act-submit-btn');
 
-        // --- Friends System (Fixed) ---
-        async function searchAndAdd() {
-            const q = document.getElementById('search-inp').value;
-            if(!q) return;
-            
-            // Search by shortId OR email
-            let snap = await db.collection('users').where('shortId', '==', q).get();
-            if(snap.empty) snap = await db.collection('users').where('email', '==', q).get();
+        if((type==='reject' || type==='suspend') && !comment) return toast("⚠️ يجب كتابة سبب");
+        if(type==='approve' && !selectedTech) return toast("⚠️ اختر فني لتنفيذ المهمة");
 
-            if(snap.empty) return showToast('مستخدم غير موجود');
-            
-            const target = snap.docs[0];
-            if(target.id === currentUser.uid) return showToast('لا يمكن إضافة نفسك');
+        btn.disabled=true;
+        try {
+            let up = { supervisorComment: comment };
+            if(type==='approve') { up.status='approved'; up.technicianId=selectedTech.id; up.technicianName=selectedTech.name; }
+            else if(type==='reject') up.status='rejected';
+            else if(type==='suspend') up.status='suspended';
+            else if(type==='done') up.status='done';
 
-            await db.collection('friends').add({
-                from: currentUser.uid, to: target.id, 
-                targetName: target.data().name, targetRole: target.data().role, targetPhoto: target.data().photo
-            });
-            showToast('تمت إضافة الزميل بنجاح');
-            loadTeam();
-        }
+            await db.collection('requests').doc(id).update(up);
+            toast("✅ تم تنفيذ الإجراء"); closeModal('action-modal');
+        } catch(e) { toast("❌ خطأ"); } finally { btn.disabled=false; }
+    }
 
-        function loadTeam() {
-            db.collection('friends').where('from', '==', currentUser.uid).onSnapshot(snap => {
-                const list = document.getElementById('team-list'); list.innerHTML = "";
-                snap.forEach(doc => {
-                    const f = doc.data();
-                    list.innerHTML += `
-                    <div class="glass-card" style="padding:10px; display:flex; align-items:center; gap:10px;">
-                        <img src="${f.targetPhoto}" class="avatar-circle">
-                        <div>
-                            <b>${f.targetName}</b><br>
-                            <span style="font-size:10px; color:#aaa">${transRole(f.targetRole)}</span>
-                        </div>
-                    </div>`;
-                });
-            });
-        }
+    async function softDelete(id) { if(confirm("نقل للمهملات؟")) await db.collection('requests').doc(id).update({isDeleted: true}); }
+    async function restoreReq(id) { await db.collection('requests').doc(id).update({isDeleted: false}); toast("✅ تم الاستعادة"); }
+    async function hardDelete(id) { if(confirm("هل أنت متأكد من الحذف النهائي؟ لا يمكن التراجع")) await db.collection('requests').doc(id).delete(); }
 
-        // --- Trash & Helpers ---
-        async function softDelete(id) { if(confirm('نقل للمهملات؟')) await db.collection('requests').doc(id).update({isDeleted:true}); }
-        function createTrashCard(r) { return `<div class="glass-card" style="opacity:0.6"><p>${r.desc}</p><button class="btn btn-primary btn-sm" onclick="db.collection('requests').doc('${r.id}').update({isDeleted:false})">استعادة</button></div>`; }
-        async function emptyTrash() { showToast('تم إفراغ السلة (Mock)'); } // Needs backend function to really delete
+    // --- Details Modal with Timeline ---
+    function openRequestDetails(id) {
+        const d = requestsCache.find(r => r.id === id);
+        document.getElementById('request-details-modal').classList.remove('hidden');
+        
+        // Render Media
+        let mediaHtml = "";
+        if(d.media && d.media.length > 0) d.media.forEach(m => mediaHtml += `<div class="media-item" style="height:120px; aspect-ratio:auto;">${m.type==='video' ? `<video controls src="${m.url}" style="width:100%;height:100%"></video>` : `<img onclick="window.open(this.src)" src="${m.url}" style="width:100%;height:100%; cursor:zoom-in;">`}</div>`);
+        else mediaHtml = "<p style='font-size:11px; color:#666; text-align:center; width:100%;'>لا توجد مرفقات</p>";
 
-        function nav(page, el) {
-            document.querySelectorAll('.page-sec').forEach(p=>p.classList.add('hidden'));
-            document.getElementById('page-'+page).classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
-            el.classList.add('active');
-        }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        function showToast(msg) { const t = document.getElementById('toast'); t.innerText=msg; t.style.display='block'; setTimeout(()=>t.style.display='none', 3000); }
-        function transRole(r) { return r==='employee'?'موظف':r==='supervisor'?'مشرف':'فني'; }
-        function transStatus(s) { const m={'pending':'انتظار','approved':'جاري العمل','done':'مكتمل','rejected':'مرفوض','suspended':'معلق'}; return m[s]||s; }
+        // Timeline Logic
+        let steps = ['pending', 'approved', 'working', 'done'];
+        let activeIdx = -1;
+        if(d.status === 'pending') activeIdx = 0;
+        else if(d.status === 'approved' || d.status === 'suspended') activeIdx = 1;
+        else if(d.status === 'done') activeIdx = 3; // Jump to end
+        else if(d.status === 'rejected') activeIdx = -2; // Special case
 
-    </script>
+        let barWidth = activeIdx === 0 ? '15%' : activeIdx === 1 ? '50%' : activeIdx === 3 ? '100%' : '0%';
+        if(activeIdx === -2) barWidth = '0'; // Rejected
+
+        let timelineHtml = `
+        <div class="timeline-container">
+            <div class="timeline-progress"></div>
+            <div class="timeline-bar" style="width:${barWidth}; background:${activeIdx===-2? 'var(--error)' : 'var(--success)'}"></div>
+            <div class="timeline-steps">
+                <div class="step-item ${activeIdx>=0?'active':''}"><div class="step-circle"><i class="fa-solid fa-paper-plane"></i></div><div class="step-label">إرسال</div></div>
+                <div class="step-item ${activeIdx>=1?'active':''} ${activeIdx===-2?'rejected':''}"><div class="step-circle"><i class="fa-solid fa-user-check"></i></div><div class="step-label">${activeIdx===-2?'مرفوض':'اعتماد'}</div></div>
+                <div class="step-item ${activeIdx>=1 && activeIdx<3 ?'active':''}"><div class="step-circle"><i class="fa-solid fa-screwdriver"></i></div><div class="step-label">تنفيذ</div></div>
+                <div class="step-item ${activeIdx===3?'active':''}"><div class="step-circle"><i class="fa-solid fa-check"></i></div><div class="step-label">مكتمل</div></div>
+            </div>
+        </div>`;
+
+        document.getElementById('req-details-content').innerHTML = `
+            ${timelineHtml}
+            <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; border:1px solid var(--glass-border); margin-bottom:15px;">
+                <div style="font-size:12px; color:var(--text-muted); margin-bottom:5px;">وصف العطل:</div>
+                <p style="margin:0; font-size:14px; line-height:1.6;">${d.description}</p>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:15px; color:#aaa;">
+                <span><i class="fa-regular fa-clock"></i> ${d.date} - ${d.time}</span>
+                <span><i class="fa-solid fa-map-pin"></i> ${d.location.split('-')[1] || 'مبنى'}</span>
+            </div>
+            ${d.technicianName ? `<div style="background:rgba(58, 134, 255, 0.1); padding:10px; border-radius:10px; margin-bottom:15px; font-size:12px; color:var(--primary);"><i class="fa-solid fa-helmet-safety"></i> الفني المسؤول: <b>${d.technicianName}</b></div>` : ''}
+            <div style="border-top:1px solid #333; padding-top:10px;">
+                <small style="display:block; margin-bottom:8px; color:#888;">المرفقات:</small>
+                <div class="media-grid" style="grid-template-columns: repeat(3, 1fr);">${mediaHtml}</div>
+            </div>
+        `;
+    }
+
+    // Helpers
+    function reqNotifyPerm() { Notification.requestPermission().then(p => { if(p==="granted") new Notification("Smart Maintenance", {body:"الإشعارات مفعلة بنجاح"}); }); }
+    function nav(p, el) { document.querySelectorAll('.page-section').forEach(x=>x.classList.add('hidden')); document.getElementById('page-'+p).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active')); el.classList.add('active'); }
+    function openSettings() { nav('settings', document.querySelector('.nav-item:nth-child(3)')); }
+    function showScreen(id) { ['auth-screen','app-container'].forEach(x => document.getElementById(x).classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    function logout() { auth.signOut(); location.reload(); }
+    function toast(m) { const t=document.getElementById('toast'); t.innerHTML=m; t.style.display='block'; setTimeout(()=>t.style.display='none',3000); }
+</script>
 </body>
 </html>

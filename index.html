@@ -52,12 +52,12 @@
         .hidden { display: none !important; }
         html { scroll-behavior: smooth; }
 
-        /* Loader Styling (Updated for Full Opacity) */
+        /* Loader Styling */
         #loader {
             position: fixed; 
             inset: 0; 
-            background-color: var(--dark); /* Solid color, no transparency */
-            z-index: 99999; /* Highest Z-Index */
+            background-color: var(--dark);
+            z-index: 99999; 
             display: flex; 
             flex-direction: column; 
             justify-content: center; 
@@ -145,7 +145,13 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.05);
         }
 
-        .auth-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        /* Fixed Auth Labels Spacing */
+        .auth-section-label {
+            text-align: right; font-size: 12px; color: var(--text-muted); 
+            margin-bottom: 8px; margin-top: 15px; display: block; font-weight: 700;
+        }
+
+        .auth-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px; }
         .auth-card-input { display: none; }
         .auth-card {
             background: var(--surface-light); border: 1px solid var(--border);
@@ -218,10 +224,13 @@
         .friend-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: #fff; border-radius: 18px; margin-bottom: 10px; cursor: pointer; border: 1px solid var(--border); transition: 0.2s; }
         .friend-item:hover { border-color: var(--primary); background: #f8fafc; }
         
-        /* Updated Z-Index for Modals to ensure they are on top */
+        /* Updated Z-Index for Modals */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
         .modal-content { width: 100%; max-width: 450px; background: #fff; border: 1px solid var(--border); border-radius: 30px; padding: 30px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.15); }
         .close-btn { position: absolute; top: 20px; left: 20px; background: #f1f5f9; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); }
+
+        /* Specific Z-Index for Delete Modal to appear ON TOP of Friend Profile */
+        #delete-friend-modal { z-index: 10000 !important; }
 
         /* Status Pills */
         .status-pill { padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 5px; width: fit-content; }
@@ -246,20 +255,10 @@
             color: var(--error); font-size: 30px; border: 4px solid #fff; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.1);
         }
 
-        /* Modern Tech Selection (New Request) */
-        .tech-select-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
+        /* Modern Tech Selection */
+        .tech-select-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .tech-select-card {
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
-            background: var(--surface-light);
+            border: 1px solid var(--border); border-radius: 16px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; background: var(--surface-light);
         }
         .tech-select-card:hover { border-color: var(--primary); background: #fff; }
         .tech-select-card.selected { border-color: var(--primary); background: #eff6ff; box-shadow: 0 4px 12px rgba(0,86,179,0.1); }
@@ -286,20 +285,21 @@
             <p style="color:var(--text-muted); font-size:13px; margin-bottom:35px; line-height:1.6;">نظام الصيانة الذكي - الجامعة</p>
 
             <div id="reg-fields" class="hidden">
-                <p style="text-align:right; font-size:12px; color:var(--text-muted); margin-bottom:8px;">اختر النوع:</p>
+                <p class="auth-section-label">اختر النوع:</p>
                 <div class="auth-grid" style="grid-template-columns: 1fr 1fr;">
                     <label><input type="radio" name="auth-gender" value="male" class="auth-card-input" checked><div class="auth-card"><i class="fa-solid fa-person"></i><span>ذكر</span></div></label>
                     <label><input type="radio" name="auth-gender" value="female" class="auth-card-input"><div class="auth-card"><i class="fa-solid fa-person-dress"></i><span>أنثى</span></div></label>
                 </div>
-                <div class="input-group"><input type="text" id="reg-name" placeholder="الاسم الكامل"></div>
+                <div class="input-group" style="margin-top:15px;"><input type="text" id="reg-name" placeholder="الاسم الكامل"></div>
                 <div class="input-group"><input type="tel" id="reg-phone" placeholder="01xxxxxxxxx"></div>
-                <p style="text-align:right; font-size:12px; color:var(--text-muted); margin-bottom:8px;">الوظيفة:</p>
+                
+                <p class="auth-section-label">الوظيفة:</p>
                 <div class="auth-grid">
                     <label><input type="radio" name="auth-role" value="employee" class="auth-card-input" checked><div class="auth-card"><i class="fa-solid fa-user-pen"></i><span>موظف</span></div></label>
                     <label><input type="radio" name="auth-role" value="supervisor" class="auth-card-input"><div class="auth-card"><i class="fa-solid fa-user-tie"></i><span>مشرف</span></div></label>
                     <label><input type="radio" name="auth-role" value="technician" class="auth-card-input"><div class="auth-card"><i class="fa-solid fa-helmet-safety"></i><span>فني</span></div></label>
                 </div>
-                <div class="input-group"><input type="text" id="reg-job" placeholder="المسمى الوظيفي"></div>
+                <div class="input-group" style="margin-top:15px;"><input type="text" id="reg-job" placeholder="المسمى الوظيفي"></div>
                 <div class="input-group"><input type="text" id="reg-loc" placeholder="مقر العمل"></div>
             </div>
 
@@ -470,19 +470,6 @@
         <div id="media-content-container" style="max-width:95%; max-height:80vh;"></div>
     </div>
 
-    <div id="delete-friend-modal" class="modal-overlay hidden">
-        <div class="modal-content" style="text-align:center;">
-            <div class="close-btn" onclick="closeModal('delete-friend-modal')"><i class="fa-solid fa-xmark"></i></div>
-            <div class="confirm-icon-box"><i class="fa-solid fa-user-xmark"></i></div>
-            <h3 style="margin-bottom:10px; color:var(--text);">حذف صديق؟</h3>
-            <p style="color:var(--text-muted); margin-bottom:25px; font-size:14px;">هل أنت متأكد من رغبتك في إزالة هذا المستخدم من قائمة الأصدقاء؟ سيتم إزالته أيضاً من قائمة المشرفين.</p>
-            <div style="display:flex; gap:10px;">
-                <button onclick="confirmRemoveFriend()" class="btn-main btn-danger">نعم، حذف</button>
-                <button onclick="closeModal('delete-friend-modal')" class="btn-ghost" style="width:100%;">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
     <div id="friend-profile-modal" class="modal-overlay hidden">
         <div class="modal-content" style="text-align:center; z-index:2001;">
             <div class="close-btn" onclick="closeModal('friend-profile-modal')"><i class="fa-solid fa-xmark"></i></div>
@@ -556,6 +543,19 @@
             </div>
         </div>
     </div>
+    
+    <div id="delete-friend-modal" class="modal-overlay hidden">
+        <div class="modal-content" style="text-align:center;">
+            <div class="close-btn" onclick="closeModal('delete-friend-modal')"><i class="fa-solid fa-xmark"></i></div>
+            <div class="confirm-icon-box"><i class="fa-solid fa-user-xmark"></i></div>
+            <h3 style="margin-bottom:10px; color:var(--text);">حذف صديق؟</h3>
+            <p style="color:var(--text-muted); margin-bottom:25px; font-size:14px;">هل أنت متأكد من رغبتك في إزالة هذا المستخدم من قائمة الأصدقاء؟ سيتم إزالته أيضاً من قائمة المشرفين.</p>
+            <div style="display:flex; gap:10px;">
+                <button onclick="confirmRemoveFriend()" class="btn-main btn-danger">نعم، حذف</button>
+                <button onclick="closeModal('delete-friend-modal')" class="btn-ghost" style="width:100%;">إلغاء</button>
+            </div>
+        </div>
+    </div>
 
     <div id="toast" style="position:fixed; top:30px; left:50%; transform:translateX(-50%); background:rgba(15, 23, 42, 0.95); color:white; padding:12px 30px; border-radius:50px; border:1px solid rgba(255,255,255,0.1); z-index:9999; display:none; font-size:13px; font-weight:bold; box-shadow:0 10px 40px rgba(0,0,0,0.5); font-family:'Cairo'; backdrop-filter:blur(5px);"></div>
 
@@ -596,15 +596,15 @@
     let newProfilePicFile = null;
     let isFirstLoad = true;
     let currentFriendDocId = null; // To track friend deletion
-    let deletedFriendIds = []; // Local cache to hide deleted supervisors immediately
 
     // =========================================================================
     // 2. AUTHENTICATION & STARTUP
     // =========================================================================
     auth.onAuthStateChanged(async u => {
         if(u) {
+            // Check Email Verification
             if(!u.emailVerified) {
-                document.getElementById('loader').classList.add('hidden'); // Hide loader to show alert
+                document.getElementById('loader').classList.add('hidden');
                 toast("⚠️ يجب تفعيل البريد الإلكتروني أولاً.");
                 auth.signOut();
                 showScreen('auth-screen');
@@ -624,7 +624,7 @@
             if(doc.exists) {
                 userData = doc.data();
                 
-                // Ensure legacy fields
+                // Legacy fields patch
                 if(!userData.shortId) {
                     userData.shortId = Math.random().toString(36).substr(2,6).toUpperCase();
                     await db.collection('users').doc(currentUser.uid).update({shortId: userData.shortId});
@@ -633,20 +633,18 @@
 
                 renderHeader();
                 showScreen('app-container');
-                
-                // Setup UI based on Role
                 setupRoleUI();
                 
                 loadFeed();
-                loadTeam();
+                loadTeam(); // Essential for supervisor filtering
                 loadFriendReqs();
                 loadProfilePageData();
                 
-                // Defaults for Create Form
+                // Set default dates
                 document.getElementById('req-date').valueAsDate = new Date();
                 document.getElementById('req-time').value = new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
 
-                // Hide loader only when everything is ready
+                // Hide loader only after data is ready
                 setTimeout(() => { document.getElementById('loader').classList.add('hidden'); }, 500);
             }
         } catch(e) { 
@@ -662,14 +660,15 @@
             document.getElementById('filter-container').classList.remove('hidden');
         }
         
-        // Technician: Change "Plus" button to "Report"
+        // Technician: Replace "Add" button with "Report" button
         if(userData.role === 'technician') {
             const addBtn = document.querySelector('.nav-add-btn');
             addBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i>';
             addBtn.onclick = function() {
+                // Open Tech Report Modal instead of Create Page
                 document.getElementById('tech-report-modal').classList.remove('hidden');
             };
-            // Hide "Create Request" page access
+            // Disable Create Page Logic
             document.getElementById('page-create').innerHTML = "<div style='text-align:center; padding:50px;'><h3 style='color:var(--text-muted)'>حساب فني</h3><p>لا يمكنك إنشاء بلاغات، فقط متابعة المهام وإرسال التقارير.</p></div>";
         }
     }
@@ -685,13 +684,12 @@
         document.getElementById('banner-img').src = userData.photoUrl;
     }
 
-    // Logic for Sound (Receiver Only)
+    // Logic for Sound: Play ONLY if request is incoming (not mine)
     function checkAndPlaySound(newRequests) {
-        // Check if any new request is NOT created by me (Incoming)
         const hasIncoming = newRequests.some(r => r.userId !== currentUser.uid);
         if (hasIncoming) {
             const audio = document.getElementById('notify-sound');
-            if(audio) audio.play().catch(e => console.log("Sound interaction needed"));
+            if(audio) audio.play().catch(e => console.log("Audio play blocked"));
             toast("🔔 إشعار جديد");
             document.querySelector('.bell-badge').style.display = 'block';
         }
@@ -711,6 +709,7 @@
             snap.forEach(doc => {
                 const data = {id: doc.id, ...doc.data()};
                 updatedCache.push(data);
+                // Check if it's a truly new item (not just updated)
                 if (!isFirstLoad && !currentIds.includes(doc.id)) {
                     newItems.push(data);
                 }
@@ -770,6 +769,7 @@
                 }
 
                 if(userData.role === 'supervisor' && d.status === 'pending') {
+                    // Supervisor actions
                     actionBtns = `
                     <div style="display:flex; gap:10px;">
                         <button onclick="event.stopPropagation(); openAction('${d.id}','approve')" class="btn-main btn-sm" style="background:var(--success);">قبول وتعيين فني</button>
@@ -777,6 +777,7 @@
                     </div>`;
                 }
                 else if(userData.role === 'technician') {
+                    // Tech actions
                     if(d.status === 'approved') {
                         actionBtns = `
                         <div style="display:flex; gap:10px;">
@@ -850,7 +851,6 @@
         };
         document.getElementById('act-title').innerText = titles[type];
 
-        // Logic Change: Placeholder for Approve vs Reject
         if(type === 'approve') {
             commBox.placeholder = "ملاحظات للفني (اختياري)...";
             document.getElementById('tech-select-area').classList.remove('hidden');
@@ -900,7 +900,7 @@
 
         btn.disabled=true;
         try {
-            let updateData = { supervisorComment: comment }; // Used for notes or reject reason
+            let updateData = { supervisorComment: comment };
             
             if(type === 'approve') { 
                 updateData.status = 'approved'; 
@@ -928,26 +928,20 @@
     // 5. FRIENDS & DELETE LOGIC (UPDATED)
     // =========================================================================
     function openDeleteFriendModal() {
-        // Modal is now separate from profile modal to avoid z-index issues
+        // Just show the modal (it now has high z-index)
         document.getElementById('delete-friend-modal').classList.remove('hidden');
     }
 
     async function confirmRemoveFriend() {
         if(!currentFriendDocId) return;
         try {
-            // 1. Delete from Firestore
+            // Delete from Firestore
             await db.collection('users').doc(currentUser.uid).collection('friends').doc(currentFriendDocId).delete();
-            
-            // 2. Add to local deleted cache to hide from Supervisor list immediately
-            // We need the friend's actual UserID, which we can get from the DOM or data attributes
-            // But simplifying: We will just reload the supervisor list next time it's opened.
-            // Or better:
             
             toast("تم حذف الصديق");
             closeModal('delete-friend-modal');
             closeModal('friend-profile-modal');
-            
-            // Refresh team list automatically via snapshot listener
+            // The team list updates automatically via snapshot
         } catch(e) {
             console.error(e);
             toast("حدث خطأ أثناء الحذف");
@@ -956,7 +950,7 @@
     
     async function viewFriendProfile(fid, docId) {
         document.getElementById('loader').classList.remove('hidden');
-        currentFriendDocId = docId; // Store docId for potential deletion
+        currentFriendDocId = docId; // Store docId for deletion
         
         try {
             const doc = await db.collection('users').doc(fid).get();
@@ -981,9 +975,6 @@
                     callBtn.classList.add('hidden');
                 }
                 
-                // Store ID for filter check
-                document.getElementById('friend-profile-modal').dataset.uid = fid;
-
                 document.getElementById('friend-profile-modal').classList.remove('hidden');
             }
         } catch(e) { document.getElementById('loader').classList.add('hidden'); }
@@ -1021,6 +1012,7 @@
             </div>`;
     }
 
+    // UPDATED: Logic to filter supervisors by friends list
     async function openSupModal() { 
         if(!document.getElementById('req-desc').value) return toast("⚠️ الوصف مطلوب");
         if(!document.getElementById('req-type').value) return toast("⚠️ نوع العطل مطلوب");
@@ -1029,35 +1021,18 @@
         const l=document.getElementById('sup-list'); 
         l.innerHTML="<p style='text-align:center'>تحميل المشرفين...</p>"; 
         
-        // Fetch ALL supervisors
+        // 1. Get ALL Supervisors
         const snap = await db.collection('users').where('role','==','supervisor').get();
         l.innerHTML="";
         
-        // Also fetch my friends to check who is deleted/valid
+        // 2. Get MY Friends IDs
         const friendsSnap = await db.collection('users').doc(currentUser.uid).collection('friends').get();
         const friendIds = friendsSnap.docs.map(doc => doc.data().friendId);
 
         let count = 0;
         snap.forEach(d=>{ 
-            // Constraint Check: "Remove from supervisor list if deleted from friends"
-            // Implementation: We verify if this supervisor is in my friend list OR if the logic allows non-friends.
-            // Based on user prompt "حتي لو مشرف يتحذف من قايمة اختيار مشرف ... في حالة تم حذفة من الاصدقاء"
-            // This implies: Show ONLY supervisors who are ALSO friends. OR filter out those explicitly deleted.
-            // Safest logic for this user: Check if ID is in friendIds.
-            
-            // However, typically you can report to any supervisor. 
-            // I will assume the system SHOULD filter by friends only as per the strong hint.
-            // BUT, if I enforce this, a new user with no friends sees no supervisors.
-            // So, I will show ALL supervisors, UNLESS they were friends and I deleted them? No, that's hard to track.
-            // Simple Interpretation: Only show supervisors present in my friend list?
-            // "Remove from supervisor list ... in case deleted from friends".
-            
-            // FINAL LOGIC: I will check if the supervisor is in `friendIds`. If the user insists on this link, I'll filter.
-            // Let's filter: Only display supervisors if they are in my friend list.
-            
-            // Wait, that might break usage. Let's stick to standard: Show all, but the prompt is specific.
-            // "When friend deleted... remove from supervisor list". This implies the supervisor list IS composed of friends.
-            
+            // 3. FILTER: Only show supervisors who are in my friends list
+            // This ensures if I delete a friend, they disappear from here too.
             if(friendIds.includes(d.id)) { 
                 const u=d.data(); 
                 l.innerHTML+=`
@@ -1095,7 +1070,7 @@
             const facVal = facSelect.value;
             const facText = facSelect.options[facSelect.selectedIndex].text;
             
-            // Updated Location String: Faculty - Room (No Building)
+            // Updated Location String: Faculty - Room
             const loc = `${facText} - ${document.getElementById('req-room').value}`;
             
             await db.collection('requests').add({ 
@@ -1275,7 +1250,7 @@
     async function restoreReq(id) { await db.collection('requests').doc(id).update({isDeleted:false}); toast("تم الاستعادة"); }
     async function hardDelete(id) { if(confirm("حذف نهائي؟")) await db.collection('requests').doc(id).delete(); }
 
-    // Search & Add Friend (Existing Logic)
+    // Search & Add Friend
     async function searchUser() {
         const q = document.getElementById('search-query').value.trim();
         const resDiv = document.getElementById('search-results');
